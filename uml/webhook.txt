@@ -1,0 +1,22 @@
+@startuml
+
+title Refresh content
+
+cloud web
+
+node nodejs {
+    TCP -right- [express]
+}
+
+package data {
+
+}
+
+database list
+
+web -down-> TCP : 1. /webhook
+express -down-> data : 2. git pull
+data -up-> express : 3. files data
+express -right-> list : 4. writes
+
+@enduml

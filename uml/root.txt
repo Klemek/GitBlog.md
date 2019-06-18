@@ -1,0 +1,27 @@
+@startuml
+
+title Homepage
+
+cloud web
+
+node nodejs {
+    TCP -right- [express]
+}
+
+package data {
+    component index [
+        index.ejs
+        style.css
+        ...
+    ]
+}
+
+database list
+
+web -down-> TCP : 1. root
+express -down-> index : 2
+index --> express : 3
+list -left-> express : 3
+express -up-> web : 4. html
+
+@enduml

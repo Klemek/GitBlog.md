@@ -1,0 +1,17 @@
+@startuml
+
+title RSS feed
+
+cloud web
+
+node nodejs {
+    TCP -right- [express]
+}
+
+database list
+
+web -down-> TCP : 1. /rss
+list -left-> express : 2.
+express -up-> web : 3. xml
+
+@enduml

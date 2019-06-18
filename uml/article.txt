@@ -1,0 +1,28 @@
+@startuml
+
+title Article
+
+cloud web
+
+node nodejs {
+    TCP -right- [express]
+    [showdown]
+}
+
+package data {
+    package "2019/06/18" {
+        component index [
+            index.md
+            image.png
+            ...
+        ]
+    }
+}
+
+web -down-> TCP : 1. /2019/06/18/title
+express -down-> index : 2. fetch
+index -up-> showdown : 3. markdown
+showdown -left-> express : 4. html
+express -up-> web : 5. html
+
+@enduml
