@@ -1,0 +1,23 @@
+{
+  "nodePort": 3000,
+  "dataDir": "data",
+  "modules" : {
+    "plantuml" : false,
+    "rss": true,
+    "webhook": true
+  },
+  "home" : {
+    "index" : "index.ejs"
+  },
+  "article" : {
+    "index" : "index.md"
+  },
+  "rss" : {
+    "endpoint" : "/rss",
+    "length" : 10
+  },
+  "webhook" : {
+    "endpoint": "/webhook",
+    "secretFile": "git_secret"
+  }
+}

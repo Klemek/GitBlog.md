@@ -1,0 +1,33 @@
+{
+  "name": "gitblog.md",
+  "version": "1.0.0",
+  "description": "A static blog using Markdown pulled from your git repository.",
+  "main": "src/server.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "ncp": "^2.0.0",
+    "showdown": "^1.9.0",
+    "xml": "^1.0.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "jest": "^24.8.0",
+    "superagent": "^5.1.0",
+    "supertest": "^4.0.2"
+  },
+  "scripts": {
+    "test": "jest",
+    "install": "node src/postinstall.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/klemek/gitblog.md.git"
+  },
+  "author": "klemek",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/klemek/gitblog.md/issues"
+  },
+  "homepage": "https://github.com/klemek/gitblog.md#readme"
+}
