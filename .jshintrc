@@ -15,9 +15,6 @@
   "varstmt": true,
   "sub": true,
   "quotmark": "single",
-  "browser": true,
-  "jquery": true,
-  "devel": true,
   "node": true,
   "globals": {
   }

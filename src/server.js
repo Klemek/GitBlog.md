@@ -1,4 +1,4 @@
-const config = require('./config.json');
+const config = require('../config.json');
 const app = require('./app')(config);
 
 const port = config.nodePort|3000;

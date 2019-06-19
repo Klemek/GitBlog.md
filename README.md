@@ -57,7 +57,7 @@ then edit the config.json file with your values :
 ```bash
 npm start
 #or
-node server.js
+node src/server.js
 ```
 
 You might want to use something like screen to separate the process from your current terminal session.
