@@ -1,6 +1,6 @@
 {
-  "nodePort": 3000,
-  "dataDir": "data",
+  "node_port": 3000,
+  "data_dir": "data",
   "modules" : {
     "plantuml" : false,
     "rss": true,
