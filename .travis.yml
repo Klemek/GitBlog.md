@@ -6,10 +6,13 @@ cache:
   npm: true
   directories:
     - node_modules
-before_install:
-  - chmod +x src/postinstall.js
+addons:
+  apt:
+    packages:
+      - graphviz
 install:
   - npm install
+  - npm install node-plantuml
 before_script:
   - npm install -g jshint
 script:

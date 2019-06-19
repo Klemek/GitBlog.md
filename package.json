@@ -18,7 +18,7 @@
   },
   "scripts": {
     "test": "jest",
-    "install": "src/postinstall.js"
+    "install": "node src/postinstall.js"
   },
   "repository": {
     "type": "git",

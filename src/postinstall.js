@@ -14,5 +14,5 @@ ncp('./sample_data/',dir, function(err){
     if(err)
         console.error(err);
     else
-        console.log('done');
+        console.log(`sample data copied to ${dir}`);
 });
