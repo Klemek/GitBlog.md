@@ -1,6 +1,8 @@
 # GitBlog.md (WIP)
 > This is a work in progress, some information written here might not be true yet.
 
+[![Build Status](https://img.shields.io/travis/Klemek/GitBlog.md.svg?branch=master)](https://travis-ci.org/Klemek/GitBlog.md)
+
 A static blog using Markdown pulled from your git repository.
 
 ## Flow
