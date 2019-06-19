@@ -60,7 +60,7 @@ npm start
 node server.js
 ```
 
-This might want to use something like screen to separate the process from your current terminal session.
+You might want to use something like screen to separate the process from your current terminal session.
 
 **4. Create and init your git source**
 
