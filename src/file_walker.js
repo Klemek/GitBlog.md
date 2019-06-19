@@ -26,9 +26,14 @@ const fileTree = (path, cb) => {
     });
 };
 
+const readIndexFile = (path,cb) => {
+    //TODO reading page title and possibly ![thumbnail](url)
+};
+
 module.exports = (config) => {
     return {
         fileTree: config['test'] ? fileTree : undefined,
+        readIndexFile: config['test'] ? readIndexFile : undefined,
         fetchArticles: (cb) => {
             fileTree(config['data_dir'], (err, fileList) => {
                 if (err)
