@@ -19,7 +19,7 @@ module.exports = function () {
         let config = JSON.parse(configData);
         return merge(refConfig, config);
     } catch (error) {
-        console.error('Failed to load config.json');
+        console.error('Failed to load config.json : '+error);
         return refConfig;
     }
 };
