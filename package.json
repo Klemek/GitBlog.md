@@ -6,8 +6,8 @@
   "main": "src/server.js",
   "dependencies": {
     "express": "^4.17.1",
+    "ncp": "^2.0.0",
     "showdown": "^1.9.0",
-    "shx": "^0.3.2",
     "xml": "^1.0.1"
   },
   "devDependencies": {
@@ -20,7 +20,7 @@
   "scripts": {
     "start": "node src/server.js",
     "test": "jest --silent",
-    "install": "shx mkdir ./data && shx cp -rf ./sample_data/home/* ./data && shx mkdir -p ./data/$(date +%Y)/$(date +%m)/$(date +%d) && shx cp -rf ./sample_data/article/* ./data/$(date +%Y)/$(date +%m)/$(date +%d) && shx cp -f src/config.default.json ./config.example.json"
+    "install": "node src/postinstall.js"
   },
   "repository": {
     "type": "git",
