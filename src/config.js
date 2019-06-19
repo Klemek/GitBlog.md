@@ -3,14 +3,12 @@ const fs = require('fs');
 
 const merge = function (ref, src) {
     if (typeof ref !== typeof src) {
-        console.log(ref, src, ref);
         return ref;
     } else if (typeof ref === 'object') {
         const out = {};
         Object.keys(ref).forEach(key => out[key] = merge(ref[key], src[key]));
         return out;
     } else {
-        console.log(ref, src, src);
         return src;
     }
 };
