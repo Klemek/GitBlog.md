@@ -10,7 +10,10 @@
     "index" : "index.ejs"
   },
   "article" : {
-    "index" : "index.md"
+    "index" : "index.md",
+    "thumbnail_tag" : "thumbnail",
+    "default_title": "Untitled",
+    "default_thumbnail" : null
   },
   "rss" : {
     "endpoint" : "/rss",

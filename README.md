@@ -26,33 +26,7 @@ npm install
 cd gitblog.md
 cp config.example.json config.json
 ```
-then edit the config.json file with your values :
-> default values for config.json
-````json
-{
-  "nodePort": 3000,
-  "dataDir": "data",
-  "modules" : {
-    "plantuml" : false,
-    "rss": true,
-    "webhook": true
-  },
-  "home" : {
-    "index" : "index.ejs"
-  },
-  "article" : {
-    "index" : "index.md"
-  },
-  "rss" : {
-    "endpoint" : "/rss",
-    "length" : 10
-  },
-  "webhook" : {
-    "endpoint": "/webhook",
-    "secretFile": "git_secret"
-  }
-}
-````
+then edit the config.json file with your custom values.
 
 **3. Start your server**
 

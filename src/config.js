@@ -15,7 +15,7 @@ const merge = (ref, src) => {
 
 module.exports = () => {
     try {
-        let configData = fs.readFileSync('./config.json');
+        let configData = fs.readFileSync('./config.json', {encoding:'UTF-8'});
         let config = JSON.parse(configData);
         return merge(refConfig, config);
     } catch (error) {

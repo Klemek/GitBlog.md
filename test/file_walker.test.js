@@ -8,14 +8,17 @@ const config = {
     'test': true,
     'data_dir': dataDir,
     'article': {
-        'index': testIndex
+        'index': testIndex,
+        'default_title': 'Untitled',
+        'default_thumbnail': 'default.png',
+        'thumbnail_tag': 'thumbnail'
     }
 };
 
 const fw = require('../src/file_walker')(config);
 
 const deleteFolderSync = (path) => {
-    if(!fs.existsSync(path))
+    if (!fs.existsSync(path))
         return;
     fs.readdirSync(path, {withFileTypes: true}).forEach((item) => {
         if (item.isDirectory())
@@ -105,10 +108,95 @@ describe('Test function fileTree', () => {
     });
 });
 
+describe('Test index article reading', () => {
+    const file = `${dataDir}/${testIndex}`;
+
+    test('invalid file', (done) => {
+        fw.readIndexFile('invalid file', 'thumbnail', (err, info) => {
+            expect(err).not.toBeNull();
+            expect(info).not.toBeDefined();
+            done();
+        });
+
+    });
+
+    test('correct file', (done) => {
+        fs.writeFileSync(file, `
+           # This is an awesome title !?¤
+           ![custom_thumbnail](./thumbnail.jpg)
+           this is some text
+           `);
+        fw.readIndexFile(file, 'custom_thumbnail', (err, info) => {
+            expect(err).toBeNull();
+            expect(info).toBeDefined();
+            expect(info.title).toBe('This is an awesome title !?¤');
+            expect(info.thumbnail).toBe('./thumbnail.jpg');
+            done();
+        });
+    });
+
+    test('no title', (done) => {
+        fs.writeFileSync(file, `
+           ## This is an awesome title !?¤
+           ![custom_thumbnail](./thumbnail.jpg)
+           ### this is some text
+           `);
+        fw.readIndexFile(file, 'custom_thumbnail', (err, info) => {
+            expect(err).toBeNull();
+            expect(info).toBeDefined();
+            expect(info.title).not.toBeDefined();
+            expect(info.thumbnail).toBe('./thumbnail.jpg');
+            done();
+        });
+    });
+
+    test('title at beginning', (done) => {
+        fs.writeFileSync(file, '#title');
+        fw.readIndexFile(file, 'custom_thumbnail', (err, info) => {
+            expect(err).toBeNull();
+            expect(info).toBeDefined();
+            expect(info.title).toBe('title');
+            expect(info.thumbnail).not.toBeDefined();
+            done();
+        });
+    });
+
+    test('no thumbnail', (done) => {
+        fs.writeFileSync(file, `
+           # This is an awesome title !?¤
+           ![custom_thumbnail](./thumbnail.jpg)
+           this is some text
+           `);
+        fw.readIndexFile(file, 'thumbnail', (err, info) => {
+            expect(err).toBeNull();
+            expect(info).toBeDefined();
+            expect(info.title).toBe('This is an awesome title !?¤');
+            expect(info.thumbnail).not.toBeDefined();
+            done();
+        });
+    });
+
+    test('multiple thumbnails', (done) => {
+        fs.writeFileSync(file, `
+           # This is an awesome title !?¤
+           ![custom_thumbnail](./thumbnail.jpg)
+           this is some text
+           ![custom_thumbnail](./thumbnail2.jpg)
+           `);
+        fw.readIndexFile(file, 'custom_thumbnail', (err, info) => {
+            expect(err).toBeNull();
+            expect(info).toBeDefined();
+            expect(info.title).toBe('This is an awesome title !?¤');
+            expect(info.thumbnail).toBe('./thumbnail.jpg');
+            done();
+        });
+    });
+});
+
 describe('Test article fetching', () => {
     test('invalid data dir', (done) => {
         config['data_dir'] = 'invalid root';
-        fw.fetchArticles((err,list) => {
+        fw.fetchArticles((err, list) => {
             expect(err).not.toBeNull();
             expect(list).not.toBeDefined();
             config['data_dir'] = dataDir;
@@ -116,7 +204,7 @@ describe('Test article fetching', () => {
         });
     });
     test('empty data dir', (done) => {
-        fw.fetchArticles((err,list) => {
+        fw.fetchArticles((err, list) => {
             expect(err).toBeNull();
             expect(list).toBeDefined();
             expect(list.length).toBe(0);
@@ -133,10 +221,31 @@ describe('Test article fetching', () => {
             `${dataDir}/test/test/${testIndex}`,
             `${dataDir}/2019/05/${testIndex}`,
         ]);
-        fw.fetchArticles((err,list) => {
+        fw.fetchArticles((err, list) => {
             expect(err).toBeNull();
             expect(list).toBeDefined();
             expect(list.length).toBe(0);
+            done();
+        });
+    });
+    test('empty index file', (done) => {
+        createEmptyDirs([
+            `${dataDir}/2019/05/05`,
+        ]);
+        const file = `${dataDir}/2019/05/05/${testIndex}`;
+        createEmptyFiles([file]);
+        fw.fetchArticles((err, list) => {
+            expect(err).toBeNull();
+            expect(list).toBeDefined();
+            expect(list.length).toBe(1);
+            expect(list[0]).toEqual({
+                path: file,
+                year: 2019,
+                month: 5,
+                day: 5,
+                title:'Untitled',
+                thumbnail:'default.png'
+            });
             done();
         });
     });
@@ -144,19 +253,23 @@ describe('Test article fetching', () => {
         createEmptyDirs([
             `${dataDir}/2019/05/05`,
         ]);
-        const fileList = [
-            `${dataDir}/2019/05/05/${testIndex}`,
-        ];
-        createEmptyFiles(fileList);
-        fw.fetchArticles((err,list) => {
+        const file = `${dataDir}/2019/05/05/${testIndex}`;
+        fs.writeFileSync(file, `
+           # Title
+           ![thumbnail](./thumbnail.jpg)
+           this is some text
+           `);
+        fw.fetchArticles((err, list) => {
             expect(err).toBeNull();
             expect(list).toBeDefined();
             expect(list.length).toBe(1);
             expect(list[0]).toEqual({
-               path: fileList[0],
-                year:2019,
-                month:5,
-                day:5
+                path: file,
+                year: 2019,
+                month: 5,
+                day: 5,
+                title:'Title',
+                thumbnail:`${dataDir}/2019/05/05/./thumbnail.jpg`
             });
             done();
         });
