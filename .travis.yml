@@ -6,6 +6,8 @@ cache:
   npm: true
   directories:
     - node_modules
+before_install:
+  - chmod +x src/postinstall.js
 install:
   - npm install
 before_script:
