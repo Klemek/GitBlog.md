@@ -33,7 +33,7 @@ then edit the config.json file with your values :
   "nodePort": 3000,
   "dataDir": "data",
   "modules" : {
-    "plantuml" : true,
+    "plantuml" : false,
     "rss": true,
     "webhook": true
   },

@@ -6,7 +6,6 @@
   "dependencies": {
     "express": "^4.17.1",
     "ncp": "^2.0.0",
-    "node-plantuml": "^0.8.1",
     "showdown": "^1.9.0",
     "xml": "^1.0.1"
   },
