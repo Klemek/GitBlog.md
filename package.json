@@ -21,7 +21,7 @@
   "scripts": {
     "start": "node src/server.js",
     "test": "jest",
-    "install": "shx mkdir -p ./data/$(date +%Y)/$(date +%m)/$(date +%d)/ && shx cp -rf ./sample_data/* ./data/$(date +%Y)/$(date +%m)/$(date +%d) && shx cp -f ./src/default_config.json ./config.example.json"
+    "install": "shx mkdir ./data && shx cp -rf ./sample_data/home/* ./data && shx mkdir -p ./data/$(date +%Y)/$(date +%m)/$(date +%d) && shx cp -rf ./sample_data/article/* ./data/$(date +%Y)/$(date +%m)/$(date +%d) && shx cp -f ./src/default_config.json ./config.example.json"
   },
   "repository": {
     "type": "git",
