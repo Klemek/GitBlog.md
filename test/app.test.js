@@ -1,7 +1,8 @@
 /* jshint -W117 */
 const request = require('supertest');
-const config = require('./config.test.json');
-const app = require('../src/app')(config);
+const app = require('../src/app')({
+
+});
 
 describe('Test root path', () => {
     test('GET / 200', done => {

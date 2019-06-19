@@ -1,4 +1,4 @@
-const refConfig = require('./default_config.json');
+const refConfig = require('./config.default.json');
 const fs = require('fs');
 
 const merge = function (ref, src) {
