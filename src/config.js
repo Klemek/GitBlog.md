@@ -1,7 +1,7 @@
 const refConfig = require('./config.default.json');
 const fs = require('fs');
 
-const merge = function (ref, src) {
+const merge = (ref, src) => {
     if (typeof ref !== typeof src) {
         return ref;
     } else if (typeof ref === 'object') {
@@ -13,7 +13,7 @@ const merge = function (ref, src) {
     }
 };
 
-module.exports = function () {
+module.exports = () => {
     try {
         let configData = fs.readFileSync('./config.json');
         let config = JSON.parse(configData);
