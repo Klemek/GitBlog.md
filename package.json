@@ -18,7 +18,8 @@
     "supertest": "^4.0.2"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "install": "postinstall.js"
   },
   "repository": {
     "type": "git",
