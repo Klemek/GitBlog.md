@@ -57,7 +57,7 @@ then edit the config.json file with your values :
 **3. Start your server**
 
 ```bash
-npm start
+npm run
 #or
 node src/server.js
 ```

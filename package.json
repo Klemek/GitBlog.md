@@ -1,4 +1,5 @@
 {
+  "nodePort": 5000,
   "name": "gitblog.md",
   "version": "1.0.0",
   "description": "A static blog using Markdown pulled from your git repository.",
@@ -7,6 +8,7 @@
     "express": "^4.17.1",
     "ncp": "^2.0.0",
     "showdown": "^1.9.0",
+    "shx": "^0.3.2",
     "xml": "^1.0.1"
   },
   "devDependencies": {
@@ -17,8 +19,9 @@
     "supertest": "^4.0.2"
   },
   "scripts": {
+    "start": "node src/server.js",
     "test": "jest",
-    "install": "node src/postinstall.js"
+    "install": "shx mkdir -p ./data/$(date +%Y)/$(date +%m)/$(date +%d)/ && shx cp -rf ./sample_data/* ./data/$(date +%Y)/$(date +%m)/$(date +%d) && shx cp -f ./src/default_config.json ./config.example.json"
   },
   "repository": {
     "type": "git",

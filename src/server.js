@@ -1,9 +1,7 @@
-const config = require('../config.json');
+const config = require('./config');
 const app = require('./app')(config);
 
-const port = config.nodePort|3000;
-
-app.listen(config.nodePort|3000, () => {
-    console.log(`gitblog.md server listening on port ${port}`);
+app.listen(config.nodePort, () => {
+    console.log(`gitblog.md server listening on port ${config.nodePort}`);
 });
 
