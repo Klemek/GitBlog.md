@@ -151,18 +151,29 @@ describe('Test webhook', () => {
       done();
     });
   });
+  test('403 no payload', (done) => {
+    config['webhook']['signature_header'] = 'testheader';
+    config['webhook']['secret'] = 'testvalue';
+    request(app).post('/webhooktest').then((response) => {
+      expect(response.statusCode).toBe(403);
+      done();
+    });
+  });
   test('403 wrong secret', (done) => {
-    config['webhook']['secret_header'] = 'testheader';
-    config['webhook']['secret_value'] = 'testvalue';
-    request(app).post('/webhooktest').set('testheader','testvalue2').then((response) => {
+    config['webhook']['signature_header'] = 'testheader';
+    config['webhook']['secret'] = 'testvalue';
+    request(app).post('/webhooktest').set('testheader', 'sha1=invalid').then((response) => {
       expect(response.statusCode).toBe(403);
       done();
     });
   });
   test('200 valid secret', (done) => {
-    config['webhook']['secret_header'] = 'testheader';
-    config['webhook']['secret_value'] = 'testvalue';
-    request(app).post('/webhooktest').set('testheader','testvalue').then((response) => {
+    config['webhook']['signature_header'] = 'testheader';
+    config['webhook']['secret'] = 'testvalue';
+    request(app).post('/webhooktest')
+      .send({})
+      .set('testheader', 'sha1=d924d5bd4b36faf9d572844ac9c12a09ce3e7134')
+      .then((response) => {
       expect(response.statusCode).toBe(200);
       //TODO test reload
       done();

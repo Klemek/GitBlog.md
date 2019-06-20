@@ -63,14 +63,14 @@ Create a webhook on your git source (On GitHub, in the `Settings/Webhooks` part 
 Here are the steps for Github, if you use another platform adapt it your way (header format on the config) :
 
 * Create a password or random secret
-* Calculate it's SHA1
 * Edit your configuration to add webhook info 
 ```json
 {
 ...
 "webhook": {
-    "secret_value": "sha1=<value>",
-    "secret_header": "X-Hub-Signature"
+    "endpoint": "/webhook",
+    "secret": "sha1=<value>",
+    "signature_header": "X-Hub-Signature"
   },
 ...
 }

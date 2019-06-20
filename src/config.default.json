@@ -30,8 +30,8 @@
   },
   "webhook": {
     "endpoint": "/webhook",
-    "secret_value": "",
-    "secret_header": ""
+    "secret": "",
+    "signature_header": ""
   },
   "showdown": {
     "parseImgDimensions": true,

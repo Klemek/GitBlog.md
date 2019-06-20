@@ -3,6 +3,9 @@ const app = express();
 const fs = require('fs');
 const path = require('path');
 const Rss = require('rss');
+const bodyParser = require('body-parser');
+const crypto = require('crypto');
+app.use(bodyParser.json());
 
 /**
  * Terminal colors and symbols to display status messages
@@ -127,12 +130,20 @@ module.exports = (config) => {
   //webhook endpoint
   app.post(config['webhook']['endpoint'], (req, res) => {
     if (config['modules']['webhook']) {
-      if (config['webhook']['secret_header'] && req.get(config['webhook']['secret_header']) !== config['webhook']['secret_value']) {
-        res.sendStatus(403);
-      } else {
-        res.sendStatus(200);
-        //TODO reload
+      if (config['webhook']['signature_header'] && config['webhook']['secret']) {
+        const payload = JSON.stringify(req.body);
+        if (!payload) {
+          return res.sendStatus(403);
+        }
+        const hmac = crypto.createHmac('sha1', config['webhook']['secret']);
+        const digest = 'sha1=' + hmac.update(payload).digest('hex');
+        const checksum = req.headers[config['webhook']['signature_header']];
+        if (!checksum || !digest || checksum !== digest) {
+          return res.sendStatus(403);
+        }
       }
+      res.sendStatus(200);
+      //TODO reload
     } else {
       res.sendStatus(400);
     }
