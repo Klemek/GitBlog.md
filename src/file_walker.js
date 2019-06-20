@@ -69,22 +69,20 @@ module.exports = (config) => {
         if (err)
           return cb(err);
         const paths = fileList
-          .map((path) => path.substr(config['data_dir'].length))
-          .filter((path) => path.indexOf(config['article']['index']) === path.length - config['article']['index'].length)
-          .map((path) => path.substr(0, path.length - config['article']['index'].length))
-          .map((path) => path.match(/^\/(\d{4})\/(\d{2})\/(\d{2})\/$/))
-          .filter((matches) => matches && matches.length > 1);
+          .map((p) => p.substr(config['data_dir'].length+1).split(path.sep))
+          .filter((p) => p.length === 4 && p[3] === config['article']['index'] &&
+            /^\d{4}$/.test(p[0]) && /^\d{2}$/.test(p[1]) && /^\d{2}$/.test(p[2]));
         if (paths.length === 0)
           cb(null, {});
         const articles = {};
         let remaining = 0;
-        paths.forEach((matches) => {
+        paths.forEach((p) => {
           const article = {
-            path: path.join(matches[1], matches[2], matches[3]),
-            realPath: path.join(config['data_dir'], matches[1], matches[2], matches[3]),
-            year: parseInt(matches[1]),
-            month: parseInt(matches[2]),
-            day: parseInt(matches[3])
+            path: path.join(p[0], p[1], p[2]),
+            realPath: path.join(config['data_dir'], p[0], p[1], p[2]),
+            year: parseInt(p[0]),
+            month: parseInt(p[1]),
+            day: parseInt(p[2])
           };
           article.date = new Date(article.year, article.month, article.day);
           article.date.setUTCHours(0);
