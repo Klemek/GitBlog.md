@@ -10,7 +10,9 @@
   "home": {
     "index": "index.ejs",
     "error": "error.ejs",
-    "hidden": [".ejs"]
+    "hidden": [
+      ".ejs"
+    ]
   },
   "article": {
     "index": "index.md",
