@@ -14,6 +14,16 @@ const cons = {
   error: '\x1b[31m✘\x1b[0m %s',
 };
 
+const randStr = (length) => {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+};
+
 module.exports = (config) => {
   const fw = require('./file_walker')(config);
   const renderer = require('./renderer')(config);
@@ -25,16 +35,18 @@ module.exports = (config) => {
 
   const articles = {};
   let lastRSS = '';
+  let webhookSecret;
 
   /**
    * Fetch articles from the data folder and send success as a response
-   * @param callback
+   * @param success
+   * @param error
    */
-  const reload = (callback) => {
+  const reload = (success, error) => {
     fw.fetchArticles((err, dict) => {
       if (err) {
-        callback(false);
-        return console.error(cons.error, 'loading articles : ' + err);
+        console.error(cons.error, 'error loading articles : ' + err);
+        return error ? error() : null;
       }
       Object.keys(articles).forEach((key) => delete articles[key]);
       Object.keys(dict).forEach((key) => articles[key] = dict[key]);
@@ -46,11 +58,40 @@ module.exports = (config) => {
 
       lastRSS = '';
 
-      callback(true);
+      success();
     });
   };
   if (config['test'])
     app.reload = reload;
+
+  /**
+   * Fetch or create secret token for git webhook
+   * @param success
+   * @param error
+   */
+  const checkSecret = (success, error) => {
+    if (!config['modules']['webhook'])
+      success();
+    fs.readFile(config['webhook']['secret_file'], {encoding: 'UTF-8'}, (err, data) => {
+      if (err) {
+        webhookSecret = randStr(32);
+        fs.writeFile(config['webhook']['secret_file'], webhookSecret, {encoding: 'UTF-8'}, (err) => {
+          if (err) {
+            console.error(cons.error, 'error creating secret : ' + err);
+            return error ? error() : null;
+          }
+          console.log(cons.ok,'created git secret at '+config['webhook']['secret_file']);
+          success();
+        });
+      } else {
+        webhookSecret = data;
+        console.log(cons.ok,'loaded git secret from '+config['webhook']['secret_file']);
+        success();
+      }
+    });
+  };
+  if (config['test'])
+    app.checkSecret = checkSecret;
 
   /**
    * Render the page with the view engine and catch errors
@@ -180,11 +221,12 @@ module.exports = (config) => {
 
   // must be use in a server.js to start the server
   app.start = () => {
-    reload((res) => {
-      if (res)
+    reload(() => {
+      checkSecret(() => {
         app.listen(config['node_port'], () => {
           console.log(cons.ok, `gitblog.md server listening on port ${config['node_port']}`);
         });
+      });
     });
   };
 

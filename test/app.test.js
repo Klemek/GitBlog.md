@@ -22,13 +22,10 @@ config['rss']['length'] = 2;
 
 const app = require('../src/app')(config);
 
-beforeEach((done) => {
+beforeEach((done, fail) => {
   utils.deleteFolderSync(dataDir);
   fs.mkdirSync(dataDir);
-  app.reload((res) => {
-    expect(res).toBe(true);
-    done();
-  });
+  app.reload(done, fail);
 });
 
 afterAll(() => {
@@ -60,7 +57,7 @@ describe('Test root path', () => {
       done();
     });
   });
-  test('200 2 articles', (done) => {
+  test('200 2 articles', (done, fail) => {
     utils.createEmptyDirs([
       path.join(dataDir, '2019', '05', '05'),
       path.join(dataDir, '2018', '05', '05')
@@ -70,15 +67,59 @@ describe('Test root path', () => {
       path.join(dataDir, '2018', '05', '05', 'index.md')
     ]);
     fs.writeFileSync(path.join(dataDir, testIndex), 'articles <%= articles.length %>');
-    app.reload((res) => {
-      expect(res).toBe(true);
+    app.reload(() => {
       request(app).get('/').then((response) => {
         expect(response.statusCode).toBe(200);
         expect(response.text).toBe('articles 2');
         done();
       });
-    });
+    }, fail);
 
+  });
+});
+
+describe('Test check secret', () => {
+  const secretFile = 'git_secret';
+  const tmpSecretFile = 'tmp_git_secret';
+  beforeEach(() => {
+    if (fs.existsSync(secretFile))
+      fs.renameSync(secretFile, tmpSecretFile);
+  });
+
+  afterEach(() => {
+    if (fs.existsSync(tmpSecretFile)) {
+      fs.renameSync(tmpSecretFile, secretFile);
+    } else if (fs.existsSync(secretFile)) {
+      fs.unlinkSync(secretFile); //remove secret file if remaining
+    }
+  });
+
+  test('no check if not activated', (done, fail) => {
+    config['modules']['webhook'] = false;
+    app.checkSecret(() => {
+      config['modules']['webhook'] = true;
+      done();
+    }, () => {
+      config['modules']['webhook'] = true;
+      fail();
+    });
+  });
+  test('create if not exists', (done, fail) => {
+    if (fs.existsSync(secretFile))
+      fs.unlinkSync(secretFile);
+    app.checkSecret(() => {
+      expect(fs.existsSync(secretFile)).toBe(true);
+      expect(fs.readFileSync(secretFile).length).toBeGreaterThan(0);
+      done();
+    }, fail);
+  });
+  test('read if exists', (done, fail) => {
+    fs.writeFileSync(secretFile,'secret value');
+    app.checkSecret(() => {
+      expect(fs.existsSync(secretFile)).toBe(true);
+      expect(fs.readFileSync(secretFile, {encoding:'UTF-8'})).toBe('secret value');
+      done();
+    }, fail);
   });
 });
 
@@ -99,7 +140,7 @@ describe('Test RSS feed', () => {
       done();
     });
   });
-  test('200 2 rss items', (done) => {
+  test('200 2 rss items', (done, fail) => {
     utils.createEmptyDirs([
       path.join(dataDir, '2019', '05', '05'),
       path.join(dataDir, '2018', '05', '05')
@@ -108,17 +149,16 @@ describe('Test RSS feed', () => {
       path.join(dataDir, '2019', '05', '05', 'index.md'),
       path.join(dataDir, '2018', '05', '05', 'index.md')
     ]);
-    app.reload((res) => {
-      expect(res).toBe(true);
+    app.reload(() => {
       request(app).get('/rsstest').then((response) => {
         expect(response.statusCode).toBe(200);
         expect(response.text.length).toBeGreaterThan(0);
         expect(response.text.split('<item>').length).toBe(3);
         done();
-      });
+      }, fail);
     });
   });
-  test('200 max rss items', (done) => {
+  test('200 max rss items', (done, fail) => {
     utils.createEmptyDirs([
       path.join(dataDir, '2019', '05', '05'),
       path.join(dataDir, '2018', '05', '05'),
@@ -129,14 +169,13 @@ describe('Test RSS feed', () => {
       path.join(dataDir, '2018', '05', '05', 'index.md'),
       path.join(dataDir, '2017', '05', '05', 'index.md')
     ]);
-    app.reload((res) => {
-      expect(res).toBe(true);
+    app.reload(() => {
       request(app).get('/rsstest').then((response) => {
         expect(response.statusCode).toBe(200);
         expect(response.text.length).toBeGreaterThan(0);
         expect(response.text.split('<item>').length).toBe(3);
         done();
-      });
+      }, fail);
     });
   });
 });
@@ -149,59 +188,55 @@ describe('Test articles rendering', () => {
     });
   });
 
-  test('500 no template', (done) => {
+  test('500 no template', (done, fail) => {
     utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05'),]);
     fs.writeFileSync(path.join(dataDir, '2019', '05', '05', 'index.md'), '# Hello');
-    app.reload((res) => {
-      expect(res).toBe(true);
+    app.reload(() => {
       request(app).get('/2019/05/05/hello/').then((response) => {
         expect(response.statusCode).toBe(500);
         done();
-      });
+      }, fail);
     });
   });
 
-  test('200 rendered article', (done) => {
+  test('200 rendered article', (done, fail) => {
     utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05'),]);
     fs.writeFileSync(path.join(dataDir, '2019', '05', '05', 'index.md'), '# Hello');
     fs.writeFileSync(path.join(dataDir, testTemplate), '<%- article.content %><%- `<a href="${article.url}">reload</a>` %>');
-    app.reload((res) => {
-      expect(res).toBe(true);
+    app.reload(() => {
       request(app).get('/2019/05/05/hello/').then((response) => {
         expect(response.statusCode).toBe(200);
         expect(response.text).toBe('<h1 id="hello">Hello</h1><a href="/2019/05/05/hello/">reload</a>');
         done();
-      });
+      }, fail);
     });
   });
 
-  test('200 other url', (done) => {
+  test('200 other url', (done, fail) => {
     utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05'),]);
     utils.createEmptyFiles([
       path.join(dataDir, '2019', '05', '05', 'index.md'),
       path.join(dataDir, testTemplate)
     ]);
-    app.reload((res) => {
-      expect(res).toBe(true);
+    app.reload(() => {
       request(app).get('/2019/05/05/anything/').then((response) => {
         expect(response.statusCode).toBe(200);
         done();
-      });
+      }, fail);
     });
   });
 
-  test('200 other url 2', (done) => {
+  test('200 other url 2', (done, fail) => {
     utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05'),]);
     utils.createEmptyFiles([
       path.join(dataDir, '2019', '05', '05', 'index.md'),
       path.join(dataDir, testTemplate)
     ]);
-    app.reload((res) => {
-      expect(res).toBe(true);
+    app.reload(() => {
       request(app).get('/2019/05/05/').then((response) => {
         expect(response.statusCode).toBe(200);
         done();
-      });
+      }, fail);
     });
   });
 });
