@@ -4,15 +4,15 @@ main {
     margin: auto;
 }
 
-.article a, .article a:visited{
-    color:black;
+.article a, .article a:visited {
+    color: black;
 }
 
-.article a:visited{
-    color:black;
+.article a:visited {
+    color: black;
 }
 
-.article img{
-    max-width:100%;
-    max-height:10vh;
+.article img {
+    max-width: 100%;
+    max-height: 10vh;
 }

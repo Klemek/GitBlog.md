@@ -12,10 +12,13 @@
     <h2>Articles in this blog :</h2>
     <% articles.forEach((article) => { %>
         <div class="article">
-            <h3><%- `<a href="${article.url}">${article.title}</a>`%> (<small><%= `${article.day}/${article.month}/${article.year}`%></small>)</h3>
-            <% if(article.thumbnail){%>
-                <%- `<img alt="thumbnail" src=${article.thumbnail}>`%>
-            <% }%>
+            <h3><%- `<a href="${article.url}">${article.title}</a>` %> (
+                <small><%= `${article.day}/${article.month}/${article.year}` %></small>
+                )
+            </h3>
+            <% if(article.thumbnail){ %>
+                <%- `<img alt="thumbnail" src=${article.thumbnail}>` %>
+            <% } %>
         </div>
     <% }); %>
 </main>
