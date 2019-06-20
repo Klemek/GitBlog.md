@@ -44,9 +44,9 @@ module.exports = (config) => {
     };
 
     const showError = (resPath, code, res) => {
-        const errorPath = path.join(config['data_dir'],config['home']['error']);
-        fs.access(errorPath, (err) => {
-            if(err)
+        const errorPath = path.join(config['data_dir'], config['home']['error']);
+        fs.access(errorPath, fs.constants.R_OK, (err) => {
+            if (err)
                 res.sendStatus(code);
             else
                 render(res, errorPath, {error: code, path: resPath}, code);
@@ -55,8 +55,8 @@ module.exports = (config) => {
 
     app.get('/', (req, res) => {
         const homePath = `${config['data_dir']}/${config['home']['index']}`;
-        fs.access(homePath,(err)=>{
-            if(err)
+        fs.access(homePath, fs.constants.R_OK, (err) => {
+            if (err)
                 showError(req.path, 404, res);
             else
                 render(res, homePath, {articles: articles});
