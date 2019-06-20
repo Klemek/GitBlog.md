@@ -1,25 +1,27 @@
 {
   "node_port": 3000,
   "data_dir": "data",
-  "modules" : {
-    "plantuml" : false,
+  "view_engine": "ejs",
+  "modules": {
+    "plantuml": false,
     "rss": true,
     "webhook": true
   },
-  "home" : {
-    "index" : "index.ejs"
+  "home": {
+    "index": "index.ejs",
+    "error": "error.ejs"
   },
-  "article" : {
-    "index" : "index.md",
-    "thumbnail_tag" : "thumbnail",
+  "article": {
+    "index": "index.md",
+    "thumbnail_tag": "thumbnail",
     "default_title": "Untitled",
-    "default_thumbnail" : null
+    "default_thumbnail": null
   },
-  "rss" : {
-    "endpoint" : "/rss",
-    "length" : 10
+  "rss": {
+    "endpoint": "/rss",
+    "length": 10
   },
-  "webhook" : {
+  "webhook": {
     "endpoint": "/webhook",
     "secretFile": "git_secret"
   }

@@ -1,5 +1,6 @@
 /* jshint -W117 */
 const fs = require('fs');
+const utils = require('./test_utils');
 
 const dataDir = './test_data';
 const testIndex = 'testindex.md';
@@ -17,31 +18,16 @@ const config = {
 
 const fw = require('../src/file_walker')(config);
 
-const deleteFolderSync = (path) => {
-    if (!fs.existsSync(path))
-        return;
-    fs.readdirSync(path, {withFileTypes: true}).forEach((item) => {
-        if (item.isDirectory())
-            deleteFolderSync(`${path}/${item.name}`);
-        else
-            fs.unlinkSync(`${path}/${item.name}`);
-    });
-    fs.rmdirSync(path);
-};
-
 beforeEach(() => {
-    deleteFolderSync(dataDir);
+    utils.deleteFolderSync(dataDir);
     fs.mkdirSync(dataDir);
 });
 
 afterAll(() => {
     if (fs.existsSync(dataDir)) {
-        deleteFolderSync(dataDir);
+        utils.deleteFolderSync(dataDir);
     }
 });
-
-const createEmptyDirs = list => list.forEach(path => fs.mkdirSync(path, {recursive: true}));
-const createEmptyFiles = list => list.forEach(file => fs.writeFileSync(file, ''));
 
 describe('Test function fileTree', () => {
     test('empty root', (done) => {
@@ -53,7 +39,7 @@ describe('Test function fileTree', () => {
         });
     });
     test('empty folders', (done) => {
-        createEmptyDirs([
+        utils.createEmptyDirs([
             `${dataDir}/test/test`,
             `${dataDir}/test/test2`,
             `${dataDir}/test2`
@@ -70,7 +56,7 @@ describe('Test function fileTree', () => {
             `${dataDir}/f1.txt`,
             `${dataDir}/f2.txt`
         ];
-        createEmptyFiles(fileList);
+        utils.createEmptyFiles(fileList);
         fw.fileTree(dataDir, (err, list) => {
             expect(err).toBeNull();
             expect(list).toBeDefined();
@@ -80,7 +66,7 @@ describe('Test function fileTree', () => {
         });
     });
     test('nested files', (done) => {
-        createEmptyDirs([
+        utils.createEmptyDirs([
             `${dataDir}/test/test`,
             `${dataDir}/test2`
         ]);
@@ -90,7 +76,7 @@ describe('Test function fileTree', () => {
             `${dataDir}/test/test/f3.txt`,
             `${dataDir}/test2/f4.txt`
         ];
-        createEmptyFiles(fileList);
+        utils.createEmptyFiles(fileList);
         fw.fileTree(dataDir, (err, list) => {
             expect(err).toBeNull();
             expect(list).toBeDefined();
@@ -212,11 +198,11 @@ describe('Test article fetching', () => {
         });
     });
     test('misplaced index file', (done) => {
-        createEmptyDirs([
+        utils.createEmptyDirs([
             `${dataDir}/test/test`,
             `${dataDir}/2019/05/05`,
         ]);
-        createEmptyFiles([
+        utils.createEmptyFiles([
             `${dataDir}/${testIndex}`,
             `${dataDir}/test/test/${testIndex}`,
             `${dataDir}/2019/05/${testIndex}`,
@@ -229,11 +215,11 @@ describe('Test article fetching', () => {
         });
     });
     test('empty index file', (done) => {
-        createEmptyDirs([
+        utils.createEmptyDirs([
             `${dataDir}/2019/05/05`,
         ]);
         const file = `${dataDir}/2019/05/05/${testIndex}`;
-        createEmptyFiles([file]);
+        utils.createEmptyFiles([file]);
         fw.fetchArticles((err, list) => {
             expect(err).toBeNull();
             expect(list).toBeDefined();
@@ -250,7 +236,7 @@ describe('Test article fetching', () => {
         });
     });
     test('correct index file', (done) => {
-        createEmptyDirs([
+        utils.createEmptyDirs([
             `${dataDir}/2019/05/05`,
         ]);
         const file = `${dataDir}/2019/05/05/${testIndex}`;

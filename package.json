@@ -5,6 +5,7 @@
   "description": "A static blog using Markdown pulled from your git repository.",
   "main": "src/server.js",
   "dependencies": {
+    "ejs": "^2.6.2",
     "express": "^4.17.1",
     "ncp": "^2.0.0",
     "showdown": "^1.9.0",
