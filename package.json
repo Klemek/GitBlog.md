@@ -9,7 +9,7 @@
     "express": "^4.17.1",
     "ncp": "^2.0.0",
     "showdown": "^1.9.0",
-    "xml": "^1.0.1"
+    "xml-js": "^1.6.11"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

@@ -2,6 +2,7 @@
   "node_port": 3000,
   "data_dir": "data",
   "view_engine": "ejs",
+  "loopback_url": "http://localhost:3000",
   "modules": {
     "plantuml": false,
     "rss": true,
@@ -22,6 +23,8 @@
     "default_thumbnail": null
   },
   "rss": {
+    "title": "mygitblog RSS feed",
+    "description": "a generated RSS feed from my articles",
     "endpoint": "/rss",
     "length": 10
   },
