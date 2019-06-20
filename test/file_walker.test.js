@@ -191,10 +191,10 @@ describe('Test article fetching', () => {
         });
     });
     test('empty data dir', (done) => {
-        fw.fetchArticles((err, list) => {
+        fw.fetchArticles((err, dict) => {
             expect(err).toBeNull();
-            expect(list).toBeDefined();
-            expect(list.length).toBe(0);
+            expect(dict).toBeDefined();
+            expect(Object.keys(dict).length).toBe(0);
             done();
         });
     });
@@ -208,10 +208,10 @@ describe('Test article fetching', () => {
             path.join(dataDir, 'test', 'test', testIndex),
             path.join(dataDir, '2019', '05', testIndex)
         ]);
-        fw.fetchArticles((err, list) => {
+        fw.fetchArticles((err, dict) => {
             expect(err).toBeNull();
-            expect(list).toBeDefined();
-            expect(list.length).toBe(0);
+            expect(dict).toBeDefined();
+            expect(Object.keys(dict).length).toBe(0);
             done();
         });
     });
@@ -220,11 +220,11 @@ describe('Test article fetching', () => {
         const file = path.join(dir, testIndex);
         utils.createEmptyDirs([dir]);
         utils.createEmptyFiles([file]);
-        fw.fetchArticles((err, list) => {
+        fw.fetchArticles((err, dict) => {
             expect(err).toBeNull();
-            expect(list).toBeDefined();
-            expect(list.length).toBe(1);
-            expect(list[0]).toEqual({
+            expect(dict).toBeDefined();
+            expect(Object.keys(dict).length).toBe(1);
+            expect(dict[path.join('2019', '05', '05')]).toEqual({
                 path: path.join('2019', '05', '05'),
                 realPath: dir,
                 year: 2019,
@@ -234,7 +234,7 @@ describe('Test article fetching', () => {
                 title: 'Untitled',
                 thumbnail: 'default.png',
                 escapedTitle: 'untitled',
-                url: path.join('2019', '05', '05', 'untitled')+'/',
+                url: '/'+path.join('2019', '05', '05', 'untitled')+'/',
             });
             done();
         });
@@ -248,11 +248,11 @@ describe('Test article fetching', () => {
            ![thumbnail](./thumbnail.jpg)
            this is some text
            `);
-        fw.fetchArticles((err, list) => {
+        fw.fetchArticles((err, dict) => {
             expect(err).toBeNull();
-            expect(list).toBeDefined();
-            expect(list.length).toBe(1);
-            expect(list[0]).toEqual({
+            expect(dict).toBeDefined();
+            expect(Object.keys(dict).length).toBe(1);
+            expect(dict[path.join('2019', '05', '05')]).toEqual({
                 path: path.join('2019', '05', '05'),
                 realPath: dir,
                 year: 2019,
@@ -262,7 +262,7 @@ describe('Test article fetching', () => {
                 title: 'Title with : info !',
                 thumbnail: path.join('2019', '05', '05', './thumbnail.jpg'),
                 escapedTitle: 'title_with___info',
-                url: path.join('2019', '05', '05', 'title_with___info')+'/',
+                url: '/'+path.join('2019', '05', '05', 'title_with___info')+'/',
             });
             done();
         });

@@ -7,6 +7,7 @@ const utils = require('./test_utils');
 const dataDir = 'test_data';
 const testIndex = 'testindex.ejs';
 const testError = 'testerror.ejs';
+const testTemplate = 'testtemplate.ejs';
 
 const config = {
     'test': true,
@@ -19,10 +20,12 @@ const config = {
     },
     'article': {
         'index': 'index.md',
+        'template' : testTemplate,
         'thumbnail_tag': 'thumbnail',
         'default_title': 'Untitled',
         'default_thumbnail': null
     },
+    'showdown' : {}
 };
 
 const app = require('../src/app')(config);
@@ -82,6 +85,72 @@ describe('Test root path', () => {
 
     });
 });
+
+describe('Test articles rendering', () => {
+    test('404 article not found', (done) =>{
+        request(app).get('/2019/05/06/untitled/').then((response) =>{
+            expect(response.statusCode).toBe(404);
+            done();
+        });
+    });
+
+    test('500 no template', (done) =>{
+        utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05'),]);
+        fs.writeFileSync(path.join(dataDir, '2019', '05', '05','index.md'), '# Hello');
+        app.reload((res) => {
+            expect(res).toBe(true);
+            request(app).get('/2019/05/05/hello/').then((response) =>{
+                expect(response.statusCode).toBe(500);
+                done();
+            });
+        });
+    });
+
+    test('200 rendered article', (done) =>{
+        utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05'),]);
+        fs.writeFileSync(path.join(dataDir, '2019', '05', '05','index.md'), '# Hello');
+        fs.writeFileSync(path.join(dataDir, testTemplate), '<%- article.content %><%- `<a href="${article.url}">reload</a>` %>');
+        app.reload((res) => {
+            expect(res).toBe(true);
+            request(app).get('/2019/05/05/hello/').then((response) =>{
+                expect(response.statusCode).toBe(200);
+                expect(response.text).toBe('<h1 id="hello">Hello</h1><a href="/2019/05/05/hello/">reload</a>');
+                done();
+            });
+        });
+    });
+
+    test('200 other url', (done) =>{
+        utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05'),]);
+        utils.createEmptyFiles([
+            path.join(dataDir, '2019', '05', '05','index.md'),
+            path.join(dataDir, testTemplate)
+        ]);
+        app.reload((res) => {
+            expect(res).toBe(true);
+            request(app).get('/2019/05/05/anything/').then((response) =>{
+                expect(response.statusCode).toBe(200);
+                done();
+            });
+        });
+    });
+
+    test('200 other url 2', (done) =>{
+        utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05'),]);
+        utils.createEmptyFiles([
+            path.join(dataDir, '2019', '05', '05','index.md'),
+            path.join(dataDir, testTemplate)
+        ]);
+        app.reload((res) => {
+            expect(res).toBe(true);
+            request(app).get('/2019/05/05/').then((response) =>{
+                expect(response.statusCode).toBe(200);
+                done();
+            });
+        });
+    });
+});
+
 
 describe('Test static files', () => {
     test('404 invalid file no error page', (done) =>{

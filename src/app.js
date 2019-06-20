@@ -29,12 +29,13 @@ module.exports = (config) => {
      * @param callback
      */
     const reload = (callback) => {
-        fw.fetchArticles((err, list) => {
+        fw.fetchArticles((err, dict) => {
             if (err) {
                 callback(false);
                 return console.error(cons.error, 'loading articles : ' + err);
             }
-            articles.splice(0, articles.length, ...list);
+            Object.keys(articles).forEach((key) => delete articles[key]);
+            Object.keys(dict).forEach((key) => articles[key] = dict[key]);
             const nb = Object.keys(articles).length;
             if (nb > 0)
                 console.log(cons.ok, `loaded ${nb} article${nb > 1 ? 's' : ''}`);
@@ -49,15 +50,15 @@ module.exports = (config) => {
     /**
      * Render the page with the view engine and catch errors
      * @param res
-     * @param path - path of the view
+     * @param vPath - path of the view
      * @param data - data to pass to the view
      * @param code - code to send along the page
      */
-    const render = (res, path, data, code = 200) => {
-        res.render(path, data, (err, html) => {
+    const render = (res, vPath, data, code = 200) => {
+        res.render(vPath, data, (err, html) => {
             if (err) {
                 res.sendStatus(500);
-                console.log(cons.error, `failed to render ${path} : ${err}`);
+                console.log(cons.error, `failed to render ${vPath} : ${err}`);
             } else
                 res.status(code).send(html);
         });
@@ -92,21 +93,24 @@ module.exports = (config) => {
 
     // catch all article urls and render them
     app.get('*', (req, res, next) => {
-        if (req.path.test(/^\/\d{4}\/\d{2}\/\d{2}\/(\w*\/)?$/)) {
-            const articlePath = req.path.substr(0, 11);
+        if (/^\/\d{4}\/\d{2}\/\d{2}\/(\w*\/)?$/.test(req.path)) {
+            const articlePath = req.path.substr(1, 10);
             const article = articles[articlePath];
             if (!article)
                 showError(req.path, 404, res);
             else {
-                renderer.render(article.realPath, (err, html) => {
-                    if (err)
+                renderer.render(path.join(article.realPath, config['article']['index']), (err, html) => {
+                    if (err) {
+                        console.log(cons.error, `failed to render article ${req.path} : ${err}`);
                         return showError(req.path, 500, res);
+                    }
                     article.content = html;
-                    const templatePath = path.join(config['data_dir'], config['home']['index']);
+                    const templatePath = path.join(config['data_dir'], config['article']['template']);
                     fs.access(templatePath, fs.constants.R_OK, (err) => {
-                        if (err)
-                            showError(req.path, 404, res);
-                        else
+                        if (err) {
+                            console.log(cons.error, `no template found at ${templatePath}`);
+                            showError(req.path, 500, res);
+                        } else
                             render(res, templatePath, {article: article});
                     });
                 });
@@ -134,6 +138,12 @@ module.exports = (config) => {
     // catch all other methods and return 400
     app.all('*', (req, res) => {
         res.status(400).send('bad request');
+    });
+
+    app.use((err, req, res, next) => {
+        console.log(cons.error, `error when handling ${req.path} request : ${err}`);
+        console.error(err.stack);
+        next(err);
     });
 
     // must be use in a server.js to start the server
