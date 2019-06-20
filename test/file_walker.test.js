@@ -6,6 +6,8 @@ const utils = require('./test_utils');
 const dataDir = 'test_data';
 const testIndex = 'testindex.md';
 
+const joinUrl = (...paths) => path.join(...paths).replace(/\\/g,'/');
+
 const config = {
   'test': true,
   'data_dir': dataDir,
@@ -226,8 +228,8 @@ describe('Test article fetching', () => {
       expect(err).toBeNull();
       expect(dict).toBeDefined();
       expect(Object.keys(dict).length).toBe(1);
-      expect(dict[path.join('2019', '05', '05')]).toEqual({
-        path: path.join('2019', '05', '05'),
+      expect(dict[joinUrl('2019', '05', '05')]).toEqual({
+        path: joinUrl('2019', '05', '05'),
         realPath: dir,
         year: 2019,
         month: 5,
@@ -236,7 +238,7 @@ describe('Test article fetching', () => {
         title: 'Untitled',
         thumbnail: 'default.png',
         escapedTitle: 'untitled',
-        url: '/' + path.join('2019', '05', '05', 'untitled') + '/',
+        url: '/' + joinUrl('2019', '05', '05', 'untitled') + '/',
       });
       done();
     });
@@ -256,17 +258,17 @@ describe('Test article fetching', () => {
       expect(err).toBeNull();
       expect(dict).toBeDefined();
       expect(Object.keys(dict).length).toBe(1);
-      expect(dict[path.join('2019', '05', '05')]).toEqual({
-        path: path.join('2019', '05', '05'),
+      expect(dict[joinUrl('2019', '05', '05')]).toEqual({
+        path: joinUrl('2019', '05', '05'),
         realPath: dir,
         year: 2019,
         month: 5,
         day: 5,
         date: date,
         title: 'Title with : info !',
-        thumbnail: path.join('2019', '05', '05', './thumbnail.jpg'),
+        thumbnail: joinUrl('2019', '05', '05', './thumbnail.jpg'),
         escapedTitle: 'title_with___info',
-        url: '/' + path.join('2019', '05', '05', 'title_with___info') + '/',
+        url: '/' + joinUrl('2019', '05', '05', 'title_with___info') + '/',
       });
       done();
     });

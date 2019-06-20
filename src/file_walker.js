@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const joinUrl = (...paths) => path.join(...paths).replace(/\\/g,'/');
+
 /**
  * Get all files path inside a given folder path
  * @param dir
@@ -78,7 +80,7 @@ module.exports = (config) => {
         let remaining = 0;
         paths.forEach((p) => {
           const article = {
-            path: path.join(p[0], p[1], p[2]),
+            path: joinUrl(p[0], p[1], p[2]),
             realPath: path.join(config['data_dir'], p[0], p[1], p[2]),
             year: parseInt(p[0]),
             month: parseInt(p[1]),
@@ -91,9 +93,9 @@ module.exports = (config) => {
             if (err)
               return cb(err);
             article.title = info.title || config['article']['default_title'];
-            article.thumbnail = info.thumbnail ? path.join(article.path, info.thumbnail) : config['article']['default_thumbnail'];
+            article.thumbnail = info.thumbnail ? joinUrl(article.path, info.thumbnail) : config['article']['default_thumbnail'];
             article.escapedTitle = article.title.toLowerCase().replace(/[^\w]/gm, ' ').trim().replace(/ /gm, '_');
-            article.url = '/' + path.join(article.path, article.escapedTitle) + '/';
+            article.url = '/' + joinUrl(article.path, article.escapedTitle) + '/';
             articles[article.path] = article;
             remaining--;
             if (remaining === 0)
