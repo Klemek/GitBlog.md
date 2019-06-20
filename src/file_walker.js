@@ -1,6 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 
+/**
+ * Get all files path inside a given folder path
+ * @param dir
+ * @param cb
+ */
 const getFileTree = (dir, cb) => {
     let list = [];
     let remaining = 0;
@@ -27,6 +32,12 @@ const getFileTree = (dir, cb) => {
     });
 };
 
+/**
+ * Tries to read a markdown file and match a title and a thumbnail
+ * @param path
+ * @param thumbnailTag - how the thumbnail image desc is given as ![thumbnailTag](url)
+ * @param cb
+ */
 const readIndexFile = (path, thumbnailTag, cb) => {
     fs.readFile(path, {encoding: 'UTF-8'}, (err, data) => {
         if (err)
@@ -49,6 +60,10 @@ module.exports = (config) => {
     return {
         fileTree: config['test'] ? getFileTree : undefined,
         readIndexFile: config['test'] ? readIndexFile : undefined,
+        /**
+         * find and read all articles inside the data directory
+         * @param cb
+         */
         fetchArticles: (cb) => {
             getFileTree(config['data_dir'], (err, fileList) => {
                 if (err)

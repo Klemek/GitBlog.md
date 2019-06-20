@@ -3,6 +3,10 @@ const app = express();
 const fs = require('fs');
 const path = require('path');
 
+/**
+ * Terminal colors and symbols to display status messages
+ * @type {{warn: string, ok: string, error: string}}
+ */
 const cons = {
     ok: '\x1b[32m✔\x1b[0m %s',
     warn: '\x1b[33m⚠\x1b[0m %s',
@@ -12,11 +16,17 @@ const cons = {
 module.exports = (config) => {
     const fw = require('./file_walker')(config);
 
+    // set view engine from configuration
     app.set('view engine', config['view_engine']);
+    // reroute the views folder to the root folder
     app.set('views', path.join(__dirname, '..'));
 
     const articles = [];
 
+    /**
+     * Fetch articles from the data folder and send success as a response
+     * @param callback
+     */
     const reload = (callback) => {
         fw.fetchArticles((err, list) => {
             if (err) {
@@ -34,6 +44,13 @@ module.exports = (config) => {
     if (config['test'])
         app.reload = reload;
 
+    /**
+     * Render the page with the view engine and catch errors
+     * @param res
+     * @param path - path of the view
+     * @param data - data to pass to the view
+     * @param code - code to send along the page
+     */
     const render = (res, path, data, code = 200) => {
         res.render(path, data, (err, html) => {
             if (err) {
@@ -44,6 +61,12 @@ module.exports = (config) => {
         });
     };
 
+    /**
+     * Show an error with the correct page
+     * @param resPath - the page of the original error
+     * @param code - error code
+     * @param res
+     */
     const showError = (resPath, code, res) => {
         const errorPath = path.join(config['data_dir'], config['home']['error']);
         fs.access(errorPath, fs.constants.R_OK, (err) => {
@@ -54,6 +77,7 @@ module.exports = (config) => {
         });
     };
 
+    // home endpoint : send the correct index page or error if not existing
     app.get('/', (req, res) => {
         const homePath = `${config['data_dir']}/${config['home']['index']}`;
         fs.access(homePath, fs.constants.R_OK, (err) => {
@@ -64,6 +88,7 @@ module.exports = (config) => {
         });
     });
 
+    // catch all gets and return 404 if it's an hidden file type
     app.get('*', (req, res, next) => {
         if (config['home']['hidden'].includes(path.extname(req.path)))
             showError(req.path, 404, res);
@@ -71,16 +96,19 @@ module.exports = (config) => {
             next();
     });
 
+    // serve all static files via get
     app.get('*', express.static(config['data_dir']));
-
+    // catch express.static errors (mostly not found) by displaying 404
     app.get('*', (req, res) => {
         showError(req.path, 404, res);
     });
 
+    // catch all other methods and return 400
     app.all('*', (req, res) => {
         res.status(400).send('bad request');
     });
 
+    // must be use in a server.js to start the server
     app.start = () => {
         reload((res) => {
             if (res)
