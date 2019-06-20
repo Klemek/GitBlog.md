@@ -76,7 +76,7 @@ module.exports = (config) => {
                     .filter((matches) => matches && matches.length > 1);
                 if (paths.length === 0)
                     cb(null, []);
-                const list = [];
+                const articles = {};
                 let remaining = 0;
                 paths.forEach((matches) => {
                     const article = {
@@ -94,11 +94,11 @@ module.exports = (config) => {
                         article.title = info.title || config['article']['default_title'];
                         article.thumbnail = info.thumbnail ? path.join(article.path, info.thumbnail) : config['article']['default_thumbnail'];
                         article.escapedTitle = article.title.toLowerCase().replace(/[^\w]/gm, ' ').trim().replace(/ /gm, '_');
-                        article.url = path.join(article.path, article.escapedTitle);
-                        list.push(article);
+                        article.url = path.join(article.path, article.escapedTitle)+'/';
+                        articles[article.path]=article;
                         remaining--;
                         if (remaining === 0)
-                            cb(null, list);
+                            cb(null, articles);
                     });
                 });
 

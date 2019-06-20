@@ -234,7 +234,7 @@ describe('Test article fetching', () => {
                 title: 'Untitled',
                 thumbnail: 'default.png',
                 escapedTitle: 'untitled',
-                url: path.join('2019', '05', '05', 'untitled'),
+                url: path.join('2019', '05', '05', 'untitled')+'/',
             });
             done();
         });
@@ -262,7 +262,7 @@ describe('Test article fetching', () => {
                 title: 'Title with : info !',
                 thumbnail: path.join('2019', '05', '05', './thumbnail.jpg'),
                 escapedTitle: 'title_with___info',
-                url: path.join('2019', '05', '05', 'title_with___info'),
+                url: path.join('2019', '05', '05', 'title_with___info')+'/',
             });
             done();
         });

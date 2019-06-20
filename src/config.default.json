@@ -14,6 +14,7 @@
   },
   "article": {
     "index": "index.md",
+    "template": "template.ejs",
     "thumbnail_tag": "thumbnail",
     "default_title": "Untitled",
     "default_thumbnail": null
@@ -25,5 +26,13 @@
   "webhook": {
     "endpoint": "/webhook",
     "secretFile": "git_secret"
+  },
+  "showdown": {
+    "parseImgDimensions": true,
+    "strikethrough": true,
+    "tables": true,
+    "tasklists": true,
+    "openLinksInNewWindow": true,
+    "emoji": true
   }
 }

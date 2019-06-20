@@ -15,13 +15,14 @@ const cons = {
 
 module.exports = (config) => {
     const fw = require('./file_walker')(config);
+    const renderer = require('./renderer')(config);
 
     // set view engine from configuration
     app.set('view engine', config['view_engine']);
     // reroute the views folder to the root folder
     app.set('views', path.join(__dirname, '..'));
 
-    const articles = [];
+    const articles = {};
 
     /**
      * Fetch articles from the data folder and send success as a response
@@ -34,8 +35,9 @@ module.exports = (config) => {
                 return console.error(cons.error, 'loading articles : ' + err);
             }
             articles.splice(0, articles.length, ...list);
-            if (articles.length > 0)
-                console.log(cons.ok, `loaded ${articles.length} article${articles.length > 1 ? 's' : ''}`);
+            const nb = Object.keys(articles).length;
+            if (nb > 0)
+                console.log(cons.ok, `loaded ${nb} article${nb > 1 ? 's' : ''}`);
             else
                 console.log(cons.warn, `no articles loaded, check your configuration`);
             callback(true);
@@ -79,16 +81,42 @@ module.exports = (config) => {
 
     // home endpoint : send the correct index page or error if not existing
     app.get('/', (req, res) => {
-        const homePath = `${config['data_dir']}/${config['home']['index']}`;
+        const homePath = path.join(config['data_dir'], config['home']['index']);
         fs.access(homePath, fs.constants.R_OK, (err) => {
             if (err)
                 showError(req.path, 404, res);
             else
-                render(res, homePath, {articles: articles});
+                render(res, homePath, {articles: Object.values(articles)});
         });
     });
 
-    // catch all gets and return 404 if it's an hidden file type
+    // catch all article urls and render them
+    app.get('*', (req, res, next) => {
+        if (req.path.test(/^\/\d{4}\/\d{2}\/\d{2}\/(\w*\/)?$/)) {
+            const articlePath = req.path.substr(0, 11);
+            const article = articles[articlePath];
+            if (!article)
+                showError(req.path, 404, res);
+            else {
+                renderer.render(article.realPath, (err, html) => {
+                    if (err)
+                        return showError(req.path, 500, res);
+                    article.content = html;
+                    const templatePath = path.join(config['data_dir'], config['home']['index']);
+                    fs.access(templatePath, fs.constants.R_OK, (err) => {
+                        if (err)
+                            showError(req.path, 404, res);
+                        else
+                            render(res, templatePath, {article: article});
+                    });
+                });
+            }
+        } else {
+            next();
+        }
+    });
+
+    // catch all hidden file type and return 404
     app.get('*', (req, res, next) => {
         if (config['home']['hidden'].includes(path.extname(req.path)))
             showError(req.path, 404, res);
