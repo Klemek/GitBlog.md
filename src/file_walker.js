@@ -54,29 +54,32 @@ module.exports = (config) => {
                 if (err)
                     return cb(err);
                 const paths = fileList
-                    .map((path) =>path.substr(config['data_dir'].length))
-                    .filter((path) =>path.indexOf(config['article']['index']) === path.length - config['article']['index'].length)
-                    .map((path) =>path.substr(0, path.length - config['article']['index'].length))
-                    .map((path) =>path.match(/^\/(\d{4})\/(\d{2})\/(\d{2})\/$/))
-                    .filter((matches) =>matches && matches.length > 1);
+                    .map((path) => path.substr(config['data_dir'].length))
+                    .filter((path) => path.indexOf(config['article']['index']) === path.length - config['article']['index'].length)
+                    .map((path) => path.substr(0, path.length - config['article']['index'].length))
+                    .map((path) => path.match(/^\/(\d{4})\/(\d{2})\/(\d{2})\/$/))
+                    .filter((matches) => matches && matches.length > 1);
                 if (paths.length === 0)
                     cb(null, []);
                 const list = [];
                 let remaining = 0;
-                paths.forEach((matches) =>{
+                paths.forEach((matches) => {
                     const article = {
-                        path: path.join(config['data_dir'], matches[1], matches[2], matches[3], config['article']['index']),
-                        parent: path.join(config['data_dir'], matches[1], matches[2], matches[3]),
+                        path: path.join(matches[1], matches[2], matches[3]),
+                        realPath: path.join(config['data_dir'], matches[1], matches[2], matches[3]),
                         year: parseInt(matches[1]),
                         month: parseInt(matches[2]),
                         day: parseInt(matches[3])
                     };
+                    article.date = new Date(article.year, article.month, article.day);
                     remaining++;
-                    readIndexFile(article.path, config['article']['thumbnail_tag'], (err, info) => {
+                    readIndexFile(path.join(article.realPath, config['article']['index']), config['article']['thumbnail_tag'], (err, info) => {
                         if (err)
                             return cb(err);
                         article.title = info.title || config['article']['default_title'];
-                        article.thumbnail = info.thumbnail ? path.join(article.parent, info.thumbnail) : config['article']['default_thumbnail'];
+                        article.thumbnail = info.thumbnail ? path.join(article.path, info.thumbnail) : config['article']['default_thumbnail'];
+                        article.escapedTitle = article.title.toLowerCase().replace(/[^\w]/gm, ' ').trim().replace(/ /gm, '_');
+                        article.url = path.join(article.path, article.escapedTitle);
                         list.push(article);
                         remaining--;
                         if (remaining === 0)

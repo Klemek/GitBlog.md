@@ -225,13 +225,16 @@ describe('Test article fetching', () => {
             expect(list).toBeDefined();
             expect(list.length).toBe(1);
             expect(list[0]).toEqual({
-                path: file,
-                parent:dir,
+                path: path.join('2019', '05', '05'),
+                realPath: dir,
                 year: 2019,
                 month: 5,
                 day: 5,
+                date : new Date(2019,5,5),
                 title: 'Untitled',
-                thumbnail: 'default.png'
+                thumbnail: 'default.png',
+                escapedTitle: 'untitled',
+                url: path.join('2019', '05', '05', 'untitled'),
             });
             done();
         });
@@ -241,7 +244,7 @@ describe('Test article fetching', () => {
         const file = path.join(dir, testIndex);
         utils.createEmptyDirs([dir]);
         fs.writeFileSync(file, `
-           # Title
+           # Title with : info !
            ![thumbnail](./thumbnail.jpg)
            this is some text
            `);
@@ -250,13 +253,16 @@ describe('Test article fetching', () => {
             expect(list).toBeDefined();
             expect(list.length).toBe(1);
             expect(list[0]).toEqual({
-                path: file,
-                parent:dir,
+                path: path.join('2019', '05', '05'),
+                realPath: dir,
                 year: 2019,
                 month: 5,
                 day: 5,
-                title: 'Title',
-                thumbnail: path.join(dataDir, '2019', '05', '05', './thumbnail.jpg')
+                date : new Date(2019,5,5),
+                title: 'Title with : info !',
+                thumbnail: path.join('2019', '05', '05', './thumbnail.jpg'),
+                escapedTitle: 'title_with___info',
+                url: path.join('2019', '05', '05', 'title_with___info'),
             });
             done();
         });
