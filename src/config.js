@@ -6,7 +6,7 @@ const merge = (ref, src) => {
         return ref;
     } else if (typeof ref === 'object') {
         const out = {};
-        Object.keys(ref).forEach(key => out[key] = merge(ref[key], src[key]));
+        Object.keys(ref).forEach((key) =>out[key] = merge(ref[key], src[key]));
         return out;
     } else {
         return src;

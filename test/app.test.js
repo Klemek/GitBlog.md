@@ -32,23 +32,23 @@ afterAll(() => {
 });
 
 describe('Test root path', () => {
-    test('404 no index no error', done => {
-        request(app).get('/').then(response => {
+    test('404 no index no error', (done) =>{
+        request(app).get('/').then((response) =>{
             expect(response.statusCode).toBe(404);
             done();
         });
     });
-    test('404 no index but error page', done => {
+    test('404 no index but error page', (done) =>{
         fs.writeFileSync(path.join(dataDir,testError), 'error <%= error %> at <%= path %>');
-        request(app).get('/').then(response => {
+        request(app).get('/').then((response) =>{
             expect(response.statusCode).toBe(404);
             expect(response.text).toBe('error 404 at /');
             done();
         });
     });
-    test('200 index page', done => {
+    test('200 index page', (done) =>{
         fs.writeFileSync(path.join(dataDir,testIndex), 'hello there');
-        request(app).get('/').then(response => {
+        request(app).get('/').then((response) =>{
             expect(response.statusCode).toBe(200);
             expect(response.text).toBe('hello there');
             done();
@@ -58,23 +58,23 @@ describe('Test root path', () => {
 });
 
 describe('Test static files', () => {
-    test('404 invalid file no error page', done => {
-        request(app).get('/somefile.txt').then(response => {
+    test('404 invalid file no error page', (done) =>{
+        request(app).get('/somefile.txt').then((response) =>{
             expect(response.statusCode).toBe(404);
             done();
         });
     });
-    test('404 invalid file but error page', done => {
+    test('404 invalid file but error page', (done) =>{
         fs.writeFileSync(path.join(dataDir,testError), 'error <%= error %> at <%= path %>');
-        request(app).get('/somefile.txt').then(response => {
+        request(app).get('/somefile.txt').then((response) =>{
             expect(response.statusCode).toBe(404);
             expect(response.text).toBe('error 404 at /somefile.txt');
             done();
         });
     });
-    test('200 valid file', done => {
+    test('200 valid file', (done) =>{
         fs.writeFileSync(`${dataDir}/somefile.txt`, 'filecontent');
-        request(app).get('/somefile.txt').then(response => {
+        request(app).get('/somefile.txt').then((response) =>{
             expect(response.statusCode).toBe(200);
             expect(response.text).toBe('filecontent');
             done();
@@ -83,20 +83,20 @@ describe('Test static files', () => {
 });
 
 describe('Test other requests', () => {
-    test('400 POST', done => {
-        request(app).post('/').then(response => {
+    test('400 POST', (done) =>{
+        request(app).post('/').then((response) =>{
             expect(response.statusCode).toBe(400);
             done();
         });
     });
-    test('400 PUT', done => {
-        request(app).put('/').then(response => {
+    test('400 PUT', (done) =>{
+        request(app).put('/').then((response) =>{
             expect(response.statusCode).toBe(400);
             done();
         });
     });
-    test('400 DELETE', done => {
-        request(app).delete('/').then(response => {
+    test('400 DELETE', (done) =>{
+        request(app).delete('/').then((response) =>{
             expect(response.statusCode).toBe(400);
             done();
         });

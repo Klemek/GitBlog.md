@@ -18,7 +18,7 @@ if (!fs.existsSync('data')) {
 
     copy(path.join('sample_data','home'), 'data');
 
-    const pad0 = n => ('0' + n).substr(-2);
+    const pad0 = (n) =>('0' + n).substr(-2);
 
     const datetime = new Date();
     const dir = path.join('data', datetime.getFullYear().toString(), pad0(datetime.getMonth() + 1), pad0(datetime.getDate()));

@@ -54,16 +54,16 @@ module.exports = (config) => {
                 if (err)
                     return cb(err);
                 const paths = fileList
-                    .map(path => path.substr(config['data_dir'].length))
-                    .filter(path => path.indexOf(config['article']['index']) === path.length - config['article']['index'].length)
-                    .map(path => path.substr(0, path.length - config['article']['index'].length))
-                    .map(path => path.match(/^\/(\d{4})\/(\d{2})\/(\d{2})\/$/))
-                    .filter(matches => matches && matches.length > 1);
+                    .map((path) =>path.substr(config['data_dir'].length))
+                    .filter((path) =>path.indexOf(config['article']['index']) === path.length - config['article']['index'].length)
+                    .map((path) =>path.substr(0, path.length - config['article']['index'].length))
+                    .map((path) =>path.match(/^\/(\d{4})\/(\d{2})\/(\d{2})\/$/))
+                    .filter((matches) =>matches && matches.length > 1);
                 if (paths.length === 0)
                     cb(null, []);
                 const list = [];
                 let remaining = 0;
-                paths.forEach(matches => {
+                paths.forEach((matches) =>{
                     const article = {
                         path: path.join(config['data_dir'], matches[1], matches[2], matches[3], config['article']['index']),
                         parent: path.join(config['data_dir'], matches[1], matches[2], matches[3]),

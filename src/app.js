@@ -45,19 +45,22 @@ module.exports = (config) => {
 
     const showError = (resPath, code, res) => {
         const errorPath = path.join(config['data_dir'],config['home']['error']);
-        if (fs.existsSync(errorPath))
-            render(res, errorPath, {error: code, path: resPath}, code);
-        else
-            res.sendStatus(code);
+        fs.access(errorPath, (err) => {
+            if(err)
+                res.sendStatus(code);
+            else
+                render(res, errorPath, {error: code, path: resPath}, code);
+        });
     };
 
     app.get('/', (req, res) => {
         const homePath = `${config['data_dir']}/${config['home']['index']}`;
-        if (fs.existsSync(homePath))
-            render(res, homePath, {articles: articles});
-        else {
-            showError(req.path, 404, res);
-        }
+        fs.access(homePath,(err)=>{
+            if(err)
+                showError(req.path, 404, res);
+            else
+                render(res, homePath, {articles: articles});
+        });
     });
 
     app.get('*', express.static(config['data_dir']));
