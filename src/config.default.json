@@ -31,7 +31,8 @@
   "webhook": {
     "endpoint": "/webhook",
     "secret": "",
-    "signature_header": ""
+    "signature_header": "",
+    "pull_command": "git pull"
   },
   "showdown": {
     "parseImgDimensions": true,

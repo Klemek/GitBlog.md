@@ -110,8 +110,8 @@ describe('Test RSS feed', () => {
         expect(response.text.length).toBeGreaterThan(0);
         expect(response.text.split('<item>').length).toBe(3);
         done();
-      }, fail);
-    });
+      });
+    }, fail);
   });
   test('200 max rss items', (done, fail) => {
     utils.createEmptyDirs([
@@ -130,8 +130,8 @@ describe('Test RSS feed', () => {
         expect(response.text.length).toBeGreaterThan(0);
         expect(response.text.split('<item>').length).toBe(3);
         done();
-      }, fail);
-    });
+      });
+    }, fail);
   });
 });
 
@@ -145,9 +145,29 @@ describe('Test webhook', () => {
     });
   });
   test('200 no secret', (done) => {
+    utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05'),]);
+    utils.createEmptyFiles([
+      path.join(dataDir, '2019', '05', '05', 'index.md'),
+      path.join(dataDir, testTemplate)
+    ]);
+    config['webhook']['pull_command'] = 'git --help';
     request(app).post('/webhooktest').then((response) => {
       expect(response.statusCode).toBe(200);
-      //TODO test reload
+      request(app).get('/2019/05/05/').then((response) => {
+        expect(response.statusCode).toBe(200);
+        done();
+      });
+    });
+  });
+  test('500 command failed', (done) => {
+    utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05'),]);
+    utils.createEmptyFiles([
+      path.join(dataDir, '2019', '05', '05', 'index.md'),
+      path.join(dataDir, testTemplate)
+    ]);
+    config['webhook']['pull_command'] = 'qzgfqgqz';
+    request(app).post('/webhooktest').then((response) => {
+      expect(response.statusCode).toBe(500);
       done();
     });
   });
@@ -170,12 +190,12 @@ describe('Test webhook', () => {
   test('200 valid secret', (done) => {
     config['webhook']['signature_header'] = 'testheader';
     config['webhook']['secret'] = 'testvalue';
+    config['webhook']['pull_command'] = 'git --help';
     request(app).post('/webhooktest')
       .send({})
       .set('testheader', 'sha1=d924d5bd4b36faf9d572844ac9c12a09ce3e7134')
       .then((response) => {
       expect(response.statusCode).toBe(200);
-      //TODO test reload
       done();
     });
   });
@@ -196,8 +216,8 @@ describe('Test articles rendering', () => {
       request(app).get('/2019/05/05/hello/').then((response) => {
         expect(response.statusCode).toBe(500);
         done();
-      }, fail);
-    });
+      });
+    }, fail);
   });
 
   test('200 rendered article', (done, fail) => {
@@ -209,8 +229,8 @@ describe('Test articles rendering', () => {
         expect(response.statusCode).toBe(200);
         expect(response.text).toBe('<h1 id="hello">Hello</h1><a href="/2019/05/05/hello/">reload</a>');
         done();
-      }, fail);
-    });
+      });
+    }, fail);
   });
 
   test('200 other url', (done, fail) => {
@@ -223,8 +243,8 @@ describe('Test articles rendering', () => {
       request(app).get('/2019/05/05/anything/').then((response) => {
         expect(response.statusCode).toBe(200);
         done();
-      }, fail);
-    });
+      });
+    }, fail);
   });
 
   test('200 other url 2', (done, fail) => {
@@ -237,8 +257,8 @@ describe('Test articles rendering', () => {
       request(app).get('/2019/05/05/').then((response) => {
         expect(response.statusCode).toBe(200);
         done();
-      }, fail);
-    });
+      });
+    }, fail);
   });
 });
 

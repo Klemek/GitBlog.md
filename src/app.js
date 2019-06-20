@@ -2,9 +2,14 @@ const express = require('express');
 const app = express();
 const fs = require('fs');
 const path = require('path');
+
+//rss
 const Rss = require('rss');
+
+///webhook
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
+const cp = require('child_process');
 app.use(bodyParser.json());
 
 /**
@@ -142,8 +147,15 @@ module.exports = (config) => {
           return res.sendStatus(403);
         }
       }
-      res.sendStatus(200);
-      //TODO reload
+      cp.exec(config['webhook']['pull_command'], {cwd: path.join(__dirname, '..', config['data_dir'])}, (err) => {
+        if (err) {
+          console.log(cons.error, `command '${config['webhook']['pull_command']}' failed : ${err}`);
+          return res.sendStatus(500);
+        }
+        reload(() => {
+          res.sendStatus(200);
+        });
+      });
     } else {
       res.sendStatus(400);
     }
