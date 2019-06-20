@@ -1,8 +1,9 @@
 /* jshint -W117 */
 const fs = require('fs');
+const path = require('path');
 const utils = require('./test_utils');
 
-const dataDir = './test_data';
+const dataDir = 'test_data';
 const testIndex = 'testindex.md';
 
 const config = {
@@ -40,9 +41,9 @@ describe('Test function fileTree', () => {
     });
     test('empty folders', (done) => {
         utils.createEmptyDirs([
-            `${dataDir}/test/test`,
-            `${dataDir}/test/test2`,
-            `${dataDir}/test2`
+            path.join(dataDir, 'test', 'test'),
+            path.join(dataDir, 'test', 'test2'),
+            path.join(dataDir, 'test2')
         ]);
         fw.fileTree(dataDir, (err, list) => {
             expect(err).toBeNull();
@@ -53,8 +54,8 @@ describe('Test function fileTree', () => {
     });
     test('simple files', (done) => {
         const fileList = [
-            `${dataDir}/f1.txt`,
-            `${dataDir}/f2.txt`
+            path.join(dataDir, 'f1.txt'),
+            path.join(dataDir, 'f2.txt')
         ];
         utils.createEmptyFiles(fileList);
         fw.fileTree(dataDir, (err, list) => {
@@ -67,14 +68,14 @@ describe('Test function fileTree', () => {
     });
     test('nested files', (done) => {
         utils.createEmptyDirs([
-            `${dataDir}/test/test`,
-            `${dataDir}/test2`
+            path.join(dataDir, 'test', 'test'),
+            path.join(dataDir, 'test2')
         ]);
         const fileList = [
-            `${dataDir}/f1.txt`,
-            `${dataDir}/test/f2.txt`,
-            `${dataDir}/test/test/f3.txt`,
-            `${dataDir}/test2/f4.txt`
+            path.join(dataDir, 'f1.txt'),
+            path.join(dataDir, 'test', 'f2.txt'),
+            path.join(dataDir, 'test', 'test', 'f3.txt'),
+            path.join(dataDir, 'test2', 'f4.txt')
         ];
         utils.createEmptyFiles(fileList);
         fw.fileTree(dataDir, (err, list) => {
@@ -95,7 +96,7 @@ describe('Test function fileTree', () => {
 });
 
 describe('Test index article reading', () => {
-    const file = `${dataDir}/${testIndex}`;
+    const file = path.join(dataDir, testIndex);
 
     test('invalid file', (done) => {
         fw.readIndexFile('invalid file', 'thumbnail', (err, info) => {
@@ -199,13 +200,13 @@ describe('Test article fetching', () => {
     });
     test('misplaced index file', (done) => {
         utils.createEmptyDirs([
-            `${dataDir}/test/test`,
-            `${dataDir}/2019/05/05`,
+            path.join(dataDir, 'test', 'test'),
+            path.join(dataDir, '2019', '05', '05')
         ]);
         utils.createEmptyFiles([
-            `${dataDir}/${testIndex}`,
-            `${dataDir}/test/test/${testIndex}`,
-            `${dataDir}/2019/05/${testIndex}`,
+            path.join(dataDir, testIndex),
+            path.join(dataDir, 'test', 'test', testIndex),
+            path.join(dataDir, '2019', '05', testIndex)
         ]);
         fw.fetchArticles((err, list) => {
             expect(err).toBeNull();
@@ -215,10 +216,9 @@ describe('Test article fetching', () => {
         });
     });
     test('empty index file', (done) => {
-        utils.createEmptyDirs([
-            `${dataDir}/2019/05/05`,
-        ]);
-        const file = `${dataDir}/2019/05/05/${testIndex}`;
+        const dir = path.join(dataDir, '2019', '05', '05');
+        const file = path.join(dir, testIndex);
+        utils.createEmptyDirs([dir]);
         utils.createEmptyFiles([file]);
         fw.fetchArticles((err, list) => {
             expect(err).toBeNull();
@@ -226,20 +226,20 @@ describe('Test article fetching', () => {
             expect(list.length).toBe(1);
             expect(list[0]).toEqual({
                 path: file,
+                parent:dir,
                 year: 2019,
                 month: 5,
                 day: 5,
-                title:'Untitled',
-                thumbnail:'default.png'
+                title: 'Untitled',
+                thumbnail: 'default.png'
             });
             done();
         });
     });
     test('correct index file', (done) => {
-        utils.createEmptyDirs([
-            `${dataDir}/2019/05/05`,
-        ]);
-        const file = `${dataDir}/2019/05/05/${testIndex}`;
+        const dir = path.join(dataDir, '2019', '05', '05');
+        const file = path.join(dir, testIndex);
+        utils.createEmptyDirs([dir]);
         fs.writeFileSync(file, `
            # Title
            ![thumbnail](./thumbnail.jpg)
@@ -251,11 +251,12 @@ describe('Test article fetching', () => {
             expect(list.length).toBe(1);
             expect(list[0]).toEqual({
                 path: file,
+                parent:dir,
                 year: 2019,
                 month: 5,
                 day: 5,
-                title:'Title',
-                thumbnail:`${dataDir}/2019/05/05/./thumbnail.jpg`
+                title: 'Title',
+                thumbnail: path.join(dataDir, '2019', '05', '05', './thumbnail.jpg')
             });
             done();
         });

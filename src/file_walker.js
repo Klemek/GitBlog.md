@@ -1,15 +1,16 @@
 const fs = require('fs');
+const path = require('path');
 
-const getFileTree = (path, cb) => {
+const getFileTree = (dir, cb) => {
     let list = [];
     let remaining = 0;
-    fs.readdir(path, {withFileTypes: true}, (err, items) => {
+    fs.readdir(dir, {withFileTypes: true}, (err, items) => {
         if (err)
             return cb(err);
         items.forEach((item) => {
             if (item.isDirectory()) {
                 remaining++;
-                getFileTree(`${path}/${item.name}`, (err, out) => {
+                getFileTree(path.join(dir, item.name), (err, out) => {
                     if (err)
                         return cb(err);
                     list.push(...out);
@@ -18,7 +19,7 @@ const getFileTree = (path, cb) => {
                         cb(null, list);
                 });
             } else {
-                list.push(`${path}/${item.name}`);
+                list.push(path.join(dir, item.name));
             }
         });
         if (remaining === 0)
@@ -57,24 +58,25 @@ module.exports = (config) => {
                     .filter(path => path.indexOf(config['article']['index']) === path.length - config['article']['index'].length)
                     .map(path => path.substr(0, path.length - config['article']['index'].length))
                     .map(path => path.match(/^\/(\d{4})\/(\d{2})\/(\d{2})\/$/))
-                    .filter(path => path && path.length > 1);
+                    .filter(matches => matches && matches.length > 1);
                 if (paths.length === 0)
                     cb(null, []);
                 const list = [];
                 let remaining = 0;
-                paths.forEach(path => {
+                paths.forEach(matches => {
                     const article = {
-                        path: config['data_dir'] + path[0] + config['article']['index'],
-                        year: parseInt(path[1]),
-                        month: parseInt(path[2]),
-                        day: parseInt(path[3])
+                        path: path.join(config['data_dir'], matches[1], matches[2], matches[3], config['article']['index']),
+                        parent: path.join(config['data_dir'], matches[1], matches[2], matches[3]),
+                        year: parseInt(matches[1]),
+                        month: parseInt(matches[2]),
+                        day: parseInt(matches[3])
                     };
                     remaining++;
                     readIndexFile(article.path, config['article']['thumbnail_tag'], (err, info) => {
                         if (err)
                             return cb(err);
                         article.title = info.title || config['article']['default_title'];
-                        article.thumbnail = info.thumbnail ? (config['data_dir'] + path[0] + info.thumbnail) : config['article']['default_thumbnail'];
+                        article.thumbnail = info.thumbnail ? path.join(article.parent, info.thumbnail) : config['article']['default_thumbnail'];
                         list.push(article);
                         remaining--;
                         if (remaining === 0)

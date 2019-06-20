@@ -17,11 +17,6 @@ module.exports = (config) => {
 
     const articles = [];
 
-    const log = (status, msg) => {
-        if (config['test'])
-            return;
-        console.log(status, msg);
-    };
 
     const reload = (callback) => {
         fw.fetchArticles((err, list) => {
@@ -31,9 +26,9 @@ module.exports = (config) => {
             }
             articles.splice(0, articles.length, ...list);
             if (articles.length > 0)
-                log(cons.ok, `loaded ${articles.length} article${articles.length > 1 ? 's' : ''}`);
+                console.log(cons.ok, `loaded ${articles.length} article${articles.length > 1 ? 's' : ''}`);
             else
-                log(cons.warn, `no articles loaded, check your configuration`);
+                console.log(cons.warn, `no articles loaded, check your configuration`);
             callback(true);
         });
     };
@@ -42,16 +37,16 @@ module.exports = (config) => {
         res.render(path, data, (err, html) => {
             if (err) {
                 res.sendStatus(500);
-                log(cons.error, `failed to render ${path} : ${err}`);
+                console.log(cons.error, `failed to render ${path} : ${err}`);
             } else
                 res.status(code).send(html);
         });
     };
 
-    const showError = (path, code, res) => {
-        const errorPath = `${config['data_dir']}/${config['home']['error']}`;
+    const showError = (resPath, code, res) => {
+        const errorPath = path.join(config['data_dir'],config['home']['error']);
         if (fs.existsSync(errorPath))
-            render(res, errorPath, {error: code, path: path}, code);
+            render(res, errorPath, {error: code, path: resPath}, code);
         else
             res.sendStatus(code);
     };
@@ -79,7 +74,7 @@ module.exports = (config) => {
         reload((res) => {
             if (res)
                 app.listen(config['node_port'], () => {
-                    log(cons.ok, `gitblog.md server listening on port ${config['node_port']}`);
+                    console.log(cons.ok, `gitblog.md server listening on port ${config['node_port']}`);
                 });
         });
     };

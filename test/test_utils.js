@@ -1,15 +1,16 @@
 const fs = require('fs');
+const path = require('path');
 
-const deleteFolderSync = (path) => {
-    if (!fs.existsSync(path))
+const deleteFolderSync = (dir) => {
+    if (!fs.existsSync(dir))
         return;
-    fs.readdirSync(path, {withFileTypes: true}).forEach((item) => {
+    fs.readdirSync(dir, {withFileTypes: true}).forEach((item) => {
         if (item.isDirectory())
-            deleteFolderSync(`${path}/${item.name}`);
+            deleteFolderSync(path.join(dir,item.name));
         else
-            fs.unlinkSync(`${path}/${item.name}`);
+            fs.unlinkSync(path.join(dir,item.name));
     });
-    fs.rmdirSync(path);
+    fs.rmdirSync(dir);
 };
 
 module.exports = {

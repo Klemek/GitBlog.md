@@ -1,9 +1,10 @@
 /* jshint -W117 */
 const request = require('supertest');
 const fs = require('fs');
+const path = require('path');
 const utils = require('./test_utils');
 
-const dataDir = './test_data';
+const dataDir = 'test_data';
 const testIndex = 'testindex.ejs';
 const testError = 'testerror.ejs';
 
@@ -38,7 +39,7 @@ describe('Test root path', () => {
         });
     });
     test('404 no index but error page', done => {
-        fs.writeFileSync(`${dataDir}/${testError}`, 'error <%= error %> at <%= path %>');
+        fs.writeFileSync(path.join(dataDir,testError), 'error <%= error %> at <%= path %>');
         request(app).get('/').then(response => {
             expect(response.statusCode).toBe(404);
             expect(response.text).toBe('error 404 at /');
@@ -46,7 +47,7 @@ describe('Test root path', () => {
         });
     });
     test('200 index page', done => {
-        fs.writeFileSync(`${dataDir}/${testIndex}`, 'hello there');
+        fs.writeFileSync(path.join(dataDir,testIndex), 'hello there');
         request(app).get('/').then(response => {
             expect(response.statusCode).toBe(200);
             expect(response.text).toBe('hello there');
@@ -64,7 +65,7 @@ describe('Test static files', () => {
         });
     });
     test('404 invalid file but error page', done => {
-        fs.writeFileSync(`${dataDir}/${testError}`, 'error <%= error %> at <%= path %>');
+        fs.writeFileSync(path.join(dataDir,testError), 'error <%= error %> at <%= path %>');
         request(app).get('/somefile.txt').then(response => {
             expect(response.statusCode).toBe(404);
             expect(response.text).toBe('error 404 at /somefile.txt');

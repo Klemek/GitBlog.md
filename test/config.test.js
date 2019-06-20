@@ -1,8 +1,8 @@
 /* jshint -W117 */
 const fs = require('fs');
 
-const configFile = './config.json';
-const tmpConfigFile = './config.temp.json';
+const configFile = 'config.json';
+const tmpConfigFile = 'config.temp.json';
 
 beforeAll(() => {
     if (fs.existsSync(configFile)) {
