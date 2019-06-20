@@ -220,6 +220,8 @@ describe('Test article fetching', () => {
     const file = path.join(dir, testIndex);
     utils.createEmptyDirs([dir]);
     utils.createEmptyFiles([file]);
+    const date = new Date(2019, 5, 5);
+    date.setUTCHours(0);
     fw.fetchArticles((err, dict) => {
       expect(err).toBeNull();
       expect(dict).toBeDefined();
@@ -230,7 +232,7 @@ describe('Test article fetching', () => {
         year: 2019,
         month: 5,
         day: 5,
-        date: new Date(2019, 5, 5),
+        date: date,
         title: 'Untitled',
         thumbnail: 'default.png',
         escapedTitle: 'untitled',
@@ -248,6 +250,8 @@ describe('Test article fetching', () => {
            ![thumbnail](./thumbnail.jpg)
            this is some text
            `);
+    const date = new Date(2019, 5, 5);
+    date.setUTCHours(0);
     fw.fetchArticles((err, dict) => {
       expect(err).toBeNull();
       expect(dict).toBeDefined();
@@ -258,7 +262,7 @@ describe('Test article fetching', () => {
         year: 2019,
         month: 5,
         day: 5,
-        date: new Date(2019, 5, 5),
+        date: date,
         title: 'Title with : info !',
         thumbnail: path.join('2019', '05', '05', './thumbnail.jpg'),
         escapedTitle: 'title_with___info',

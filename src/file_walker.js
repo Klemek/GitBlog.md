@@ -87,6 +87,7 @@ module.exports = (config) => {
             day: parseInt(matches[3])
           };
           article.date = new Date(article.year, article.month, article.day);
+          article.date.setUTCHours(0);
           remaining++;
           readIndexFile(path.join(article.realPath, config['article']['index']), config['article']['thumbnail_tag'], (err, info) => {
             if (err)

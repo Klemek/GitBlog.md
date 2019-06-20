@@ -9,30 +9,26 @@ const testIndex = 'testindex.ejs';
 const testError = 'testerror.ejs';
 const testTemplate = 'testtemplate.ejs';
 
-const config = {
-  'test': true,
-  'data_dir': dataDir,
-  'view_engine': 'ejs',
-  'home': {
-    'index': testIndex,
-    'error': testError,
-    'hidden': ['.ejs', '.test']
-  },
-  'article': {
-    'index': 'index.md',
-    'template': testTemplate,
-    'thumbnail_tag': 'thumbnail',
-    'default_title': 'Untitled',
-    'default_thumbnail': null
-  },
-  'showdown': {}
-};
+const config = require('../src/config')();
+
+config['test'] = true;
+config['data_dir'] = dataDir;
+config['home']['index'] = testIndex;
+config['home']['error'] = testError;
+config['article']['template'] = testTemplate;
+config['home']['hidden'].push('.test');
+config['rss']['endpoint'] = '/rsstest';
+config['rss']['length'] = 2;
 
 const app = require('../src/app')(config);
 
-beforeEach(() => {
+beforeEach((done) => {
   utils.deleteFolderSync(dataDir);
   fs.mkdirSync(dataDir);
+  app.reload((res) => {
+    expect(res).toBe(true);
+    done();
+  });
 });
 
 afterAll(() => {
@@ -83,6 +79,65 @@ describe('Test root path', () => {
       });
     });
 
+  });
+});
+
+describe('Test RSS feed', () => {
+  test('404 rss deactivated', (done) => {
+    config['modules']['rss'] = false;
+    request(app).get('/rsstest').then((response) => {
+      expect(response.statusCode).toBe(404);
+      config['modules']['rss'] = true;
+      done();
+    });
+  });
+  test('200 empty rss', (done) => {
+    request(app).get('/rsstest').then((response) => {
+      expect(response.statusCode).toBe(200);
+      expect(response.text.length).toBeGreaterThan(0);
+      expect(response.text.split('<item>').length).toBe(1);
+      done();
+    });
+  });
+  test('200 2 rss items', (done) => {
+    utils.createEmptyDirs([
+      path.join(dataDir, '2019', '05', '05'),
+      path.join(dataDir, '2018', '05', '05')
+    ]);
+    utils.createEmptyFiles([
+      path.join(dataDir, '2019', '05', '05', 'index.md'),
+      path.join(dataDir, '2018', '05', '05', 'index.md')
+    ]);
+    app.reload((res) => {
+      expect(res).toBe(true);
+      request(app).get('/rsstest').then((response) => {
+        expect(response.statusCode).toBe(200);
+        expect(response.text.length).toBeGreaterThan(0);
+        expect(response.text.split('<item>').length).toBe(3);
+        done();
+      });
+    });
+  });
+  test('200 max rss items', (done) => {
+    utils.createEmptyDirs([
+      path.join(dataDir, '2019', '05', '05'),
+      path.join(dataDir, '2018', '05', '05'),
+      path.join(dataDir, '2017', '05', '05')
+    ]);
+    utils.createEmptyFiles([
+      path.join(dataDir, '2019', '05', '05', 'index.md'),
+      path.join(dataDir, '2018', '05', '05', 'index.md'),
+      path.join(dataDir, '2017', '05', '05', 'index.md')
+    ]);
+    app.reload((res) => {
+      expect(res).toBe(true);
+      request(app).get('/rsstest').then((response) => {
+        expect(response.statusCode).toBe(200);
+        expect(response.text.length).toBeGreaterThan(0);
+        expect(response.text.split('<item>').length).toBe(3);
+        done();
+      });
+    });
   });
 });
 

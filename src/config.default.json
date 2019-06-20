@@ -2,7 +2,7 @@
   "node_port": 3000,
   "data_dir": "data",
   "view_engine": "ejs",
-  "loopback_url": "http://localhost:3000",
+  "language": "en-us",
   "modules": {
     "plantuml": false,
     "rss": true,

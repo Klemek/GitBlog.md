@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const fs = require('fs');
 const path = require('path');
+const Rss = require('rss');
 
 /**
  * Terminal colors and symbols to display status messages
@@ -23,6 +24,7 @@ module.exports = (config) => {
   app.set('views', path.join(__dirname, '..'));
 
   const articles = {};
+  let lastRSS = '';
 
   /**
    * Fetch articles from the data folder and send success as a response
@@ -41,6 +43,9 @@ module.exports = (config) => {
         console.log(cons.ok, `loaded ${nb} article${nb > 1 ? 's' : ''}`);
       else
         console.log(cons.warn, `no articles loaded, check your configuration`);
+
+      lastRSS = '';
+
       callback(true);
     });
   };
@@ -87,8 +92,35 @@ module.exports = (config) => {
       if (err)
         showError(req.path, 404, res);
       else
-        render(res, homePath, {articles: Object.values(articles)});
+        render(res, homePath, {articles: Object.values(articles).sort((a, b) => ('' + b.path).localeCompare(a.path))});
     });
+  });
+
+  //RSS endpoint
+  app.get(config['rss']['endpoint'], (req, res) => {
+    if (config['modules']['rss']) {
+      if (!lastRSS) {
+        const feed = new Rss({
+          'title': config['rss']['title'],
+          'description': config['rss']['description'],
+          'feed_url': 'http://' + req.headers.host + req.url,
+          'site_url': 'http://' + req.headers.host
+        });
+        Object.values(articles)
+          .slice(0, config['rss']['length'])
+          .forEach((article) => {
+            feed.item({
+              title: article.title,
+              url: 'http://' + req.headers.host + article.url,
+              date: article.date
+            });
+          });
+        lastRSS = feed.xml();
+      }
+      res.type('rss').send(lastRSS);
+    } else {
+      showError(req.path, 404, res);
+    }
   });
 
   // catch all article urls and render them
