@@ -9,7 +9,8 @@
   },
   "home": {
     "index": "index.ejs",
-    "error": "error.ejs"
+    "error": "error.ejs",
+    "hidden": [".ejs"]
   },
   "article": {
     "index": "index.md",

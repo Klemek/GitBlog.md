@@ -17,7 +17,6 @@ module.exports = (config) => {
 
     const articles = [];
 
-
     const reload = (callback) => {
         fw.fetchArticles((err, list) => {
             if (err) {
@@ -32,6 +31,8 @@ module.exports = (config) => {
             callback(true);
         });
     };
+    if (config['test'])
+        app.reload = reload;
 
     const render = (res, path, data, code = 200) => {
         res.render(path, data, (err, html) => {
@@ -61,6 +62,13 @@ module.exports = (config) => {
             else
                 render(res, homePath, {articles: articles});
         });
+    });
+
+    app.get('*', (req, res, next) => {
+        if (config['home']['hidden'].includes(path.extname(req.path)))
+            showError(req.path, 404, res);
+        else
+            next();
     });
 
     app.get('*', express.static(config['data_dir']));

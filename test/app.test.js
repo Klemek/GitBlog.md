@@ -14,8 +14,15 @@ const config = {
     'view_engine': 'ejs',
     'home': {
         'index': testIndex,
-        'error': testError
-    }
+        'error': testError,
+        'hidden': ['.ejs','.test']
+    },
+    'article': {
+        'index': 'index.md',
+        'thumbnail_tag': 'thumbnail',
+        'default_title': 'Untitled',
+        'default_thumbnail': null
+    },
 };
 
 const app = require('../src/app')(config);
@@ -46,15 +53,34 @@ describe('Test root path', () => {
             done();
         });
     });
-    test('200 index page', (done) =>{
-        fs.writeFileSync(path.join(dataDir,testIndex), 'hello there');
+    test('200 no articles', (done) =>{
+        fs.writeFileSync(path.join(dataDir,testIndex), 'articles <%= articles.length %>');
         request(app).get('/').then((response) =>{
             expect(response.statusCode).toBe(200);
-            expect(response.text).toBe('hello there');
+            expect(response.text).toBe('articles 0');
             done();
         });
     });
-    //TODO test articles list
+    test('200 2 articles', (done) =>{
+        utils.createEmptyDirs([
+            path.join(dataDir, '2019', '05', '05'),
+            path.join(dataDir, '2018', '05', '05')
+        ]);
+        utils.createEmptyFiles([
+            path.join(dataDir, '2019', '05', '05','index.md'),
+            path.join(dataDir, '2018', '05', '05','index.md')
+        ]);
+        fs.writeFileSync(path.join(dataDir,testIndex), 'articles <%= articles.length %>');
+        app.reload((res) => {
+            expect(res).toBe(true);
+            request(app).get('/').then((response) =>{
+                expect(response.statusCode).toBe(200);
+                expect(response.text).toBe('articles 2');
+                done();
+            });
+        });
+
+    });
 });
 
 describe('Test static files', () => {
@@ -69,6 +95,13 @@ describe('Test static files', () => {
         request(app).get('/somefile.txt').then((response) =>{
             expect(response.statusCode).toBe(404);
             expect(response.text).toBe('error 404 at /somefile.txt');
+            done();
+        });
+    });
+    test('404 hidden file', (done) =>{
+        fs.writeFileSync(path.join(dataDir,'somefile.test'), '');
+        request(app).get('/somefile.test').then((response) =>{
+            expect(response.statusCode).toBe(404);
             done();
         });
     });
