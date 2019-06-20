@@ -19,6 +19,7 @@ config['article']['template'] = testTemplate;
 config['home']['hidden'].push('.test');
 config['rss']['endpoint'] = '/rsstest';
 config['rss']['length'] = 2;
+config['webhook']['endpoint'] = '/webhooktest';
 
 const app = require('../src/app')(config);
 
@@ -73,52 +74,6 @@ describe('Test root path', () => {
         expect(response.text).toBe('articles 2');
         done();
       });
-    }, fail);
-
-  });
-});
-
-describe('Test check secret', () => {
-  const secretFile = 'git_secret';
-  const tmpSecretFile = 'tmp_git_secret';
-  beforeEach(() => {
-    if (fs.existsSync(secretFile))
-      fs.renameSync(secretFile, tmpSecretFile);
-  });
-
-  afterEach(() => {
-    if (fs.existsSync(tmpSecretFile)) {
-      fs.renameSync(tmpSecretFile, secretFile);
-    } else if (fs.existsSync(secretFile)) {
-      fs.unlinkSync(secretFile); //remove secret file if remaining
-    }
-  });
-
-  test('no check if not activated', (done, fail) => {
-    config['modules']['webhook'] = false;
-    app.checkSecret(() => {
-      config['modules']['webhook'] = true;
-      done();
-    }, () => {
-      config['modules']['webhook'] = true;
-      fail();
-    });
-  });
-  test('create if not exists', (done, fail) => {
-    if (fs.existsSync(secretFile))
-      fs.unlinkSync(secretFile);
-    app.checkSecret(() => {
-      expect(fs.existsSync(secretFile)).toBe(true);
-      expect(fs.readFileSync(secretFile).length).toBeGreaterThan(0);
-      done();
-    }, fail);
-  });
-  test('read if exists', (done, fail) => {
-    fs.writeFileSync(secretFile,'secret value');
-    app.checkSecret(() => {
-      expect(fs.existsSync(secretFile)).toBe(true);
-      expect(fs.readFileSync(secretFile, {encoding:'UTF-8'})).toBe('secret value');
-      done();
     }, fail);
   });
 });
@@ -176,6 +131,41 @@ describe('Test RSS feed', () => {
         expect(response.text.split('<item>').length).toBe(3);
         done();
       }, fail);
+    });
+  });
+});
+
+describe('Test webhook', () => {
+  test('400 webhook deactivated', (done) => {
+    config['modules']['webhook'] = false;
+    request(app).post('/webhooktest').then((response) => {
+      expect(response.statusCode).toBe(400);
+      config['modules']['webhook'] = true;
+      done();
+    });
+  });
+  test('200 no secret', (done) => {
+    request(app).post('/webhooktest').then((response) => {
+      expect(response.statusCode).toBe(200);
+      //TODO test reload
+      done();
+    });
+  });
+  test('403 wrong secret', (done) => {
+    config['webhook']['secret_header'] = 'testheader';
+    config['webhook']['secret_value'] = 'testvalue';
+    request(app).post('/webhooktest').set('testheader','testvalue2').then((response) => {
+      expect(response.statusCode).toBe(403);
+      done();
+    });
+  });
+  test('200 valid secret', (done) => {
+    config['webhook']['secret_header'] = 'testheader';
+    config['webhook']['secret_value'] = 'testvalue';
+    request(app).post('/webhooktest').set('testheader','testvalue').then((response) => {
+      expect(response.statusCode).toBe(200);
+      //TODO test reload
+      done();
     });
   });
 });

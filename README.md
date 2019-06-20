@@ -52,11 +52,29 @@ git push -u origin master
 
 **5. Refresh content with a webhook (optional)**
 
-At first start, a `git_secret` file will be generated, use it to create a new webhook as following :
+Create a webhook on your git source (On GitHub, in the `Settings/Webhooks` part of the repository.) with the following parameters :
 
 * Payload URL : `https://<url_of_your_server>/webhook`
 * Content type : `application/json`
-* Secret : `<content of the git_secret file>`
 * Events : Just the push event
 
-On GitHub, webhooks can be created in the `Settings/Webhooks` part of the repository.
+**6. Securize your webhook (optional)**
+
+Here are the steps for Github, if you use another platform adapt it your way (header format on the config) :
+
+* Create a password or random secret
+* Calculate it's SHA1
+* Edit your configuration to add webhook info 
+```json
+{
+...
+"webhook": {
+    "secret_value": "sha1=<value>",
+    "secret_header": "X-Hub-Signature"
+  },
+...
+}
+```
+* Launch the server
+* Update your webhook on github to include the secret
+* Check if Github successfully reached the endpoint

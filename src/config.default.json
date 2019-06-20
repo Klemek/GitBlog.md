@@ -30,7 +30,8 @@
   },
   "webhook": {
     "endpoint": "/webhook",
-    "secret_file": "git_secret"
+    "secret_value": "",
+    "secret_header": ""
   },
   "showdown": {
     "parseImgDimensions": true,
