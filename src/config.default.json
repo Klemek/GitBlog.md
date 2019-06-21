@@ -2,9 +2,7 @@
   "node_port": 3000,
   "data_dir": "data",
   "view_engine": "ejs",
-  "language": "en-us",
   "modules": {
-    "plantuml": false,
     "rss": true,
     "webhook": true,
     "prism": true
