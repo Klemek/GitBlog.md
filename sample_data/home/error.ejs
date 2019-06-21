@@ -3,10 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Error <%= error %></title>
+    <link rel="stylesheet" type="text/css" href="/style.css">
 </head>
 <body>
 <main>
-    <h1>Error <%= error %> at path <%= path %></h1>
+    <h1>Somehing went wrong
+        <small>(Error <%= error %>)</small>
+    </h1>
+    It means the resource you're trying to access is unavailable right now.<br>
+    We're terribly sorry that you encountered this error.<br><br>
+    <a href="/">Back to home</a>
 </main>
 </body>
 </html>
