@@ -107,9 +107,16 @@ You might want to use something like screen to separate the process from your cu
 #### 4. Customize the blog's style
 
 At `npm install` a first article will be created for the current date.
-You see it as an example of rendering of your blog.
+You can see it as an example of rendering of your blog.
 Use it to edit your templates and styles located on the `data` folder.
+
 At first, home page and articles are rendered using EJS engine but you can customize that into the configuration.
+
+Resources are located on the `data` folder and can be referenced as the root of your blog.
+
+```
+/styles/main.css => data/styles/main.css
+```
 
 #### 5. Create and init your git source
 
@@ -154,7 +161,30 @@ Here are the steps for Github, if you use another platform adapt it your way (he
 ## Writing an article
 [back to top](#gitblog-md)
 
-TODO
+You need to write your article (and templates) on the git repository but **keep the data directory on the server untouched** to prevent any changes to harm the git pull normal behavior.
+
+To be referenced, an article need to be on a specific path containing its date and have a Markdown index file :
+
+```
+data/year/month/day/index.md
+```
+
+> note that month and day need to be 0 padded (`5th of june 2019 => 2019/06/05`)
+
+On your Markdown file you can write anything but some informations will be fetched automatically :
+
+* Title : first level 1 header (#)
+* Thumbnail : first thumbnail tagged image (like `![thumbnail](url)`)
+
+On that same folder, you can place resources like images and reference them in relative paths :
+
+```
+![](./image.png) => data/year/month/day/image.png
+```
+
+> note that you cannot place resources on subfolders
+
+Any URL like `/year/month/day/anything/` will redirect to this article (and link to correct resources)
 
 ## Configuration
 [back to top](#gitblog-md)
