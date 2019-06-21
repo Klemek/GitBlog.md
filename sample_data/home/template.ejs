@@ -14,8 +14,9 @@
         <span class="time"><span>Published on</span> <%= article.year + '-' + article.month + '-' + article.day %></span>
     </div>
     <div id="text"><%- article.content %></div>
-    <hr>
+    <br>
     <a href="#top">Go to top</a> - <a href="/">Back to home</a>
+    <%- include('footer'); %>
 </main>
 </body>
 </html>
