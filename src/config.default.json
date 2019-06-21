@@ -6,7 +6,8 @@
   "modules": {
     "plantuml": false,
     "rss": true,
-    "webhook": true
+    "webhook": true,
+    "prism": true
   },
   "home": {
     "index": "index.ejs",
