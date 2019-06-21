@@ -1,5 +1,6 @@
 # GitBlog.md
 
+
 [![Build Status](https://img.shields.io/travis/Klemek/GitBlog.md.svg?branch=master)](https://travis-ci.org/Klemek/GitBlog.md)
 [![Coverage Status](https://img.shields.io/coveralls/github/Klemek/GitBlog.md.svg?branch=master)](https://coveralls.io/github/Klemek/GitBlog.md?branch=master)
 
