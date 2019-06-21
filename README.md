@@ -6,7 +6,10 @@
 
 A static blog using Markdown pulled from your git repository.
 
-> You edit the markdown on your local repo, you push it and it's already on your server's blog (plus your friend's RSS is updated)
+> Step 1 : ```$ vi 2019/06/21/index.md```  
+> Step 2 : ```$ git add . && git commit -m "new article" && git push origin master```  
+> Step 3 : That's it  
+> Step 4 : No seriously you're done, go check your updated blog
 
 * **[How it works](#how-it-works)**
 * **[Installation](#installation)**
