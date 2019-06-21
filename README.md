@@ -195,75 +195,55 @@ Any URL like `/year/month/day/anything/` will redirect to this article (and link
 ## Configuration
 [back to top](#gitblog-md)
 
-*  `node_port` (default: 3000)
-   
-   the port the server is listening to
-* `data_dir` (default: data)
-
-   the directory where will be located the git repo with templates and articles
-* `view_engine` (default: ejs)
-
-   the Express view engine used to render pages from templates
+*  `node_port` (default: 3000)  
+  the port the server is listening to
+* `data_dir` (default: data)  
+  the directory where will be located the git repo with templates and articles
+* `view_engine` (default: ejs)  
+  the Express view engine used to render pages from templates
+* `access_log` (default: access.log)  
+  log file where to save access requests (empty to disable)
 * `modules`
-   * `rss` (default: true)
-   
-      activate the RSS endpoint and its features
-   * `webhook` (default: true)
-   
-      activate the webhook endpoint and its features
-   * `prism` (default: true)
-   
-      activate Prism code highlighting
+   * `rss` (default: true)  
+     activate the RSS endpoint and its features
+   * `webhook` (default: true)  
+     activate the webhook endpoint and its features
+   * `prism` (default: true)  
+     activate Prism code highlighting
 * `home`
-   * `index` (default: index.ejs)
-   
-      the name of the home page template on the data directory
-      
-      it will receive `articles`, a list of articles for rendering
-   * `error` (default: error.ejs)
-   
-      the name of the error page template on the data directory
-      
-      it will receive `error`, the error code
-   * `hidden` (default: `[.ejs]`)
-   
-      file extensions to be returned 404 when reached
+   * `index` (default: index.ejs)  
+     the name of the home page template on the data directory  
+     it will receive `articles`, a list of articles for rendering
+   * `error` (default: error.ejs)  
+     the name of the error page template on the data directory  
+     it will receive `error`, the error code
+   * `hidden` (default: `[.ejs]`)  
+     file extensions to be returned 404 when reached
 * `article`
-   * `index` (default: index.md)
-   
-      the name of the Markdown page of the article on the `/year/month/day/` directory
-   * `template` (default: template.ejs)
-   
-      the name of the article page template on the data directory
-   * `thumbnail_tag`: (default: thumbnail)
-   
-      the alt text searched to get the thumbnail image on the article
-      
-      as in `![<thumbnail_tag>](<url of the image>)`
-   * `default_title`: (default: Untitled)
-   
-      the title of the article in case a level 1 title was not found
-   * `default_thumbnail`: (default: none)
-   
-      the path of the default thumbnail to get from the data directory
+   * `index` (default: index.md)  
+     the name of the Markdown page of the article on the `/year/month/day/` directory
+   * `template` (default: template.ejs)  
+     the name of the article page template on the data directory
+   * `thumbnail_tag`: (default: thumbnail)  
+     the alt text searched to get the thumbnail image on the article  
+     as in `![<thumbnail_tag>](<url of the image>)`
+   * `default_title`: (default: Untitled)  
+     the title of the article in case a level 1 title was not found
+   * `default_thumbnail`: (default: none)  
+     the path of the default thumbnail to get from the data directory
 * `rss`
    * `title`: (default: mygitblog RSS feed)
    * `description`: (default: a generated RSS feed from my articles)
    * `endpoint`: (default: /rss)
-   * `length`: (default: 10)
-   
-      how many last articles will be present in the feed
+   * `length`: (default: 10)  
+     how many last articles will be present in the feed
 * `webhook`
    * `endpoint`: (default: /webhook)
-   * `secret`: (default: none)
-      
-      see [above](#7-securize-your-webhook-optional-)
-   * `signature_header`: (default: none)
-   
-      see [above](#7-securize-your-webhook-optional-)
-   * `pull_command`: (default: git pull)
-   
-      the command used by the server on webhook trigger
-* `showdown`
-
-   Options to be applied to Showdown renderer (see [showdown options](https://github.com/showdownjs/showdown#valid-options) for more info)
+   * `secret`: (default: none)  
+     see [above](#7-securize-your-webhook-optional-)
+   * `signature_header`: (default: none)  
+     see [above](#7-securize-your-webhook-optional-)
+   * `pull_command`: (default: git pull)  
+     the command used by the server on webhook trigger
+* `showdown`  
+  Options to be applied to Showdown renderer (see [showdown options](https://github.com/showdownjs/showdown#valid-options) for more info)

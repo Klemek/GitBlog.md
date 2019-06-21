@@ -3,6 +3,8 @@ const app = express();
 const fs = require('fs');
 const path = require('path');
 
+app.enable('trust proxy');
+
 //rss
 const Rss = require('rss');
 
@@ -93,6 +95,22 @@ module.exports = (config) => {
         render(res, errorPath, {error: code, path: resPath}, code);
     });
   };
+
+  //log request at result end
+  app.use((req, res, next) => {
+    if (config['access_log']) {
+      const end = res.end;
+      res.end = (chunk, encoding) => {
+        fs.appendFile(config['access_log'],
+          res.statusCode + ' ' + req.method + ' ' + req.url + ' ' + new Date().toUTCString() + ' ' + (req.ips.join(' ') || req.ip) + '\n',
+          {encoding: 'UTF-8'}, () => {
+            res.end = end;
+            res.end(chunk, encoding);
+          });
+      };
+    }
+    next();
+  });
 
   // home endpoint : send the correct index page or error if not existing
   app.get('/', (req, res) => {

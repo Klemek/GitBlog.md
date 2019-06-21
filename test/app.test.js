@@ -20,6 +20,7 @@ config['home']['hidden'].push('.test');
 config['rss']['endpoint'] = '/rsstest';
 config['rss']['length'] = 2;
 config['webhook']['endpoint'] = '/webhooktest';
+config['access_log'] = path.join(dataDir, 'access.log');
 
 const app = require('../src/app')(config);
 
@@ -33,6 +34,39 @@ afterAll(() => {
   if (fs.existsSync(dataDir)) {
     utils.deleteFolderSync(dataDir);
   }
+});
+
+describe('Test logging', () => {
+  test('test get 200', (done) => {
+    request(app).get('/rsstest').then(() => {
+      fs.readFile(path.join(dataDir, 'access.log'), {encoding: 'UTF-8'}, (err, data) => {
+        expect(err).toBeNull();
+        expect(data).toBe('200 GET /rsstest ' + new Date().toUTCString() + ' ::ffff:127.0.0.1\n');
+        done();
+      });
+    });
+  });
+  test('test post 400', (done) => {
+    request(app).post('/rsstest').then(() => {
+      fs.readFile(path.join(dataDir, 'access.log'), {encoding: 'UTF-8'}, (err, data) => {
+        expect(err).toBeNull();
+        expect(data).toBe('400 POST /rsstest ' + new Date().toUTCString() + ' ::ffff:127.0.0.1\n');
+        done();
+      });
+    });
+  });
+  test('test 2 requests', (done) => {
+    request(app).get('/rss').then(() => {
+      request(app).post('/rsstest').then(() => {
+        fs.readFile(path.join(dataDir, 'access.log'), {encoding: 'UTF-8'}, (err, data) => {
+          expect(err).toBeNull();
+          expect(data).toBe('404 GET /rss ' + new Date().toUTCString() + ' ::ffff:127.0.0.1\n' +
+            '400 POST /rsstest ' + new Date().toUTCString() + ' ::ffff:127.0.0.1\n');
+          done();
+        });
+      });
+    });
+  });
 });
 
 describe('Test root path', () => {
