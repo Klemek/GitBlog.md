@@ -79,6 +79,23 @@ table td:first-of-type {
     padding: 0.25em 0.5em;
 }
 
+details {
+    background: #f8f8f8;
+    margin: 0.25em 0;
+    padding: 0;
+}
+
+details > summary {
+    cursor: pointer;
+    padding: 0.5em 1em;
+}
+
+details > p {
+    background: #f5f5f5;
+    padding: 0.5em 0.5em 0.5em 2em;
+    margin: 0;
+}
+
 main.article div.header span.time span, div.article span.time span {
     color: #888;
     font-family: serif;
