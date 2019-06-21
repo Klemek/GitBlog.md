@@ -6,7 +6,7 @@
 
 A static blog using Markdown pulled from your git repository.
 
-> You edit it on your local repo, you push it and it's already on your server's blog (plus your friend's RSS is updated)
+> You edit the markdown on your local repo, you push it and it's already on your server's blog (plus your friend's RSS is updated)
 
 * **[How it works](#how-it-works)**
 * **[Installation](#installation)**
