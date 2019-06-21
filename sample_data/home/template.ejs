@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GitBlog.md - <%= article.title %></title>
+    <link rel="stylesheet" type="text/css" href="/prism.css">
+    <link rel="stylesheet" type="text/css" href="/style.css">
+</head>
+<body>
+<main class="article">
+    <div class="header">
+        <a class="link-home" href="/">↑</a>
+        <h1><%= article.title %></h1>
+        <span class="time"><span>Published on</span> <%= article.year + '-' + article.month + '-' + article.day %></span>
+    </div>
+    <div id="text"><%- article.content %></div>
+    <br>
+    <a href="#top">Go to top</a> - <a href="/">Back to home</a>
+    <%- include('footer'); %>
+</main>
+</body>
+</html>

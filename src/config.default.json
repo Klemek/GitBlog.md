@@ -1,0 +1,44 @@
+{
+  "node_port": 3000,
+  "data_dir": "data",
+  "view_engine": "ejs",
+  "modules": {
+    "rss": true,
+    "webhook": true,
+    "prism": true
+  },
+  "home": {
+    "index": "index.ejs",
+    "error": "error.ejs",
+    "hidden": [
+      ".ejs"
+    ]
+  },
+  "article": {
+    "index": "index.md",
+    "template": "template.ejs",
+    "thumbnail_tag": "thumbnail",
+    "default_title": "Untitled",
+    "default_thumbnail": null
+  },
+  "rss": {
+    "title": "mygitblog RSS feed",
+    "description": "a generated RSS feed from my articles",
+    "endpoint": "/rss",
+    "length": 10
+  },
+  "webhook": {
+    "endpoint": "/webhook",
+    "secret": "",
+    "signature_header": "",
+    "pull_command": "git pull"
+  },
+  "showdown": {
+    "parseImgDimensions": true,
+    "strikethrough": true,
+    "tables": true,
+    "tasklists": true,
+    "openLinksInNewWindow": true,
+    "emoji": true
+  }
+}

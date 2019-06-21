@@ -1,0 +1,145 @@
+body, html {
+    padding: 0;
+    margin: 0;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font: 14px/1.45 -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif;
+    color: #111;
+    -webkit-text-size-adjust: none;
+    background-color: #F5F5F5;
+    height: 100vh;
+}
+
+main {
+    max-width: 75ch;
+    padding: 2ch;
+    margin: auto;
+    background-color: #F0F0F0;
+    min-height: 100vh;
+}
+
+/* hide redundant text in article */
+#text h1:first-child {
+    display: none;
+}
+
+hr {
+    background: #e1e4e8;
+    border: 0;
+    height: 0.25em;
+    margin: 1em 0;
+}
+
+a {
+    color: #3C3CA1;
+}
+
+a:hover {
+    color: #8484C6;
+}
+
+pre, code {
+    font-size: 96%;
+    background: #f8f8f8;
+}
+
+pre {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px 16px;
+}
+
+blockquote {
+    border-left: 0.5em solid #ccc;
+    padding-left: 1em;
+    margin: 0.25em 0;
+    color: #333;
+}
+
+blockquote > p {
+    margin: 0.6rem 0;
+}
+
+table td {
+    vertical-align: baseline;
+    padding-left: 8px;
+}
+
+table td:first-of-type {
+    padding-left: 0;
+}
+
+#text table td, #text table th {
+    border: 1px solid #ccc;
+    padding: 0.25em 0.5em;
+}
+
+details {
+    background: #f8f8f8;
+    margin: 0.25em 0;
+    padding: 0;
+}
+
+details > summary {
+    cursor: pointer;
+    padding: 0.5em 1em;
+}
+
+details > p {
+    background: #f5f5f5;
+    padding: 0.5em 0.5em 0.5em 2em;
+    margin: 0;
+}
+
+main.article div.header span.time span, div.article span.time span {
+    color: #888;
+    font-family: serif;
+    font-style: italic;
+}
+
+main.article div.header a.link-home {
+    text-decoration: none;
+    float: right;
+    line-height: 2.4;
+}
+
+main.article div.header h1, main.article div.header h2, div.article h3 {
+    margin-top: 0.85em;
+    margin-bottom: 0.25em;
+    font-size: 2em;
+}
+
+main.article div.header h1 a, main.article div.header h2 a, div.article h3 a {
+    text-decoration: none;
+}
+
+main.article div.header span.time, div.article span.time {
+    display: block;
+}
+
+div.article {
+    margin-left: 1em;
+}
+
+div.article h3 {
+    font-size: 1.3em;
+}
+
+#text {
+    text-align: justify;
+    hyphens: auto;
+}
+
+#text li, #text table, #text blockquote {
+    text-align: left;
+}
+
+#text img {
+    max-width: 100%;
+    height: auto;
+}

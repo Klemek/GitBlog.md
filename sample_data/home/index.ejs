@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GitBlog.md - Home</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<main>
+    <h1>GitBlog.md</h1>
+    A static blog using Markdown pulled from your git repository
+    <h2>Articles in this blog :</h2>
+    <% articles.forEach((article) => { %>
+        <div class="article">
+            <h3><%- `<a href="${article.url}">${article.title}</a>` %></h3>
+            <span class="time"><span>Published on</span> <%= article.year + '-' + article.month + '-' + article.day %></span>
+            <% if(article.thumbnail){ %>
+                <%- `<img alt="thumbnail" src=${article.thumbnail}>` %>
+            <% } %>
+        </div>
+    <% }); %>
+    <%- include('footer'); %>
+</main>
+</body>
+</html>

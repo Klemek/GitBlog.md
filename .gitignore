@@ -1,4 +1,7 @@
 /.idea
 /node_modules
 /config.json
+/config.example.json
 /data
+/test_data
+/git_secret
