@@ -161,9 +161,16 @@ module.exports = (config) => {
     }
   });
 
+  //rewrite urls to hide articles titles : /2019/05/05/sometitle/img.png => /2019/05/05/img.png
+  app.use((req, res, next) => {
+    if (/^\/\d{4}\/\d{2}\/\d{2}\//.test(req.url))
+      req.url = req.url.slice(0, 11) + req.url.slice(req.url.lastIndexOf('/'));
+    next();
+  });
+
   // catch all article urls and render them
   app.get('*', (req, res, next) => {
-    if (/^\/\d{4}\/\d{2}\/\d{2}\/(\w*\/)?$/.test(req.path)) {
+    if (/^\/\d{4}\/\d{2}\/\d{2}\/$/.test(req.path)) {
       const articlePath = req.path.substr(1, 10);
       const article = articles[articlePath];
       if (!article)

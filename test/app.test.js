@@ -286,8 +286,17 @@ describe('Test static files', () => {
     });
   });
   test('200 valid file', (done) => {
-    fs.writeFileSync(`${dataDir}/somefile.txt`, 'filecontent');
+    fs.writeFileSync(path.join(dataDir, 'somefile.txt'), 'filecontent');
     request(app).get('/somefile.txt').then((response) => {
+      expect(response.statusCode).toBe(200);
+      expect(response.text).toBe('filecontent');
+      done();
+    });
+  });
+  test('200 valid resource of article', (done) => {
+    utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05'),]);
+    fs.writeFileSync(path.join(dataDir, '2019', '05', '05', 'somefile.txt'), 'filecontent');
+    request(app).get('/2019/05/05/title/somefile.txt').then((response) => {
       expect(response.statusCode).toBe(200);
       expect(response.text).toBe('filecontent');
       done();
