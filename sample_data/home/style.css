@@ -18,7 +18,7 @@ body {
 }
 
 main {
-    max-width: 70ch;
+    max-width: 75ch;
     padding: 2ch;
     margin: auto;
 
@@ -45,7 +45,6 @@ hr {
 a {
     color: #3C3CA1;
 }
-
 a:hover {
     color: #8484C6;
 }
@@ -65,12 +64,11 @@ table td {
     vertical-align: baseline;
     padding-left: 8px;
 }
-
 table td:first-of-type {
     padding-left: 0;
 }
 
-div.header span.time span {
+main.article div.header span.time span, div.article span.time span {
     color: #888;
     font-family: serif;
     font-style: italic;
@@ -82,17 +80,17 @@ main.article div.header a.link-home {
     line-height: 2.4;
 }
 
-main.article div.header h1, main.article div.header h2 {
+main.article div.header h1, main.article div.header h2, div.article h3 {
     margin-top: 0.85em;
     margin-bottom: 0.25em;
     font-size: 1.5em;
 }
 
-main.article div.header h1 a, main.article div.header h2 a {
+main.article div.header h1 a, main.article div.header h2 a, div.article h3 a {
     text-decoration: none;
 }
 
-main.article div.header span.time {
+main.article div.header span.time, div.article span.time {
     display: block;
 }
 
@@ -104,11 +102,9 @@ main.article div.header span.time {
     text-align: justify;
     hyphens: auto;
 }
-
 #text li, #text table, #text blockquote {
     text-align: left;
 }
-
 #text img {
     max-width: 100%;
     height: auto;
@@ -118,7 +114,6 @@ main.article div.header span.time {
     padding: 1em;
     background: #ff02;
 }
-
 .note > p {
     margin: 0.6rem 0;
 }
@@ -127,7 +122,6 @@ main.article div.header span.time {
     padding: 1em;
     background: #eff5ff;
 }
-
 .important > p {
     margin: 0.6rem 0;
 }
@@ -138,7 +132,6 @@ main.article div.header span.time {
     font-style: italic;
     color: #555;
 }
-
 #text .side > p:nth-child(2n+0) > i, #text .side > p:nth-child(2n+0) > em {
     font-style: normal;
 }
