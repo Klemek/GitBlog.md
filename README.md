@@ -52,7 +52,7 @@ As you access an article link, the server will fetch it's `index.md` Markdown fi
 </p>
 </details>
 
-As you configured your data repository, when you push any data, it will trigger the webhook that will perform a `git pull` then refresh the data you just committed.
+As you configured your data repository, when you push any data, it will trigger the webhook that will perform a `git pull` then refresh the article list.
 
 
 #### 4. RSS feed
