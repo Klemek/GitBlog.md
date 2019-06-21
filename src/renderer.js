@@ -11,7 +11,7 @@ module.exports = (config) => {
           return cb(err);
 
         if (config['modules']['prism']) {
-          const codeRegex = /```([\w-]+)\n((?:(?!```)[\s\S])*)\n```/m;
+          const codeRegex = /```([\w-]+)\r?\n((?:(?!```)[\s\S])*)\r?\n```/m;
           let match;
           while ((match = codeRegex.exec(data))) {
             const lang = match[1].trim();
