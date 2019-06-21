@@ -2,6 +2,7 @@
   "node_port": 3000,
   "data_dir": "data",
   "view_engine": "ejs",
+  "access_log": "access.log",
   "modules": {
     "rss": true,
     "webhook": true,
