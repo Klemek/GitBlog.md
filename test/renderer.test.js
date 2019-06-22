@@ -121,6 +121,12 @@ describe('Test MathJax', () => {
       done();
     });
   });
+  test('fake inline eq', (done) => {
+    renderer.renderMathJax('i have $6\nyou have $5', (data) => {
+      expect(data).toBe('i have $6\nyou have $5');
+      done();
+    });
+  });
   test('multiple eq', (done) => {
     renderer.renderMathJax('$$\n\nA\n\n$$\nstart $a$ end\n$$\n\nA\n\n$$', (data) => {
       expect(data).toBe('' +

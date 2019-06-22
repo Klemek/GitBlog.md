@@ -66,7 +66,7 @@ module.exports = (config) => {
     };
 
     const eqRegex = /\$\$((?:(?!\$\$)[\s\S])*)\$\$/m;
-    const inlineEqRegex = /\$([^$]*)\$/;
+    const inlineEqRegex = /\$([^$\n]*)\$/;
 
     let match;
     if ((match = eqRegex.exec(data))) {
