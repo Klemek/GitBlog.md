@@ -3,6 +3,7 @@
   "data_dir": "data",
   "view_engine": "ejs",
   "access_log": "access.log",
+  "error_log": "error.log",
   "modules": {
     "rss": true,
     "webhook": true,
