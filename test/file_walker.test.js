@@ -117,9 +117,10 @@ describe('Test index article reading', () => {
            `);
     fw.readIndexFile(file, 'custom_thumbnail', (err, info) => {
       expect(err).toBeNull();
-      expect(info).toBeDefined();
-      expect(info.title).toBe('This is an awesome title !?¤');
-      expect(info.thumbnail).toBe('./thumbnail.jpg');
+      expect(info).toEqual({
+        title: 'This is an awesome title !?¤',
+        thumbnail: './thumbnail.jpg'
+      });
       done();
     });
   });
@@ -132,9 +133,10 @@ describe('Test index article reading', () => {
            `);
     fw.readIndexFile(file, 'custom_thumbnail', (err, info) => {
       expect(err).toBeNull();
-      expect(info).toBeDefined();
-      expect(info.title).not.toBeDefined();
-      expect(info.thumbnail).toBe('./thumbnail.jpg');
+      expect(info).toEqual({
+        title: undefined,
+        thumbnail: './thumbnail.jpg'
+      });
       done();
     });
   });
@@ -143,9 +145,10 @@ describe('Test index article reading', () => {
     fs.writeFileSync(file, '#title');
     fw.readIndexFile(file, 'custom_thumbnail', (err, info) => {
       expect(err).toBeNull();
-      expect(info).toBeDefined();
-      expect(info.title).toBe('title');
-      expect(info.thumbnail).not.toBeDefined();
+      expect(info).toEqual({
+        title: 'title',
+        thumbnail: undefined
+      });
       done();
     });
   });
@@ -158,9 +161,10 @@ describe('Test index article reading', () => {
            `);
     fw.readIndexFile(file, 'thumbnail', (err, info) => {
       expect(err).toBeNull();
-      expect(info).toBeDefined();
-      expect(info.title).toBe('This is an awesome title !?¤');
-      expect(info.thumbnail).not.toBeDefined();
+      expect(info).toEqual({
+        title: 'This is an awesome title !?¤',
+        thumbnail: undefined
+      });
       done();
     });
   });
@@ -174,9 +178,10 @@ describe('Test index article reading', () => {
            `);
     fw.readIndexFile(file, 'custom_thumbnail', (err, info) => {
       expect(err).toBeNull();
-      expect(info).toBeDefined();
-      expect(info.title).toBe('This is an awesome title !?¤');
-      expect(info.thumbnail).toBe('./thumbnail.jpg');
+      expect(info).toEqual({
+        title: 'This is an awesome title !?¤',
+        thumbnail: './thumbnail.jpg'
+      });
       done();
     });
   });
