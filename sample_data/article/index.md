@@ -4,7 +4,24 @@ If you see this page, that means it's working
 
 ## Guide to Markdown formatting
 
+* [Headers](#headers)
+* [Emphasis](#emphasis)
+* [Lists](#lists)
+* [Links](#links)
+* [Images](#images)
+* [Code and Syntax Highlighting](#codeandsyntaxhighlighting)
+* [Tables](#tables)
+* [Blockquotes](#blockquotes)
+* [Inline HTML](#inlinehtml)
+* [Horizontal Rule](#horizontalrule)
+* [Line Breaks](#linebreaks)
+* [Check Boxes](#checkboxes)
+* [Spoilers](#spoilers)
+* [Math Equations](#mathequations)
+* [Youtube Videos](#youtubevideos)
+
 ### Headers
+[Back to top](#top)
 
 # H1
 ## H2
@@ -22,6 +39,7 @@ Alt-H2
 ------
 
 ### Emphasis
+[Back to top](#top)
 
 Emphasis, aka italics, with *asterisks* or _underscores_.
 
@@ -32,6 +50,7 @@ Combined emphasis with **asterisks and _underscores_**.
 Strikethrough uses two tildes. ~~Scratch this.~~
 
 ### Lists
+[Back to top](#top)
 
 1. First ordered list item
 2. Another item
@@ -51,6 +70,7 @@ Strikethrough uses two tildes. ~~Scratch this.~~
 + Or pluses
 
 ### Links
+[Back to top](#top)
 
 [I'm an inline-style link](https://www.google.com)
 
@@ -75,6 +95,7 @@ Some text to show that the reference links can follow later.
 [link text itself]: http://www.reddit.com
 
 ### Images
+[Back to top](#top)
 
 Here's our logo (hover to see the title text):
 
@@ -88,6 +109,7 @@ Reference-style:
 
 
 ### Code and Syntax Highlighting
+[Back to top](#top)
 
 Inline `code` has `back-ticks around` it.
 
@@ -108,6 +130,7 @@ But let's throw in a <b>tag</b>.
 
 
 ### Tables
+[Back to top](#top)
 
 Colons can be used to align columns.
 
@@ -127,6 +150,7 @@ Markdown | Less | Pretty
 1 | 2 | 3
 
 ### Blockquotes
+[Back to top](#top)
 
 > Blockquotes are very handy in email to emulate reply text.
 > This line is part of the same quote.
@@ -136,6 +160,7 @@ Quote break.
 > This is a very long line that will still be quoted properly when it wraps. Oh boy let's keep writing to make sure this is long enough to actually wrap for everyone. Oh, you can *put* **Markdown** into a blockquote.
 
 ### Inline HTML
+[Back to top](#top)
 
 <dl>
   <dt>Definition list</dt>
@@ -146,6 +171,7 @@ Quote break.
 </dl>
 
 ### Horizontal Rule
+[Back to top](#top)
 
 Three or more...
 
@@ -162,6 +188,7 @@ ___
 Underscores
 
 ### Line Breaks
+[Back to top](#top)
 
 Here's a line for us to start with.
 
@@ -169,3 +196,38 @@ This line is separated from the one above by two newlines, so it will be a *sepa
 
 This line is also a separate paragraph, but...
 This line is only separated by a single newline, so it's a separate line in the *same paragraph*.
+
+### Check Boxes
+[Back to top](#top)
+
+* [x] Task completed
+* [] Task to do
+
+### Spoilers
+[Back to top](#top)
+
+<details><summary>Title of the spoiler (click)</summary><p>
+Content of the spoiler  
+
+On several lines
+</p></details>
+
+### Math Equations
+[Back to top](#top)
+
+You can use LaTeX equations with MathJax for full equations and inline ones (based on the number of $) :
+
+$$
+\large{\beta=\sum_{i}^{\alpha }\frac{x^{i}}{\alpha}}
+$$
+
+
+Where $\alpha$ is cool
+
+
+### Youtube Videos
+[Back to top](#top)
+
+Just use the "embedded" export on Youtube with dimensions of 535x300 for best results
+
+<iframe width="535" height="300" src="https://www.youtube.com/embed/FTQbiNvZqaY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

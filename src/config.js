@@ -25,7 +25,7 @@ module.exports = () => {
     let config = JSON.parse(configData);
     return merge(refConfig, config);
   } catch (error) {
-    console.error('Failed to load config.json : ' + error);
+    console.log('\x1b[33m⚠\x1b[0m %s', 'Failed to load config.json : ' + error);
     return refConfig;
   }
 };

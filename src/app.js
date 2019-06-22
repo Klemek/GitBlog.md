@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const fs = require('fs');
 const path = require('path');
+const pjson = require('../package.json');
 
 app.enable('trust proxy');
 
@@ -71,6 +72,9 @@ module.exports = (config) => {
    * @param code - code to send along the page
    */
   const render = (res, vPath, data, code = 200) => {
+    data.info = {
+      version: pjson.version
+    };
     res.render(vPath, data, (err, html) => {
       if (err) {
         res.sendStatus(500);
@@ -154,10 +158,7 @@ module.exports = (config) => {
   app.post(config['webhook']['endpoint'], (req, res) => {
     if (config['modules']['webhook']) {
       if (config['webhook']['signature_header'] && config['webhook']['secret']) {
-        const payload = JSON.stringify(req.body);
-        if (!payload) {
-          return res.sendStatus(403);
-        }
+        const payload = JSON.stringify(req.body) || '';
         const hmac = crypto.createHmac('sha1', config['webhook']['secret']);
         const digest = 'sha1=' + hmac.update(payload).digest('hex');
         const checksum = req.headers[config['webhook']['signature_header']];

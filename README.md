@@ -14,6 +14,7 @@ A static blog using Markdown pulled from your git repository.
 * **[How it works](#how-it-works)**
 * **[Installation](#installation)**
 * **[Writing an article](#writing-an-article)**
+* **[Modules](#modules)**
 * **[Configuration](#configuration)**
 
 ## How it works
@@ -192,6 +193,18 @@ On that same folder, you can place resources like images and reference them in r
 
 Any URL like `/year/month/day/anything/` will redirect to this article (and link to correct resources)
 
+## Modules
+[back to top](#gitblog-md)
+
+* **RSS**  
+  It allows your users to use the feed to be updated as soon as a new article is out
+* **Webhook**  
+  It update your blog from your online repo when it's updated
+* **Prism**  
+  It highlight code blocks to be more readable (more info [here](https://prismjs.com/), you will need the corresponding CSS file on your templates)
+* **MathJax**  
+  It allows you to add math equations to your articles by simply writing LaTeX between $$ for full size (and between $ for inline) (more info [here](https://www.mathjax.org/))
+
 ## Configuration
 [back to top](#gitblog-md)
 
@@ -212,6 +225,8 @@ Any URL like `/year/month/day/anything/` will redirect to this article (and link
      activate the webhook endpoint and its features
    * `prism` (default: true)  
      activate Prism code highlighting
+   * `mathjax` (default: true)  
+     activate MathJax equations formatting
 * `home`
    * `index` (default: index.ejs)  
      the name of the home page template on the data directory  
@@ -248,4 +263,9 @@ Any URL like `/year/month/day/anything/` will redirect to this article (and link
    * `pull_command`: (default: git pull)  
      the command used by the server on webhook trigger
 * `showdown`  
-  Options to be applied to Showdown renderer (see [showdown options](https://github.com/showdownjs/showdown#valid-options) for more info)
+  Options to be applied to Showdown renderer (see [showdown options](https://github.com/showdownjs/showdown/wiki/Showdown-Options) for more info)
+* `mathjax`
+   * `output_format`: (default: svg)  
+     specify the output format between svg, html or MathMl (mml)
+   * `speak_text`: (default: true)  
+     activate the alternate text in equations
