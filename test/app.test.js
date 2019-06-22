@@ -13,19 +13,24 @@ const config = require('../src/config')();
 
 config['test'] = true;
 config['data_dir'] = dataDir;
+config['webhook']['endpoint'] = '/webhooktest';
+config['rss']['endpoint'] = '/rsstest';
+config['rss']['length'] = 2;
 config['home']['index'] = testIndex;
 config['home']['error'] = testError;
 config['article']['template'] = testTemplate;
-config['home']['hidden'].push('.test');
-config['rss']['endpoint'] = '/rsstest';
-config['rss']['length'] = 2;
-config['webhook']['endpoint'] = '/webhooktest';
-config['access_log'] = path.join(dataDir, 'access.log');
-config['error_log'] = path.join(dataDir, 'error.log');
 
 const app = require('../src/app')(config);
 
 beforeEach((done, fail) => {
+  config['data_dir'] = dataDir;
+  config['article']['index'] = 'index.md';
+  config['home']['hidden'] = ['.ejs', '.test'];
+  config['access_log'] = '';
+  config['error_log'] = '';
+  config['modules']['rss'] = true;
+  config['modules']['webhook'] = true;
+
   utils.deleteFolderSync(dataDir);
   fs.mkdirSync(dataDir);
   app.reload(done, fail);
@@ -37,17 +42,22 @@ afterAll(() => {
   }
 });
 
+describe('Test reload', () => {
+  test('reload fail', (done, fail) => {
+    config['data_dir'] = '';
+    app.reload(fail, done);
+  });
+});
+
 describe('Test request logging', () => {
   test('test no log', (done) => {
-    const tmp = config['access_log'];
-    config['access_log'] = '';
     request(app).get('/rsstest').then(() => {
-      config['access_log'] = tmp;
       expect(fs.existsSync(path.join(dataDir, 'access.log'))).toBe(false);
       done();
     });
   });
   test('test get 200', (done) => {
+    config['access_log'] = path.join(dataDir, 'access.log');
     request(app).get('/rsstest').then(() => {
       fs.readFile(path.join(dataDir, 'access.log'), {encoding: 'UTF-8'}, (err, data) => {
         expect(err).toBeNull();
@@ -57,6 +67,7 @@ describe('Test request logging', () => {
     });
   });
   test('test post 400', (done) => {
+    config['access_log'] = path.join(dataDir, 'access.log');
     request(app).post('/rsstest').then(() => {
       fs.readFile(path.join(dataDir, 'access.log'), {encoding: 'UTF-8'}, (err, data) => {
         expect(err).toBeNull();
@@ -66,6 +77,7 @@ describe('Test request logging', () => {
     });
   });
   test('test 2 requests', (done) => {
+    config['access_log'] = path.join(dataDir, 'access.log');
     request(app).get('/rss').then(() => {
       request(app).post('/rsstest').then(() => {
         fs.readFile(path.join(dataDir, 'access.log'), {encoding: 'UTF-8'}, (err, data) => {
@@ -81,22 +93,16 @@ describe('Test request logging', () => {
 
 describe('Test error logging', () => {
   test('test no log', (done) => {
-    const tmp = config['home']['hidden'];
     config['home']['hidden'] = null;
-    const tmp2 = config['errpr_log'];
-    config['error_log'] = '';
     request(app).get('/somefile.txt').then(() => {
-      config['home']['hidden'] = tmp;
-      config['error_log'] = tmp2;
       expect(fs.existsSync(path.join(dataDir, 'error.log'))).toBe(false);
       done();
     });
   });
   test('test null error ', (done) => {
-    const tmp = config['home']['hidden'];
     config['home']['hidden'] = null;
+    config['error_log'] = path.join(dataDir, 'error.log');
     request(app).get('/somefile.txt').then(() => {
-      config['home']['hidden'] = tmp;
       fs.readFile(path.join(dataDir, 'error.log'), {encoding: 'UTF-8'}, (err, data) => {
         expect(err).toBeNull();
         const start = data.split('\n').slice(0, 2).join('\n');
@@ -120,6 +126,13 @@ describe('Test root path', () => {
     request(app).get('/').then((response) => {
       expect(response.statusCode).toBe(404);
       expect(response.text).toBe('error 404 at /');
+      done();
+    });
+  });
+  test('500 render error', (done) => {
+    fs.writeFileSync(path.join(dataDir, testIndex), 'articles <%= null.length %>');
+    request(app).get('/').then((response) => {
+      expect(response.statusCode).toBe(500);
       done();
     });
   });
@@ -156,7 +169,6 @@ describe('Test RSS feed', () => {
     config['modules']['rss'] = false;
     request(app).get('/rsstest').then((response) => {
       expect(response.statusCode).toBe(404);
-      config['modules']['rss'] = true;
       done();
     });
   });
@@ -166,6 +178,16 @@ describe('Test RSS feed', () => {
       expect(response.text.length).toBeGreaterThan(0);
       expect(response.text.split('<item>').length).toBe(1);
       done();
+    });
+  });
+  test('200 rss cache', (done) => {
+    request(app).get('/rsstest').then(() => {
+      request(app).get('/rsstest').then((response) => {
+        expect(response.statusCode).toBe(200);
+        expect(response.text.length).toBeGreaterThan(0);
+        expect(response.text.split('<item>').length).toBe(1);
+        done();
+      });
     });
   });
   test('200 2 rss items', (done, fail) => {
@@ -213,7 +235,6 @@ describe('Test webhook', () => {
     config['modules']['webhook'] = false;
     request(app).post('/webhooktest').then((response) => {
       expect(response.statusCode).toBe(400);
-      config['modules']['webhook'] = true;
       done();
     });
   });
@@ -241,14 +262,6 @@ describe('Test webhook', () => {
     config['webhook']['pull_command'] = 'qzgfqgqz';
     request(app).post('/webhooktest').then((response) => {
       expect(response.statusCode).toBe(500);
-      done();
-    });
-  });
-  test('403 no payload', (done) => {
-    config['webhook']['signature_header'] = 'testheader';
-    config['webhook']['secret'] = 'testvalue';
-    request(app).post('/webhooktest').then((response) => {
-      expect(response.statusCode).toBe(403);
       done();
     });
   });
@@ -280,6 +293,19 @@ describe('Test articles rendering', () => {
       expect(response.statusCode).toBe(404);
       done();
     });
+  });
+
+  test('500 no index', (done, fail) => {
+    utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05'),]);
+    fs.writeFileSync(path.join(dataDir, '2019', '05', '05', 'index.md'), '# Hello');
+    fs.writeFileSync(path.join(dataDir, testTemplate), '<%- article.content %><%- `<a href="${article.url}">reload</a>` %>');
+    app.reload(() => {
+      config['article']['index'] = 'invalid.md';
+      request(app).get('/2019/05/05/hello/').then((response) => {
+        expect(response.statusCode).toBe(500);
+        done();
+      });
+    }, fail);
   });
 
   test('500 no template', (done, fail) => {

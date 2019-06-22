@@ -19,6 +19,7 @@ const config = {
 const renderer = require('../src/renderer')(config);
 
 beforeEach(() => {
+  config['modules']['prism'] = true;
   utils.deleteFolderSync(dataDir);
   fs.mkdirSync(dataDir);
 });
@@ -61,7 +62,6 @@ test('no prism', (done) => {
   renderer.render(file, (err, html) => {
     expect(err).toBeNull();
     expect(html).toBe('<pre><code class="python language-python">print("hello")\n</code></pre>\n<pre><code class="python language-python">print("hello")\n</code></pre>');
-    config['modules']['prism'] = true;
     done();
   });
 });

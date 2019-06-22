@@ -154,10 +154,7 @@ module.exports = (config) => {
   app.post(config['webhook']['endpoint'], (req, res) => {
     if (config['modules']['webhook']) {
       if (config['webhook']['signature_header'] && config['webhook']['secret']) {
-        const payload = JSON.stringify(req.body);
-        if (!payload) {
-          return res.sendStatus(403);
-        }
+        const payload = JSON.stringify(req.body) || '';
         const hmac = crypto.createHmac('sha1', config['webhook']['secret']);
         const digest = 'sha1=' + hmac.update(payload).digest('hex');
         const checksum = req.headers[config['webhook']['signature_header']];

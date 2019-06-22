@@ -22,6 +22,7 @@ const config = {
 const fw = require('../src/file_walker')(config);
 
 beforeEach(() => {
+  config['data_dir'] = dataDir;
   utils.deleteFolderSync(dataDir);
   fs.mkdirSync(dataDir);
 });
@@ -193,7 +194,6 @@ describe('Test article fetching', () => {
     fw.fetchArticles((err, list) => {
       expect(err).not.toBeNull();
       expect(list).not.toBeDefined();
-      config['data_dir'] = dataDir;
       done();
     });
   });
