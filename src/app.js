@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const fs = require('fs');
 const path = require('path');
+const pjson = require('../package.json');
 
 app.enable('trust proxy');
 
@@ -71,6 +72,9 @@ module.exports = (config) => {
    * @param code - code to send along the page
    */
   const render = (res, vPath, data, code = 200) => {
+    data.info = {
+      version: pjson.version
+    };
     res.render(vPath, data, (err, html) => {
       if (err) {
         res.sendStatus(500);
