@@ -3,6 +3,7 @@
   "data_dir": "data",
   "view_engine": "ejs",
   "access_log": "access.log",
+  "error_log": "error.log",
   "modules": {
     "rss": true,
     "webhook": true,
@@ -20,7 +21,7 @@
     "template": "template.ejs",
     "thumbnail_tag": "thumbnail",
     "default_title": "Untitled",
-    "default_thumbnail": null
+    "default_thumbnail": ""
   },
   "rss": {
     "title": "mygitblog RSS feed",

@@ -4,4 +4,5 @@
 /config.example.json
 /data
 /test_data
-/git_secret
+/access.log
+/error.log

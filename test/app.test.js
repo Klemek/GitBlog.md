@@ -21,6 +21,7 @@ config['rss']['endpoint'] = '/rsstest';
 config['rss']['length'] = 2;
 config['webhook']['endpoint'] = '/webhooktest';
 config['access_log'] = path.join(dataDir, 'access.log');
+config['error_log'] = path.join(dataDir, 'error.log');
 
 const app = require('../src/app')(config);
 
@@ -36,7 +37,16 @@ afterAll(() => {
   }
 });
 
-describe('Test logging', () => {
+describe('Test request logging', () => {
+  test('test no log', (done) => {
+    const tmp = config['access_log'];
+    config['access_log'] = '';
+    request(app).get('/rsstest').then(() => {
+      config['access_log'] = tmp;
+      expect(fs.existsSync(path.join(dataDir, 'access.log'))).toBe(false);
+      done();
+    });
+  });
   test('test get 200', (done) => {
     request(app).get('/rsstest').then(() => {
       fs.readFile(path.join(dataDir, 'access.log'), {encoding: 'UTF-8'}, (err, data) => {
@@ -64,6 +74,35 @@ describe('Test logging', () => {
             '400 POST /rsstest ' + new Date().toUTCString() + ' ::ffff:127.0.0.1\n');
           done();
         });
+      });
+    });
+  });
+});
+
+describe('Test error logging', () => {
+  test('test no log', (done) => {
+    const tmp = config['home']['hidden'];
+    config['home']['hidden'] = null;
+    const tmp2 = config['errpr_log'];
+    config['error_log'] = '';
+    request(app).get('/somefile.txt').then(() => {
+      config['home']['hidden'] = tmp;
+      config['error_log'] = tmp2;
+      expect(fs.existsSync(path.join(dataDir, 'error.log'))).toBe(false);
+      done();
+    });
+  });
+  test('test null error ', (done) => {
+    const tmp = config['home']['hidden'];
+    config['home']['hidden'] = null;
+    request(app).get('/somefile.txt').then(() => {
+      config['home']['hidden'] = tmp;
+      fs.readFile(path.join(dataDir, 'error.log'), {encoding: 'UTF-8'}, (err, data) => {
+        expect(err).toBeNull();
+        const start = data.split('\n').slice(0, 2).join('\n');
+        const expected = '500 GET /somefile.txt ' + new Date().toUTCString() + ' ::ffff:127.0.0.1\nTypeError: Cannot read property \'includes\' of null';
+        expect(start).toBe(expected);
+        done();
       });
     });
   });

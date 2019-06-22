@@ -203,6 +203,8 @@ Any URL like `/year/month/day/anything/` will redirect to this article (and link
   the Express view engine used to render pages from templates
 * `access_log` (default: access.log)  
   log file where to save access requests (empty to disable)
+* `error_log` (default: error.log)  
+  log file where to save all server errors (empty to disable)
 * `modules`
    * `rss` (default: true)  
      activate the RSS endpoint and its features

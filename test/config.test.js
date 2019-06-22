@@ -1,5 +1,6 @@
 /* jshint -W117 */
 const fs = require('fs');
+const path = require('path');
 
 const configFile = 'config.json';
 const tmpConfigFile = 'config.temp.json';
@@ -26,6 +27,18 @@ test('no config', () => {
   const config = require('../src/config')();
   expect(config).toBeDefined();
   expect(config['node_port']).toBe(3000);
+  expect(config['data_dir']).toBe('data');
+});
+
+test('example config', () => {
+  if (fs.existsSync(configFile))
+    fs.unlinkSync(configFile);
+  fs.copyFileSync(path.join('src', 'config.default.json'), configFile);
+  const data = fs.readFileSync(configFile, {encoding: 'UTF-8'});
+  fs.writeFileSync(configFile, data.replace('3000', '3333'), {encoding: 'UTF-8'});
+  const config = require('../src/config')();
+  expect(config).toBeDefined();
+  expect(config['node_port']).toBe(3333);
   expect(config['data_dir']).toBe('data');
 });
 

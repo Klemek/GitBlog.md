@@ -1,7 +1,7 @@
 {
   "nodePort": 5000,
   "name": "gitblog.md",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A static blog using Markdown pulled from your git repository.",
   "main": "src/server.js",
   "dependencies": {

@@ -102,7 +102,7 @@ module.exports = (config) => {
       const end = res.end;
       res.end = (chunk, encoding) => {
         fs.appendFile(config['access_log'],
-          res.statusCode + ' ' + req.method + ' ' + req.url + ' ' + new Date().toUTCString() + ' ' + (req.ips.join(' ') || req.ip) + '\n',
+          `${res.statusCode} ${req.method} ${req.url} ${new Date().toUTCString()} ${req.ips.join(' ') || req.ip}\n`,
           {encoding: 'UTF-8'}, () => {
             res.end = end;
             res.end(chunk, encoding);
@@ -235,10 +235,16 @@ module.exports = (config) => {
     res.status(400).send('bad request');
   });
 
+  //log all server errors
   app.use((err, req, res, next) => {
-    console.log(cons.error, `error when handling ${req.path} request : ${err}`);
-    console.error(err.stack);
-    next(err);
+    console.log(cons.error, `error when handling ${req.method} ${req.path} request : ${err}`);
+    if (!config['error_log'])
+      next(err);
+    fs.appendFile(config['error_log'],
+      `500 ${req.method} ${req.url} ${new Date().toUTCString()} ${req.ips.join(' ') || req.ip}\n${err.stack}\n`,
+      {encoding: 'UTF-8'}, () => {
+        next(err);
+      });
   });
 
   // must be use in a server.js to start the server
