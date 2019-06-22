@@ -20,7 +20,7 @@
     "template": "template.ejs",
     "thumbnail_tag": "thumbnail",
     "default_title": "Untitled",
-    "default_thumbnail": null
+    "default_thumbnail": ""
   },
   "rss": {
     "title": "mygitblog RSS feed",
