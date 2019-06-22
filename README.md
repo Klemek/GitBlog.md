@@ -207,6 +207,8 @@ Any URL like `/year/month/day/anything/` will redirect to this article (and link
      activate the webhook endpoint and its features
    * `prism` (default: true)  
      activate Prism code highlighting
+   * `mathjax` (default: true)  
+     activate MathJax equations formatting
 * `home`
    * `index` (default: index.ejs)  
      the name of the home page template on the data directory  
@@ -244,3 +246,8 @@ Any URL like `/year/month/day/anything/` will redirect to this article (and link
      the command used by the server on webhook trigger
 * `showdown`  
   Options to be applied to Showdown renderer (see [showdown options](https://github.com/showdownjs/showdown#valid-options) for more info)
+* `mathjax`
+   * `output_format`: (default: svg)  
+     specify the output format between svg, html or MathMl (mml)
+   * `speak_text`: (default: true)  
+     activate the alternate text in equations

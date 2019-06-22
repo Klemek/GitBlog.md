@@ -9,6 +9,7 @@
     "crypto": "^1.0.1",
     "ejs": "^2.6.2",
     "express": "^4.17.1",
+    "mathjax-node": "^2.1.1",
     "ncp": "^2.0.0",
     "node-prismjs": "^0.1.2",
     "prismjs": "^1.16.0",

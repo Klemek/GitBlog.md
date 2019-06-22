@@ -7,12 +7,18 @@ const dataDir = 'test_data';
 const file = path.join(dataDir, 'test.md');
 
 const config = {
+  'test': true,
   'modules': {
     'prism': true,
+    'mathjax': true
   },
   'showdown': {
     'simplifiedAutoLink': true,
     'smartIndentationFix': true
+  },
+  'mathjax': {
+    'output_format': 'html',
+    'speak_text': false
   }
 };
 
@@ -20,6 +26,7 @@ const renderer = require('../src/renderer')(config);
 
 beforeEach(() => {
   config['modules']['prism'] = true;
+  config['modules']['mathjax'] = true;
   utils.deleteFolderSync(dataDir);
   fs.mkdirSync(dataDir);
 });
@@ -30,67 +37,130 @@ afterAll(() => {
   }
 });
 
-test('invalid file', (done) => {
-  renderer.render('invalid file', (err, html) => {
-    expect(err).not.toBeNull();
-    expect(html).not.toBeDefined();
-    done();
+describe('Test Showdown', () => {
+  test('normal', (done) => {
+    renderer.renderShowDown('# Hello', (html) => {
+      expect(html).toBe('<h1 id="hello">Hello</h1>');
+      done();
+    });
+  });
+  test('custom rules', (done) => {
+    renderer.renderShowDown('www.google.com', (html) => {
+      expect(html).toBe('<p><a href="http://www.google.com">www.google.com</a></p>');
+      done();
+    });
+  });
+  test('code format', (done) => {
+    renderer.renderShowDown('```python\nprint("hello")\n```\n\n```python\nprint("hello")\n```', (html) => {
+      expect(html).toBe('<pre><code class="python language-python">print("hello")\n</code></pre>\n<pre><code class="python language-python">print("hello")\n</code></pre>');
+      done();
+    });
   });
 });
 
-test('normal file', (done) => {
-  fs.writeFileSync(file, `# Hello`);
-  renderer.render(file, (err, html) => {
-    expect(err).toBeNull();
-    expect(html).toBe('<h1 id="hello">Hello</h1>');
-    done();
+describe('Test Prism', () => {
+  test('no prism', (done) => {
+    config['modules']['prism'] = false;
+    renderer.renderPrism('```python\nprint("hello")\n```\n\n```python\nprint("hello")\n```', (data) => {
+      expect(data).toBe('```python\nprint("hello")\n```\n\n```python\nprint("hello")\n```');
+      done();
+    });
+  });
+
+  test('prism correct', (done) => {
+    renderer.renderPrism('```python\nprint("hello")\n```', (data) => {
+      expect(data).not.toBe('<pre><code class="python language-python">print("hello")\n</code></pre>');
+      expect(data.indexOf('<pre><code class="python language-python">')).toBe(0);
+      done();
+    });
+  });
+
+  test('prism invalid lang', (done) => {
+    renderer.renderPrism('```pythdon\nprint("hello")\n```', (data) => {
+      expect(data).not.toBe('<pre><code class="pythdon language-pythdon">print("hello")\n</code></pre>');
+      expect(data.indexOf('<pre><code class="pythdon language-pythdon">')).toBe(0);
+      done();
+    });
+  });
+
+  test('prism mutliple code blocks', (done) => {
+    renderer.renderPrism('```python\n\n```\n```python\n\n```', (data) => {
+      expect(data).toBe('<pre><code class="python language-python"></code></pre>\n<pre><code class="python language-python"></code></pre>');
+      done();
+    });
   });
 });
 
-test('custom rules', (done) => {
-  fs.writeFileSync(file, `www.google.com`);
-  renderer.render(file, (err, html) => {
-    expect(err).toBeNull();
-    expect(html).toBe('<p><a href="http://www.google.com">www.google.com</a></p>');
-    done();
+describe('Test MathJax', () => {
+  test('no mathjax', (done) => {
+    config['modules']['mathjax'] = false;
+    renderer.renderMathJax('$$\nhello\n$$\ntest$test$', (data) => {
+      expect(data).toBe('$$\nhello\n$$\ntest$test$');
+      done();
+    });
+  });
+  test('full eq', (done) => {
+    renderer.renderMathJax('$$\n\nA\n\n$$', (data) => {
+      expect(data).toBe('<span class=\"mjx-chtml MJXc-display\" style=\"text-align: center;\">' +
+        '<span class=\"mjx-math\"><span class=\"mjx-mrow\"><span class=\"mjx-mi\">' +
+        '<span class=\"mjx-char MJXc-TeX-math-I\" style=\"padding-top: 0.519em; padding-bottom: 0.298em;\">' +
+        'A' +
+        '</span></span></span></span></span>');
+      done();
+    });
+  });
+  test('inline eq', (done) => {
+    renderer.renderMathJax('start $a$ end', (data) => {
+      expect(data).toBe('start ' +
+        '<span class=\"mjx-chtml\">' +
+        '<span class=\"mjx-math\"><span class=\"mjx-mrow\"><span class=\"mjx-mi\">' +
+        '<span class=\"mjx-char MJXc-TeX-math-I\" style=\"padding-top: 0.225em; padding-bottom: 0.298em;\">' +
+        'a' +
+        '</span></span></span></span></span>' +
+        ' end');
+      done();
+    });
+  });
+  test('multiple eq', (done) => {
+    renderer.renderMathJax('$$\n\nA\n\n$$\nstart $a$ end\n$$\n\nA\n\n$$', (data) => {
+      expect(data).toBe('' +
+        '<span class=\"mjx-chtml MJXc-display\" style=\"text-align: center;\">' +
+        '<span class=\"mjx-math\"><span class=\"mjx-mrow\"><span class=\"mjx-mi\">' +
+        '<span class=\"mjx-char MJXc-TeX-math-I\" style=\"padding-top: 0.519em; padding-bottom: 0.298em;\">' +
+        'A' +
+        '</span></span></span></span></span>\n' +
+        'start ' +
+        '<span class=\"mjx-chtml\">' +
+        '<span class=\"mjx-math\"><span class=\"mjx-mrow\"><span class=\"mjx-mi\">' +
+        '<span class=\"mjx-char MJXc-TeX-math-I\" style=\"padding-top: 0.225em; padding-bottom: 0.298em;\">' +
+        'a' +
+        '</span></span></span></span></span>' +
+        ' end\n' +
+        '<span class=\"mjx-chtml MJXc-display\" style=\"text-align: center;\">' +
+        '<span class=\"mjx-math\"><span class=\"mjx-mrow\"><span class=\"mjx-mi\">' +
+        '<span class=\"mjx-char MJXc-TeX-math-I\" style=\"padding-top: 0.519em; padding-bottom: 0.298em;\">' +
+        'A' +
+        '</span></span></span></span></span>');
+      done();
+    });
   });
 });
 
-test('no prism', (done) => {
-  config['modules']['prism'] = false;
-  fs.writeFileSync(file, '```python\nprint("hello")\n```\n\n```python\nprint("hello")\n```');
-  renderer.render(file, (err, html) => {
-    expect(err).toBeNull();
-    expect(html).toBe('<pre><code class="python language-python">print("hello")\n</code></pre>\n<pre><code class="python language-python">print("hello")\n</code></pre>');
-    done();
+describe('Test render', () => {
+  test('invalid file', (done) => {
+    renderer.render('invalid file', (err, html) => {
+      expect(err).not.toBeNull();
+      expect(html).not.toBeDefined();
+      done();
+    });
   });
-});
 
-test('prism correct', (done) => {
-  fs.writeFileSync(file, '```python\nprint("hello")\n```');
-  renderer.render(file, (err, html) => {
-    expect(err).toBeNull();
-    expect(html).not.toBe('<pre><code class="python language-python">print("hello")\n</code></pre>');
-    expect(html.indexOf('<pre><code class="python language-python">')).toBe(0);
-    done();
-  });
-});
-
-test('prism invalid lang', (done) => {
-  fs.writeFileSync(file, '```pythdon\nprint("hello")\n```');
-  renderer.render(file, (err, html) => {
-    expect(err).toBeNull();
-    expect(html).not.toBe('<pre><code class="pythdon language-pythdon">print("hello")\n</code></pre>');
-    expect(html.indexOf('<pre><code class="pythdon language-pythdon">')).toBe(0);
-    done();
-  });
-});
-
-test('prism mutliple code blocks', (done) => {
-  fs.writeFileSync(file, '```python\n\n```\n\n```python\n\n```');
-  renderer.render(file, (err, html) => {
-    expect(err).toBeNull();
-    expect(html).toBe('<pre><code class="python language-python"></code></pre>\n<pre><code class="python language-python"></code></pre>');
-    done();
+  test('normal file', (done) => {
+    fs.writeFileSync(file, `# Hello`);
+    renderer.render(file, (err, html) => {
+      expect(err).toBeNull();
+      expect(html).toBe('<h1 id="hello">Hello</h1>');
+      done();
+    });
   });
 });
