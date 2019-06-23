@@ -1,6 +1,6 @@
 {
   "name": "gitblog.md",
-  "version": "1.0.3",
+  "version": "1.1",
   "description": "A static blog using Markdown pulled from your git repository.",
   "main": "src/server.js",
   "dependencies": {
@@ -43,7 +43,8 @@
       "src/**/*.js",
       "!/node_modules/",
       "!src/server.js",
-      "!src/postinstall.js"
+      "!src/postinstall.js",
+      "!src/lib/*.js"
     ]
   }
 }

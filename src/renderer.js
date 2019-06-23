@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const showdown = require('showdown');
 
 module.exports = (config) => {
@@ -27,6 +28,25 @@ module.exports = (config) => {
       } catch (err) {
         console.error(err);
       }
+    }
+    cb(data);
+  };
+
+  if (config['modules']['plantuml']) {
+    require('./script_loader')(path.join(__dirname, 'lib', 'plantuml_synchro.js'));
+  }
+
+  const renderPlantUML = (data, cb) => {
+    if (!config['modules']['plantuml'])
+      return cb(data);
+    const umlRegex = /@startuml\r?\n((?:(?!@enduml)[\s\S])*)\r?\n@enduml/m;
+    let match;
+    while ((match = umlRegex.exec(data))) {
+      const code = match[1].trim();
+      const s = unescape(encodeURIComponent(code)); // jshint ignore:line
+      const compressed = global['zip_deflate'](s);
+      const url = `http://www.plantuml.com/plantuml/${config['plantuml']['output_format']}/${encode64(compressed)}`;// jshint ignore:line
+      data = data.slice(0, match.index) + `<img alt="generated PlantUML diagram" src="${url}">` + data.slice(match.index + match[0].length);
     }
     cb(data);
   };
@@ -81,16 +101,19 @@ module.exports = (config) => {
   return {
     renderShowDown: config['test'] ? renderShowDown : undefined,
     renderPrism: config['test'] ? renderPrism : undefined,
+    renderPlantUML: config['test'] ? renderPlantUML : undefined,
     renderMathJax: config['test'] ? renderMathJax : undefined,
     render: (file, cb) => {
       fs.readFile(file, {encoding: 'UTF-8'}, (err, data) => {
         if (err)
           return cb(err);
 
-        renderPrism(data, (data2) => {
-          renderMathJax(data2, (data3) => {
-            renderShowDown(data3, (html) => {
-              cb(null, html);
+        renderPrism(data, (data) => {
+          renderPlantUML(data, (data) => {
+            renderMathJax(data, (data) => {
+              renderShowDown(data, (html) => {
+                cb(null, html);
+              });
             });
           });
         });
