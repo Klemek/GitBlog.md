@@ -12,6 +12,8 @@
     "plantuml": true
   },
   "home": {
+    "title": "GitBlog.md",
+    "description": "A static blog using Markdown pulled from your git repository",
     "index": "index.ejs",
     "error": "error.ejs",
     "hidden": [

@@ -36,6 +36,7 @@ module.exports = (config) => {
 
   const articles = {};
   let lastRSS = '';
+  let host;
 
   /**
    * Fetch articles from the data folder and send success as a response
@@ -73,6 +74,9 @@ module.exports = (config) => {
    */
   const render = (res, vPath, data, code = 200) => {
     data.info = {
+      title: config['home']['title'],
+      description: config['home']['description'],
+      host: host,
       version: pjson.version
     };
     res.render(vPath, data, (err, html) => {
@@ -99,6 +103,14 @@ module.exports = (config) => {
         render(res, errorPath, {error: code, path: resPath}, code);
     });
   };
+
+  app.use((req, res, next) => {
+    if (!host) {
+      host = 'http://' + req.headers.host;
+      console.log(cons.ok, 'Currently hosted on ' + host);
+    }
+    next();
+  });
 
   //log request at result end
   app.use((req, res, next) => {

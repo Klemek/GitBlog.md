@@ -2,13 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>GitBlog.md - Home</title>
+    <title><%= info.title %> - Home</title>
+
+    <meta name="twitter:card" content="summary_large_image">
+    <%= `<meta property="og:title" content="${info.title} - ${article.title}">` %>
+    <%= `<meta property="twitter:title" content="${info.title} - ${article.title}">` %>
+    <%= `<meta property="og:description" content="${info.description}">` %>
+    <%= `<meta property="twitter:description" content="${info.description}">` %>
+    <%= `<meta property="org:url" content="${info.host}/">` %>
+
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
 <main>
-    <h1>GitBlog.md</h1>
-    A static blog using Markdown pulled from your git repository
+    <h1><%= info.title %></h1>
+    <%= info.description %>
     <h2>Articles in this blog :</h2>
     <% articles.forEach((article) => { %>
         <div class="article">
