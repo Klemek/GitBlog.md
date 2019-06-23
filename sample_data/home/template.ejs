@@ -5,14 +5,14 @@
     <title><%= info.title %> - <%= article.title %></title>
 
     <meta name="twitter:card" content="summary_large_image">
-    <%= `<meta property="og:title" content="${info.title} - ${article.title}">` %>
-    <%= `<meta property="twitter:title" content="${info.title} - ${article.title}">` %>
-    <%= `<meta property="og:description" content="${info.description}">` %>
-    <%= `<meta property="twitter:description" content="${info.description}">` %>
-    <%= `<meta property="org:url" content="${info.host + article.url}">` %>
+    <%- `<meta property="og:title" content="${info.title} - ${article.title}">` %>
+    <%- `<meta property="twitter:title" content="${info.title} - ${article.title}">` %>
+    <%- `<meta property="og:description" content="${info.description}">` %>
+    <%- `<meta property="twitter:description" content="${info.description}">` %>
+    <%- `<meta property="org:url" content="${info.host + article.url}">` %>
     <% if (article.thumbnail) { %>
-        <%= `<meta property="org:image" content="${info.host + article.thumbnail}">` %>
-        <%= `<meta property="twitter:image" content="${info.host + article.thumbnail}">` %>
+        <%- `<meta property="org:image" content="${info.host + article.thumbnail}">` %>
+        <%- `<meta property="twitter:image" content="${info.host + article.thumbnail}">` %>
     <% } %>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
