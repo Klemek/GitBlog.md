@@ -225,7 +225,7 @@ module.exports = (config) => {
   });
 
   // serve all static files via get
-  app.get('*', express.static(config['data_dir']));
+  app.get('*', express.static(path.join(__dirname, '..', config['data_dir'])));
   // catch express.static errors (mostly not found) by displaying 404
   app.get('*', (req, res) => {
     showError(req.path, 404, res);

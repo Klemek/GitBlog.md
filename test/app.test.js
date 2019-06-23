@@ -385,9 +385,10 @@ describe('Test static files', () => {
     });
   });
   test('200 valid file', (done) => {
-    fs.writeFileSync(path.join(dataDir, 'somefile.txt'), 'filecontent');
-    request(app).get('/somefile.txt').then((response) => {
+    fs.writeFileSync(path.join(dataDir, 'somefile.css'), 'filecontent');
+    request(app).get('/somefile.css').then((response) => {
       expect(response.statusCode).toBe(200);
+      expect(response.type).toBe('text/css');
       expect(response.text).toBe('filecontent');
       done();
     });
