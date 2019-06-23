@@ -132,7 +132,9 @@ You need to [create a new repository](https://github.com/new) on your favorite G
 ```bash
 #gitblog.md/
 cd data
+git init
 git remote add origin <url_of_your_repo.git>
+git commit -m "initial commit"
 git push -u origin master
 ```
 
