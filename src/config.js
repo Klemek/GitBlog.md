@@ -10,6 +10,10 @@ const fs = require('fs');
 const merge = (ref, src) => {
   if (typeof ref !== typeof src) {
     return ref;
+  } else if (ref.length && !src.length) {
+    return ref;
+  } else if (ref.length && src.length) {
+    return src;
   } else if (typeof ref === 'object') {
     const out = {};
     Object.keys(ref).forEach((key) => out[key] = merge(ref[key], src[key]));

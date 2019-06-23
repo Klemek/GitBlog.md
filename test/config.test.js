@@ -65,3 +65,17 @@ test('wrong config fixed', () => {
   expect(config['node_port']).toBe(3000);
   expect(config['data_dir']).toBe('data2');
 });
+
+test('array parsing', () => {
+  fs.writeFileSync(configFile, '{"home":{"hidden":["item1","item2"]}}');
+  const config = require('../src/config')();
+  expect(config).toBeDefined();
+  expect(config['home']['hidden']).toEqual(['item1', 'item2']);
+});
+
+test('array fix', () => {
+  fs.writeFileSync(configFile, '{"home":{"hidden":{}}}');
+  const config = require('../src/config')();
+  expect(config).toBeDefined();
+  expect(config['home']['hidden']).toEqual(['.ejs']);
+});
