@@ -232,6 +232,12 @@ Any URL like `/year/month/day/anything/` will redirect to this article (and link
    * `plantuml` (default: true)  
      activate PlantUML diagram rendering
 * `home`
+   * `title` (default: GitBlog.md)  
+     the title of your blog, **strongly advised to be changed**  
+     given to the template to complete page title and metadata
+   * `description` (default: A static blog using Markdown pulled from your git repository)  
+     the description of your blog, **strongly advised to be changed**  
+     given to the template to complete page title and metadata
    * `index` (default: index.ejs)  
      the name of the home page template on the data directory  
      it will receive `articles`, a list of articles for rendering
