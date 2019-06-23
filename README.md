@@ -160,7 +160,7 @@ Here are the steps for Github, if you use another platform adapt it your way (he
 ```json
 "webhook": {
     "endpoint": "/webhook",
-    "secret": "sha1=<value>",
+    "secret": "<value>",
     "signature_header": "X-Hub-Signature"
   },
 ```
