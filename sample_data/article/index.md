@@ -18,6 +18,7 @@ If you see this page, that means it's working
 * [Check Boxes](#checkboxes)
 * [Spoilers](#spoilers)
 * [Math Equations](#mathequations)
+* [UML](#uml)
 * [Youtube Videos](#youtubevideos)
 
 ### Headers
@@ -224,6 +225,33 @@ $$
 
 Where $\alpha$ is cool
 
+### UML
+[Back to top](#top)
+
+You can use PlantUML diagrams with `@startuml` and `@enduml` tags :
+
+@startuml
+title Article
+cloud web
+node nodejs {
+    TCP -right- [express]
+    [showdown]
+}
+package data {
+    package "2019/06/18" {
+        component index [
+            index.md
+            image.png
+            ...
+        ]
+    }
+}
+web -down-> TCP : 1. /2019/06/18/title
+express -down-> index : 2. fetch
+index -up-> showdown : 3. markdown
+showdown -left-> express : 4. html
+express -up-> web : 5. html
+@enduml
 
 ### Youtube Videos
 [Back to top](#top)

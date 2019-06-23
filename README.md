@@ -76,7 +76,7 @@ On the `/rss` endpoint, the servers gives you a RSS feed based on the list of ar
 #### 1. Download and install the latest version from the repo
 ```bash
 git clone https://github.com/klemek/gitblog.md.git
-npm install
+npm install --production
 ```
 #### 2. Create your config file
 ```bash
@@ -198,7 +198,9 @@ Any URL like `/year/month/day/anything/` will redirect to this article (and link
 * **Prism**  
   It highlight code blocks to be more readable (more info [here](https://prismjs.com/), you will need the corresponding CSS file on your templates)
 * **MathJax**  
-  It allows you to add math equations to your articles by simply writing LaTeX between $$ for full size (and between $ for inline) (more info [here](https://www.mathjax.org/))
+  It allows you to add math equations to your articles by simply writing LaTeX between `$$` for full size (and between $ for inline) (more info [here](https://www.mathjax.org/))
+* **PlantUML**  
+  It allows you to add UML diagrams with PlantUML Syntax between `@startuml` and `@enduml` (more info [here](http://www.plantuml.com))
 
 ## Configuration
 [back to top](#gitblog-md)
@@ -222,6 +224,8 @@ Any URL like `/year/month/day/anything/` will redirect to this article (and link
      activate Prism code highlighting
    * `mathjax` (default: true)  
      activate MathJax equations formatting
+   * `plantuml` (default: true)  
+     activate PlantUML diagram rendering
 * `home`
    * `index` (default: index.ejs)  
      the name of the home page template on the data directory  

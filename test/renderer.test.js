@@ -10,7 +10,8 @@ const config = {
   'test': true,
   'modules': {
     'prism': true,
-    'mathjax': true
+    'mathjax': true,
+    'plantuml': true
   },
   'showdown': {
     'simplifiedAutoLink': true,
@@ -19,6 +20,9 @@ const config = {
   'mathjax': {
     'output_format': 'html',
     'speak_text': false
+  },
+  'plantuml': {
+    'output_format': 'svg'
   }
 };
 
@@ -27,6 +31,7 @@ const renderer = require('../src/renderer')(config);
 beforeEach(() => {
   config['modules']['prism'] = true;
   config['modules']['mathjax'] = true;
+  config['modules']['plantuml'] = true;
   utils.deleteFolderSync(dataDir);
   fs.mkdirSync(dataDir);
 });
@@ -90,6 +95,31 @@ describe('Test Prism', () => {
     });
   });
 });
+
+describe('Test PlantUML', () => {
+  test('no plantuml', (done) => {
+    config['modules']['plantuml'] = false;
+    renderer.renderPlantUML('@startuml\nBob -> Alice : hello\n@enduml', (data) => {
+      expect(data).toBe('@startuml\nBob -> Alice : hello\n@enduml');
+      done();
+    });
+  });
+
+  test('plantuml correct', (done) => {
+    renderer.renderPlantUML('@startuml\nBob -> Alice : hello\n@enduml', (data) => {
+      expect(data).toBe('<img alt="generated PlantUML diagram" src="http://www.plantuml.com/plantuml/svg/SyfFKj2rKt3CoKnELR1Io4ZDoSa70000">');
+      done();
+    });
+  });
+
+  test('plantuml multiple uml', (done) => {
+    renderer.renderPlantUML('@startuml\nBob -> Alice : hello\n@enduml\n@startuml\nBob -> Alice : hello\n@enduml', (data) => {
+      expect(data).toBe('<img alt="generated PlantUML diagram" src="http://www.plantuml.com/plantuml/svg/SyfFKj2rKt3CoKnELR1Io4ZDoSa70000">\n<img alt="generated PlantUML diagram" src="http://www.plantuml.com/plantuml/svg/SyfFKj2rKt3CoKnELR1Io4ZDoSa70000">');
+      done();
+    });
+  });
+});
+
 
 describe('Test MathJax', () => {
   test('no mathjax', (done) => {

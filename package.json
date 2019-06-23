@@ -43,7 +43,8 @@
       "src/**/*.js",
       "!/node_modules/",
       "!src/server.js",
-      "!src/postinstall.js"
+      "!src/postinstall.js",
+      "!src/lib/*.js"
     ]
   }
 }
