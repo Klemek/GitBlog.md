@@ -145,9 +145,7 @@ In your template, the following data is sent :
   * `path` : the URL path for the folder of the article (without the title)
   * `realPath` : the system's path for the folder
   * `escapedTitle` : the code with alphanumeric and underscore characters only
-* `error` (error pages only)
-  * `error` : the error code
-  * `path` : the resource that caused the error
+* `error` (error pages only) : the error code
 
 #### 5. Create and init your git source
 

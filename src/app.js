@@ -26,6 +26,28 @@ const cons = {
 };
 
 module.exports = (config) => {
+  /**
+   * Fetch articles from the data folder and send success as a response
+   * @param success
+   * @param error
+   */
+  let reload;
+  /**
+   * Render the page with the view engine and catch errors
+   * @param req
+   * @param res
+   * @param vPath - path of the view
+   * @param data - data to pass to the view
+   * @param code - code to send along the page
+   */
+  let render;
+  /**
+   * Show an error with the correct page
+   * @param req
+   * @param res
+   * @param code - error code
+   */
+  let showError;
   const fw = require('./file_walker')(config);
   const renderer = require('./renderer')(config);
 
@@ -38,12 +60,7 @@ module.exports = (config) => {
   let lastRSS = '';
   let host = config['host'];
 
-  /**
-   * Fetch articles from the data folder and send success as a response
-   * @param success
-   * @param error
-   */
-  const reload = (success, error) => {
+  reload = (success, error) => {
     fw.fetchArticles((err, dict) => {
       if (err) {
         console.error(cons.error, 'error loading articles : ' + err);
@@ -65,15 +82,7 @@ module.exports = (config) => {
   if (config['test'])
     app.reload = reload;
 
-  /**
-   * Render the page with the view engine and catch errors
-   * @param req
-   * @param res
-   * @param vPath - path of the view
-   * @param data - data to pass to the view
-   * @param code - code to send along the page
-   */
-  const render = (req, res, vPath, data, code = 200) => {
+  render = (req, res, vPath, data, code = 200) => {
     data.info = {
       title: config['home']['title'],
       description: config['home']['description'],
@@ -83,27 +92,24 @@ module.exports = (config) => {
       config: config
     };
     res.render(vPath, data, (err, html) => {
-      if (err) {
+      if (err && vPath !== path.join(config['data_dir'], config['home']['error'])) {
+        console.log(cons.error, `failed to render page ${vPath} : ${err}`);
+        showError(req, res, 500);
+      } else if (err) {
         res.sendStatus(500);
-        console.log(cons.error, `failed to render ${vPath} : ${err}`);
+        console.log(cons.error, `failed to render error page : ${err}`);
       } else
         res.status(code).send(html);
     });
   };
 
-  /**
-   * Show an error with the correct page
-   * @param req
-   * @param res
-   * @param code - error code
-   */
-  const showError = (req, res, code) => {
+  showError = (req, res, code) => {
     const errorPath = path.join(config['data_dir'], config['home']['error']);
     fs.access(errorPath, fs.constants.R_OK, (err) => {
       if (err)
         res.sendStatus(code);
       else
-        render(req, res, errorPath, {error: code, path: req.path}, code);
+        render(req, res, errorPath, {error: code}, code);
     });
   };
 
@@ -232,11 +238,10 @@ module.exports = (config) => {
   });
 
   // catch all hidden file type and return 404
-  app.get('*', (req, res, next) => {
-    if (config['home']['hidden'].includes(path.extname(req.path)))
+  config['home']['hidden'].forEach(pathMatcher => {
+    app.get(pathMatcher, (req, res) => {
       showError(req, res, 404);
-    else
-      next();
+    });
   });
 
   // serve all static files via get

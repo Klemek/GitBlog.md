@@ -18,7 +18,8 @@
     "index": "index.ejs",
     "error": "error.ejs",
     "hidden": [
-      ".ejs"
+      "*.ejs",
+      "/.git*"
     ]
   },
   "article": {

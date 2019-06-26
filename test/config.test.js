@@ -77,5 +77,5 @@ test('array fix', () => {
   fs.writeFileSync(configFile, '{"home":{"hidden":{}}}');
   const config = require('../src/config')();
   expect(config).toBeDefined();
-  expect(config['home']['hidden']).toEqual(['.ejs']);
+  expect(config['home']['hidden']).toEqual(['*.ejs', '/.git*']);
 });

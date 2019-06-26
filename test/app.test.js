@@ -16,16 +16,15 @@ config['data_dir'] = dataDir;
 config['webhook']['endpoint'] = '/webhooktest';
 config['rss']['endpoint'] = '/rsstest';
 config['rss']['length'] = 2;
-config['home']['index'] = testIndex;
 config['home']['error'] = testError;
 config['article']['template'] = testTemplate;
 
 const app = require('../src/app')(config);
 
 beforeEach((done, fail) => {
+  config['home']['index'] = testIndex;
   config['data_dir'] = dataDir;
   config['article']['index'] = 'index.md';
-  config['home']['hidden'] = ['.ejs', '.test'];
   config['access_log'] = '';
   config['error_log'] = '';
   config['modules']['rss'] = true;
@@ -93,20 +92,20 @@ describe('Test request logging', () => {
 
 describe('Test error logging', () => {
   test('test no log', (done) => {
-    config['home']['hidden'] = null;
-    request(app).get('/somefile.txt').then(() => {
+    config['home']['index'] = null;
+    request(app).get('/').then(() => {
       expect(fs.existsSync(path.join(dataDir, 'error.log'))).toBe(false);
       done();
     });
   });
   test('test null error ', (done) => {
-    config['home']['hidden'] = null;
+    config['home']['index'] = null;
     config['error_log'] = path.join(dataDir, 'error.log');
-    request(app).get('/somefile.txt').then(() => {
+    request(app).get('/').then(() => {
       fs.readFile(path.join(dataDir, 'error.log'), {encoding: 'UTF-8'}, (err, data) => {
         expect(err).toBeNull();
         const start = data.split('\n').slice(0, 2).join('\n');
-        const expected = '500 GET /somefile.txt ' + new Date().toUTCString() + ' ::ffff:127.0.0.1\nTypeError: Cannot read property \'includes\' of null';
+        const expected = '500 GET / ' + new Date().toUTCString() + ' ::ffff:127.0.0.1\nTypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string. Received type object';
         expect(start).toBe(expected);
         done();
       });
@@ -131,6 +130,23 @@ describe('Test root path', () => {
   });
   test('500 render error', (done) => {
     fs.writeFileSync(path.join(dataDir, testIndex), 'articles <%= null.length %>');
+    request(app).get('/').then((response) => {
+      expect(response.statusCode).toBe(500);
+      done();
+    });
+  });
+  test('500 render error with page', (done) => {
+    fs.writeFileSync(path.join(dataDir, testIndex), 'articles <%= null.length %>');
+    fs.writeFileSync(path.join(dataDir, testError), 'error <%= error %>');
+    request(app).get('/').then((response) => {
+      expect(response.statusCode).toBe(500);
+      expect(response.text).toBe('error 500');
+      done();
+    });
+  });
+  test('500 render error with failing page', (done) => {
+    fs.writeFileSync(path.join(dataDir, testIndex), 'articles <%= null.length %>');
+    fs.writeFileSync(path.join(dataDir, testError), 'error <%= null.error %>');
     request(app).get('/').then((response) => {
       expect(response.statusCode).toBe(500);
       done();
@@ -386,8 +402,17 @@ describe('Test static files', () => {
     });
   });
   test('404 hidden file', (done) => {
-    fs.writeFileSync(path.join(dataDir, 'somefile.test'), '');
-    request(app).get('/somefile.test').then((response) => {
+    utils.createEmptyDirs([path.join(dataDir, 'tmp')]);
+    fs.writeFileSync(path.join(dataDir, 'tmp', 'somefile.ejs'), '');
+    request(app).get('/tmp/somefile.ejs').then((response) => {
+      expect(response.statusCode).toBe(404);
+      done();
+    });
+  });
+  test('404 hidden folder', (done) => {
+    utils.createEmptyDirs([path.join(dataDir, '.git')]);
+    fs.writeFileSync(path.join(dataDir, '.git', 'file.txt'), '');
+    request(app).get('/.git/file.txt').then((response) => {
       expect(response.statusCode).toBe(404);
       done();
     });
