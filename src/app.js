@@ -94,17 +94,16 @@ module.exports = (config) => {
   /**
    * Show an error with the correct page
    * @param req
-   * @param resPath - the page of the original error
-   * @param code - error code
    * @param res
+   * @param code - error code
    */
-  const showError = (req, resPath, code, res) => {
+  const showError = (req, res, code) => {
     const errorPath = path.join(config['data_dir'], config['home']['error']);
     fs.access(errorPath, fs.constants.R_OK, (err) => {
       if (err)
         res.sendStatus(code);
       else
-        render(req, res, errorPath, {error: code, path: resPath}, code);
+        render(req, res, errorPath, {error: code, path: req.path}, code);
     });
   };
 
@@ -137,7 +136,7 @@ module.exports = (config) => {
     const homePath = path.join(config['data_dir'], config['home']['index']);
     fs.access(homePath, fs.constants.R_OK, (err) => {
       if (err)
-        showError(req.path, 404, res);
+        showError(req, res, 404);
       else
         render(req, res, homePath, {articles: Object.values(articles).sort((a, b) => ('' + b.path).localeCompare(a.path))});
     });
@@ -150,15 +149,15 @@ module.exports = (config) => {
         const feed = new Rss({
           'title': config['rss']['title'],
           'description': config['rss']['description'],
-          'feed_url': 'http://' + req.headers.host + req.url,
-          'site_url': 'http://' + req.headers.host
+          'feed_url': host + req.url,
+          'site_url': host
         });
         Object.values(articles)
           .slice(0, config['rss']['length'])
           .forEach((article) => {
             feed.item({
               title: article.title,
-              url: 'http://' + req.headers.host + article.url,
+              url: host + article.url,
               date: article.date
             });
           });
@@ -166,7 +165,7 @@ module.exports = (config) => {
       }
       res.type(req.headers['user-agent'].match(/Mozilla/) ? 'text/xml' : 'rss').send(lastRSS);
     } else {
-      showError(req.path, 404, res);
+      showError(req, res, 404);
     }
   });
 
@@ -209,19 +208,19 @@ module.exports = (config) => {
       const articlePath = req.path.substr(1, 10);
       const article = articles[articlePath];
       if (!article)
-        showError(req.path, 404, res);
+        showError(req, res, 404);
       else {
         renderer.render(path.join(article.realPath, config['article']['index']), (err, html) => {
           if (err) {
             console.log(cons.error, `failed to render article ${req.path} : ${err}`);
-            return showError(req.path, 500, res);
+            return showError(req, res, 500);
           }
           article.content = html;
           const templatePath = path.join(config['data_dir'], config['article']['template']);
           fs.access(templatePath, fs.constants.R_OK, (err) => {
             if (err) {
               console.log(cons.error, `no template found at ${templatePath}`);
-              showError(req.path, 500, res);
+              showError(req, res, 500);
             } else
               render(req, res, templatePath, {article: article});
           });
@@ -235,7 +234,7 @@ module.exports = (config) => {
   // catch all hidden file type and return 404
   app.get('*', (req, res, next) => {
     if (config['home']['hidden'].includes(path.extname(req.path)))
-      showError(req.path, 404, res);
+      showError(req, res, 404);
     else
       next();
   });
@@ -244,7 +243,7 @@ module.exports = (config) => {
   app.get('*', express.static(path.join(__dirname, '..', config['data_dir'])));
   // catch express.static errors (mostly not found) by displaying 404
   app.get('*', (req, res) => {
-    showError(req.path, 404, res);
+    showError(req, res, 404);
   });
 
   // catch all other methods and return 400
