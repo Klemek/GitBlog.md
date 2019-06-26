@@ -175,8 +175,16 @@ describe('Test RSS feed', () => {
   test('200 empty rss', (done) => {
     request(app).get('/rsstest').then((response) => {
       expect(response.statusCode).toBe(200);
+      expect(response.type).toBe('application/rss+xml');
       expect(response.text.length).toBeGreaterThan(0);
       expect(response.text.split('<item>').length).toBe(1);
+      done();
+    });
+  });
+  test('200 Mozilla fix', (done) => {
+    request(app).get('/rsstest').set('user-agent', 'Mozilla Firefox 64.0').then((response) => {
+      expect(response.statusCode).toBe(200);
+      expect(response.type).toBe('text/xml');
       done();
     });
   });

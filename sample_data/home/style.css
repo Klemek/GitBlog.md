@@ -8,7 +8,7 @@ body, html {
 }
 
 body {
-    font: 14px/1.45 -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif;
+    font: 15px sans-serif;
     color: #111;
     -webkit-text-size-adjust: none;
     background-color: #F5F5F5;
@@ -16,8 +16,8 @@ body {
 }
 
 main {
-    max-width: 75ch;
-    padding: 2ch;
+    max-width: 42rem;
+    padding: 2rem;
     margin: auto;
     background-color: #F0F0F0;
     min-height: 100vh;
@@ -58,7 +58,7 @@ blockquote {
     border-left: 0.5em solid #ccc;
     padding-left: 1em;
     margin: 0.25em 0;
-    color: #333;
+    color: #555;
 }
 
 blockquote > p {
@@ -108,7 +108,7 @@ main.article div.header a.link-home {
     line-height: 2.4;
 }
 
-main.article div.header h1, main.article div.header h2, div.article h3 {
+main.article div.header h1, main.article div.header h2 {
     margin-top: 0.85em;
     margin-bottom: 0.25em;
     font-size: 2em;
@@ -123,11 +123,19 @@ main.article div.header span.time, div.article span.time {
 }
 
 div.article {
-    margin-left: 1em;
+    margin: 0 1em 1em 1em;
 }
 
 div.article h3 {
     font-size: 1.3em;
+    margin:0;
+}
+
+div.article img{
+    max-width: 100%;
+    height: auto;
+    margin-right:1em;
+    margin-top:0.25em;
 }
 
 #text {
