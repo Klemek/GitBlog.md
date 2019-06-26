@@ -58,7 +58,7 @@ blockquote {
     border-left: 0.5em solid #ccc;
     padding-left: 1em;
     margin: 0.25em 0;
-    color: #333;
+    color: #555;
 }
 
 blockquote > p {
@@ -108,7 +108,7 @@ main.article div.header a.link-home {
     line-height: 2.4;
 }
 
-main.article div.header h1, main.article div.header h2, div.article h3 {
+main.article div.header h1, main.article div.header h2 {
     margin-top: 0.85em;
     margin-bottom: 0.25em;
     font-size: 2em;
@@ -123,11 +123,19 @@ main.article div.header span.time, div.article span.time {
 }
 
 div.article {
-    margin-left: 1em;
+    margin: 0 1em 1em 1em;
 }
 
 div.article h3 {
     font-size: 1.3em;
+    margin:0;
+}
+
+div.article img{
+    max-width: 100%;
+    height: auto;
+    margin-right:1em;
+    margin-top:0.25em;
 }
 
 #text {
