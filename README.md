@@ -120,6 +120,30 @@ Resources are located on the `data` folder and can be referenced as the root of 
 /styles/main.css => data/styles/main.css
 ```
 
+In your template, the following data is sent :
+
+* `info`  (every pages)
+  * `title` :  the blog's title as in the config
+  * `description` the blog's description as in the config
+  * `host` : the specified or guessed host with the protocol
+  * `version` : the GitBlog.md current running version
+  * `request` : the Express request object
+  * `config` : the content of the config
+* `article` (article pages only)
+  * `title` : the full title
+  * `thumbnail` the URL path of the thumbnail
+  * `url` : the URL path for this article (with the title)
+  * `date` : a JS date
+  * `year`
+  * `month`
+  * `day`
+  * `path` : the URL path for the folder of the article (without the title)
+  * `realPath` : the system's path for the folder
+  * `escapedTitle` : the code with alphanumeric and underscore characters only
+* `error` (error pages only)
+  * `error` : the error code
+  * `path` : the resource that caused the error
+
 #### 5. Create and init your git source
 
 You need to [create a new repository](https://github.com/new) on your favorite Git service.
@@ -207,6 +231,9 @@ Any URL like `/year/month/day/anything/` will redirect to this article (and link
 
 *  `node_port` (default: 3000)  
   the port the server is listening to
+*  `host` (default: none)  
+  if set (like `https://mywebsite.com`, it will be used as reference for creating links  
+  by default, host is guessed based on first request
 * `data_dir` (default: data)  
   the directory where will be located the git repo with templates and articles
 * `view_engine` (default: ejs)  
