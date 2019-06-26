@@ -175,6 +175,7 @@ describe('Test RSS feed', () => {
   test('200 empty rss', (done) => {
     request(app).get('/rsstest').then((response) => {
       expect(response.statusCode).toBe(200);
+      expect(response.type).toBe('application/rss+xml');
       expect(response.text.length).toBeGreaterThan(0);
       expect(response.text.split('<item>').length).toBe(1);
       done();

@@ -160,7 +160,7 @@ module.exports = (config) => {
           });
         lastRSS = feed.xml();
       }
-      res.type('rss').send(lastRSS);
+      res.type(req.headers['user-agent'].match(/Mozilla/) ? 'xml' : 'rss').send(lastRSS);
     } else {
       showError(req.path, 404, res);
     }
