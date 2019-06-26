@@ -11,7 +11,7 @@
     <%- `<meta property="twitter:description" content="${info.description}">` %>
     <%- `<meta property="org:url" content="${info.host + article.url}">` %>
     <% if (article.thumbnail) { %>
-        <%- `<meta property="org:image" content="${info.host + article.thumbnail}">` %>
+        <%- `<meta property="og:image" content="${info.host + article.thumbnail}">` %>
         <%- `<meta property="twitter:image" content="${info.host + article.thumbnail}">` %>
     <% } %>
 
