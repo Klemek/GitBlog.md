@@ -184,6 +184,14 @@ Here are the steps for Github, if you use another platform adapt it your way (he
 * Update your webhook on github to include the secret
 * Check if Github successfully reached the endpoint
 
+#### 8. Keep your server always up and running (optionnal)
+
+This project `package.json` comes with a [nodemon](https://github.com/remy/nodemon) config. 
+
+After installing (`npm i -g nodemon`) you can then run the app with juste the `nodemon` command in the working directory.
+
+With this method, you can do a simple `git pull` to update your server.
+
 ## Writing an article
 [back to top](#gitblog-md)
 
