@@ -37,7 +37,7 @@
     "endpoint": "/webhook",
     "secret": "",
     "signature_header": "",
-    "pull_command": "git pull"
+    "pull_command": "git pull origin master"
   },
   "showdown": {
     "parseImgDimensions": true,
