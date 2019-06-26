@@ -36,7 +36,7 @@ module.exports = (config) => {
 
   const articles = {};
   let lastRSS = '';
-  let host;
+  let host = config['host'];
 
   /**
    * Fetch articles from the data folder and send success as a response
@@ -67,17 +67,20 @@ module.exports = (config) => {
 
   /**
    * Render the page with the view engine and catch errors
+   * @param req
    * @param res
    * @param vPath - path of the view
    * @param data - data to pass to the view
    * @param code - code to send along the page
    */
-  const render = (res, vPath, data, code = 200) => {
+  const render = (req, res, vPath, data, code = 200) => {
     data.info = {
       title: config['home']['title'],
       description: config['home']['description'],
       host: host,
-      version: pjson.version
+      version: pjson.version,
+      request: req,
+      config: config
     };
     res.render(vPath, data, (err, html) => {
       if (err) {
@@ -90,17 +93,18 @@ module.exports = (config) => {
 
   /**
    * Show an error with the correct page
+   * @param req
    * @param resPath - the page of the original error
    * @param code - error code
    * @param res
    */
-  const showError = (resPath, code, res) => {
+  const showError = (req, resPath, code, res) => {
     const errorPath = path.join(config['data_dir'], config['home']['error']);
     fs.access(errorPath, fs.constants.R_OK, (err) => {
       if (err)
         res.sendStatus(code);
       else
-        render(res, errorPath, {error: code, path: resPath}, code);
+        render(req, res, errorPath, {error: code, path: resPath}, code);
     });
   };
 
@@ -135,7 +139,7 @@ module.exports = (config) => {
       if (err)
         showError(req.path, 404, res);
       else
-        render(res, homePath, {articles: Object.values(articles).sort((a, b) => ('' + b.path).localeCompare(a.path))});
+        render(req, res, homePath, {articles: Object.values(articles).sort((a, b) => ('' + b.path).localeCompare(a.path))});
     });
   });
 
@@ -219,7 +223,7 @@ module.exports = (config) => {
               console.log(cons.error, `no template found at ${templatePath}`);
               showError(req.path, 500, res);
             } else
-              render(res, templatePath, {article: article});
+              render(req, res, templatePath, {article: article});
           });
         });
       }
