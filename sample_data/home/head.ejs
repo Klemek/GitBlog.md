@@ -1,0 +1,25 @@
+<meta name="twitter:card" content="summary_large_image">
+<% if(locals.article){ %>
+    <%- `<meta property="og:title" content="${info.title} - ${article.title}">` %>
+    <%- `<meta property="twitter:title" content="${info.title} - ${article.title}">` %>
+    <%- `<meta property="og:description" content="${info.description}">` %>
+    <%- `<meta property="twitter:description" content="${info.description}">` %>
+    <%- `<meta property="org:url" content="${info.host + article.url}">` %>
+    <% if (article.thumbnail) { %>
+        <%- `<meta property="og:image" content="${info.host}/${article.thumbnail}">` %>
+        <%- `<meta property="twitter:image" content="${info.host}/${article.thumbnail}">` %>
+    <% } %>
+    <link rel="stylesheet" type="text/css" href="/prism.css">
+<% } else { %>
+    <%- `<meta property="og:title" content="${info.title} - Home">` %>
+    <%- `<meta property="twitter:title" content="${info.title} - Home">` %>
+    <%- `<meta property="og:description" content="${info.description}">` %>
+    <%- `<meta property="twitter:description" content="${info.description}">` %>
+    <%- `<meta property="org:url" content="${info.host}/">` %>
+<% } %>
+
+<link rel="alternate" type="application/rss+xml" title="RSS feed" href="/rss"/>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+
+<link rel="stylesheet" type="text/css" href="/style.css">
