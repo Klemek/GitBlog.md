@@ -127,6 +127,10 @@ Resources are located on the `data` folder and can be referenced as the root of 
 
 In your template, the following data is sent :
 
+<details>
+<summary>details (click)</summary>
+<p>
+
 * `info`  (every pages)
   * `title` :  the blog's title as in the config
   * `description` the blog's description as in the config
@@ -146,6 +150,8 @@ In your template, the following data is sent :
   * `realPath` : the system's path for the folder
   * `escapedTitle` : the code with alphanumeric and underscore characters only
 * `error` (error pages only) : the error code
+</p>
+</details>
 
 #### 5. Create and init your git source
 
@@ -280,8 +286,8 @@ Any URL like `/year/month/day/anything/` will redirect to this article (and link
    * `error` (default: error.ejs)  
      the name of the error page template on the data directory  
      it will receive `error`, the error code
-   * `hidden` (default: `[.ejs]`)  
-     file extensions to be returned 404 when reached
+   * `hidden` (default: `[*.ejs,/.git*]`)  
+     path matches to be returned 404 when reached
 * `article`
    * `index` (default: index.md)  
      the name of the Markdown page of the article on the `/year/month/day/` directory
