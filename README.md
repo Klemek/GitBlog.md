@@ -291,6 +291,8 @@ Any URL like `/year/month/day/anything/` will redirect to this article (and link
 * `article`
    * `index` (default: index.md)  
      the name of the Markdown page of the article on the `/year/month/day/` directory
+   * `draft` (default: draft.md)  
+     the name of the Markdown page of an article not shown on the list
    * `template` (default: template.ejs)  
      the name of the article page template on the data directory
    * `thumbnail_tag`: (default: thumbnail)  

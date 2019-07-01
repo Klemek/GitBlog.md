@@ -24,6 +24,7 @@
   },
   "article": {
     "index": "index.md",
+    "draft": "draft.md",
     "template": "template.ejs",
     "thumbnail_tag": "thumbnail",
     "default_title": "Untitled",

@@ -6,13 +6,14 @@ const utils = require('./test_utils');
 const dataDir = 'test_data';
 const testIndex = 'testindex.md';
 
-const joinUrl = (...paths) => path.join(...paths).replace(/\\/g,'/');
+const joinUrl = (...paths) => path.join(...paths).replace(/\\/g, '/');
 
 const config = {
   'test': true,
   'data_dir': dataDir,
   'article': {
     'index': testIndex,
+    'draft': 'draft.md',
     'default_title': 'Untitled',
     'default_thumbnail': 'default.png',
     'thumbnail_tag': 'thumbnail'
@@ -238,6 +239,7 @@ describe('Test article fetching', () => {
         realPath: dir,
         year: 2019,
         month: 5,
+        draft: false,
         day: 5,
         date: date,
         title: 'Untitled',
@@ -269,11 +271,71 @@ describe('Test article fetching', () => {
         year: 2019,
         month: 5,
         day: 5,
+        draft: false,
         date: date,
         title: 'Title with : info !',
         thumbnail: joinUrl('2019', '05', '05', './thumbnail.jpg'),
         escapedTitle: 'title_with___info',
         url: '/' + joinUrl('2019', '05', '05', 'title_with___info') + '/',
+      });
+      done();
+    });
+  });
+  test('correct draft file', (done) => {
+    const dir = path.join(dataDir, '2019', '05', '05');
+    const file = path.join(dir, 'draft.md');
+    utils.createEmptyDirs([dir]);
+    fs.writeFileSync(file, `
+           # Title with : info !
+           ![thumbnail](./thumbnail.jpg)
+           this is some text
+           `);
+    const date = new Date(2019, 5, 5);
+    date.setUTCHours(0);
+    fw.fetchArticles((err, dict) => {
+      expect(err).toBeNull();
+      expect(dict).toBeDefined();
+      expect(Object.keys(dict).length).toBe(1);
+      expect(dict[joinUrl('2019', '05', '05')]).toEqual({
+        path: joinUrl('2019', '05', '05'),
+        realPath: dir,
+        year: 2019,
+        month: 5,
+        day: 5,
+        draft: true,
+        date: date,
+        title: 'Title with : info !',
+        thumbnail: joinUrl('2019', '05', '05', './thumbnail.jpg'),
+        escapedTitle: 'title_with___info',
+        url: '/' + joinUrl('2019', '05', '05', 'title_with___info') + '/',
+      });
+      done();
+    });
+  });
+  test('index file override draft', (done) => {
+    const dir = path.join(dataDir, '2019', '05', '05');
+    const file = path.join(dir, testIndex);
+    const file2 = path.join(dir, 'draft.md');
+    utils.createEmptyDirs([dir]);
+    utils.createEmptyFiles([file, file2]);
+    const date = new Date(2019, 5, 5);
+    date.setUTCHours(0);
+    fw.fetchArticles((err, dict) => {
+      expect(err).toBeNull();
+      expect(dict).toBeDefined();
+      expect(Object.keys(dict).length).toBe(1);
+      expect(dict[joinUrl('2019', '05', '05')]).toEqual({
+        path: joinUrl('2019', '05', '05'),
+        realPath: dir,
+        year: 2019,
+        month: 5,
+        draft: false,
+        day: 5,
+        date: date,
+        title: 'Untitled',
+        thumbnail: 'default.png',
+        escapedTitle: 'untitled',
+        url: '/' + joinUrl('2019', '05', '05', 'untitled') + '/',
       });
       done();
     });
