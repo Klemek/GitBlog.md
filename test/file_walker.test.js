@@ -236,7 +236,7 @@ describe('Test article fetching', () => {
       expect(Object.keys(dict).length).toBe(1);
       expect(dict[joinUrl('2019', '05', '05')]).toEqual({
         path: joinUrl('2019', '05', '05'),
-        realPath: dir,
+        realPath: file,
         year: 2019,
         month: 5,
         draft: false,
@@ -267,7 +267,7 @@ describe('Test article fetching', () => {
       expect(Object.keys(dict).length).toBe(1);
       expect(dict[joinUrl('2019', '05', '05')]).toEqual({
         path: joinUrl('2019', '05', '05'),
-        realPath: dir,
+        realPath: file,
         year: 2019,
         month: 5,
         day: 5,
@@ -298,7 +298,7 @@ describe('Test article fetching', () => {
       expect(Object.keys(dict).length).toBe(1);
       expect(dict[joinUrl('2019', '05', '05')]).toEqual({
         path: joinUrl('2019', '05', '05'),
-        realPath: dir,
+        realPath: file,
         year: 2019,
         month: 5,
         day: 5,
@@ -326,7 +326,7 @@ describe('Test article fetching', () => {
       expect(Object.keys(dict).length).toBe(1);
       expect(dict[joinUrl('2019', '05', '05')]).toEqual({
         path: joinUrl('2019', '05', '05'),
-        realPath: dir,
+        realPath: file,
         year: 2019,
         month: 5,
         draft: false,

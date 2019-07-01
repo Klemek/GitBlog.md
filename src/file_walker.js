@@ -82,7 +82,7 @@ module.exports = (config) => {
           const article = {
             path: joinUrl(p[0], p[1], p[2]),
             draft: p[3] === config['article']['draft'],
-            realPath: path.join(config['data_dir'], p[0], p[1], p[2]),
+            realPath: path.join(config['data_dir'], p[0], p[1], p[2], p[3]),
             year: parseInt(p[0]),
             month: parseInt(p[1]),
             day: parseInt(p[2])
@@ -90,7 +90,7 @@ module.exports = (config) => {
           article.date = new Date(article.year, article.month, article.day);
           article.date.setUTCHours(0);
           remaining++;
-          readIndexFile(path.join(article.realPath, p[3]), config['article']['thumbnail_tag'], (err, info) => {
+          readIndexFile(article.realPath, config['article']['thumbnail_tag'], (err, info) => {
             if (err)
               return cb(err);
             article.title = info.title || config['article']['default_title'];

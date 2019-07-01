@@ -69,8 +69,9 @@ module.exports = (config) => {
       Object.keys(articles).forEach((key) => delete articles[key]);
       Object.keys(dict).forEach((key) => articles[key] = dict[key]);
       const nb = Object.keys(articles).length;
+      const dnb = Object.values(articles).filter(a => a.draft).length;
       if (nb > 0)
-        console.log(cons.ok, `loaded ${nb} article${nb > 1 ? 's' : ''}`);
+        console.log(cons.ok, `loaded ${nb} article${nb > 1 ? 's' : ''} (${dnb} drafted)`);
       else
         console.log(cons.warn, `no articles loaded, check your configuration`);
 
@@ -220,7 +221,7 @@ module.exports = (config) => {
       if (!article)
         showError(req, res, 404);
       else {
-        renderer.render(path.join(article.realPath, config['article']['index']), (err, html) => {
+        renderer.render(article.realPath, (err, html) => {
           if (err) {
             console.log(cons.error, `failed to render article ${req.path} : ${err}`);
             return showError(req, res, 500);
