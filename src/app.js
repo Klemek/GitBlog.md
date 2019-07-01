@@ -144,7 +144,11 @@ module.exports = (config) => {
       if (err)
         showError(req, res, 404);
       else
-        render(req, res, homePath, {articles: Object.values(articles).sort((a, b) => ('' + b.path).localeCompare(a.path))});
+        render(req, res, homePath,
+          {
+            articles: Object.values(articles)
+              .filter(d => !d.draft).sort((a, b) => ('' + b.path).localeCompare(a.path))
+          });
     });
   });
 

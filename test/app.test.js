@@ -121,10 +121,10 @@ describe('Test root path', () => {
     });
   });
   test('404 no index but error page', (done) => {
-    fs.writeFileSync(path.join(dataDir, testError), 'error <%= error %> at <%= path %>');
+    fs.writeFileSync(path.join(dataDir, testError), 'error <%= error %>');
     request(app).get('/').then((response) => {
       expect(response.statusCode).toBe(404);
-      expect(response.text).toBe('error 404 at /');
+      expect(response.text).toBe('error 404');
       done();
     });
   });
@@ -160,14 +160,17 @@ describe('Test root path', () => {
       done();
     });
   });
-  test('200 2 articles', (done, fail) => {
+  test('200 2 articles 1 drafted', (done, fail) => {
     utils.createEmptyDirs([
       path.join(dataDir, '2019', '05', '05'),
-      path.join(dataDir, '2018', '05', '05')
+      path.join(dataDir, '2018', '05', '05'),
+      path.join(dataDir, '2017', '05', '05')
     ]);
     utils.createEmptyFiles([
-      path.join(dataDir, '2019', '05', '05', 'index.md'),
-      path.join(dataDir, '2018', '05', '05', 'index.md')
+      path.join(dataDir, '2019', '05', '05', 'draft.md'),
+      path.join(dataDir, '2018', '05', '05', 'index.md'),
+      path.join(dataDir, '2018', '05', '05', 'draft.md'),
+      path.join(dataDir, '2017', '05', '05', 'index.md'),
     ]);
     fs.writeFileSync(path.join(dataDir, testIndex), 'articles <%= articles.length %>');
     app.reload(() => {
@@ -394,10 +397,10 @@ describe('Test static files', () => {
     });
   });
   test('404 invalid file but error page', (done) => {
-    fs.writeFileSync(path.join(dataDir, testError), 'error <%= error %> at <%= path %>');
+    fs.writeFileSync(path.join(dataDir, testError), 'error <%= error %>');
     request(app).get('/somefile.txt').then((response) => {
       expect(response.statusCode).toBe(404);
-      expect(response.text).toBe('error 404 at /somefile.txt');
+      expect(response.text).toBe('error 404');
       done();
     });
   });

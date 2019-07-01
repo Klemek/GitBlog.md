@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const joinUrl = (...paths) => path.join(...paths).replace(/\\/g,'/');
+const joinUrl = (...paths) => path.join(...paths).replace(/\\/g, '/');
 
 /**
  * Get all files path inside a given folder path
@@ -71,8 +71,8 @@ module.exports = (config) => {
         if (err)
           return cb(err);
         const paths = fileList
-          .map((p) => p.substr(config['data_dir'].length+1).split(path.sep))
-          .filter((p) => p.length === 4 && p[3] === config['article']['index'] &&
+          .map((p) => p.substr(config['data_dir'].length + 1).split(path.sep))
+          .filter((p) => p.length === 4 && (p[3] === config['article']['index'] || p[3] === config['article']['draft']) &&
             /^\d{4}$/.test(p[0]) && /^\d{2}$/.test(p[1]) && /^\d{2}$/.test(p[2]));
         if (paths.length === 0)
           cb(null, {});
@@ -81,6 +81,7 @@ module.exports = (config) => {
         paths.forEach((p) => {
           const article = {
             path: joinUrl(p[0], p[1], p[2]),
+            draft: p[3] === config['article']['draft'],
             realPath: path.join(config['data_dir'], p[0], p[1], p[2]),
             year: parseInt(p[0]),
             month: parseInt(p[1]),
@@ -89,14 +90,15 @@ module.exports = (config) => {
           article.date = new Date(article.year, article.month, article.day);
           article.date.setUTCHours(0);
           remaining++;
-          readIndexFile(path.join(article.realPath, config['article']['index']), config['article']['thumbnail_tag'], (err, info) => {
+          readIndexFile(path.join(article.realPath, p[3]), config['article']['thumbnail_tag'], (err, info) => {
             if (err)
               return cb(err);
             article.title = info.title || config['article']['default_title'];
             article.thumbnail = info.thumbnail ? joinUrl(article.path, info.thumbnail) : config['article']['default_thumbnail'];
             article.escapedTitle = article.title.toLowerCase().replace(/[^\w]/gm, ' ').trim().replace(/ /gm, '_');
             article.url = '/' + joinUrl(article.path, article.escapedTitle) + '/';
-            articles[article.path] = article;
+            if (!articles[article.path] || !article.draft)
+              articles[article.path] = article;
             remaining--;
             if (remaining === 0)
               cb(null, articles);
