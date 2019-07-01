@@ -322,12 +322,11 @@ describe('Test articles rendering', () => {
     });
   });
 
-  test('500 no index', (done, fail) => {
+  test('500 fail to render', (done, fail) => {
     utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05'),]);
     fs.writeFileSync(path.join(dataDir, '2019', '05', '05', 'index.md'), '# Hello');
-    fs.writeFileSync(path.join(dataDir, testTemplate), '<%- article.content %><%- `<a href="${article.url}">reload</a>` %>');
+    fs.writeFileSync(path.join(dataDir, testTemplate), '<%- articl.content %><%- `<a href="${article.url}">reload</a>` %>');
     app.reload(() => {
-      config['article']['index'] = 'invalid.md';
       request(app).get('/2019/05/05/hello/').then((response) => {
         expect(response.statusCode).toBe(500);
         done();
@@ -349,6 +348,19 @@ describe('Test articles rendering', () => {
   test('200 rendered article', (done, fail) => {
     utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05'),]);
     fs.writeFileSync(path.join(dataDir, '2019', '05', '05', 'index.md'), '# Hello');
+    fs.writeFileSync(path.join(dataDir, testTemplate), '<%- article.content %><%- `<a href="${article.url}">reload</a>` %>');
+    app.reload(() => {
+      request(app).get('/2019/05/05/hello/').then((response) => {
+        expect(response.statusCode).toBe(200);
+        expect(response.text).toBe('<h1 id="hello">Hello</h1><a href="/2019/05/05/hello/">reload</a>');
+        done();
+      });
+    }, fail);
+  });
+
+  test('200 rendered draft', (done, fail) => {
+    utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05'),]);
+    fs.writeFileSync(path.join(dataDir, '2019', '05', '05', 'draft.md'), '# Hello');
     fs.writeFileSync(path.join(dataDir, testTemplate), '<%- article.content %><%- `<a href="${article.url}">reload</a>` %>');
     app.reload(() => {
       request(app).get('/2019/05/05/hello/').then((response) => {
