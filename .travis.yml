@@ -11,5 +11,6 @@ install:
 before_script:
   - npm install -g jshint
 script:
-  - jest --silent --coverage --coverageReporters=text-lcov | coveralls
+  - jest --coverage --silent
   - jshint ./src
+  - cat ./coverage/lcov.info | coveralls
