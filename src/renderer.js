@@ -64,7 +64,9 @@ module.exports = (config) => {
     if (!config['modules']['mathjax'])
       return cb(data);
 
-    const doMJ = (match, format) => {
+    const spl = data.split('```');
+
+    const doMJ = (match, format, i) => {
       const eq = match[1].trim();
       const output = config['mathjax']['output_format'];
       const mjConf = {
@@ -74,8 +76,8 @@ module.exports = (config) => {
       };
       mjConf[output] = true;
       mjAPI.typeset(mjConf, (res) => {
-        data = data.slice(0, match.index) + res[output] + data.slice(match.index + match[0].length);
-        renderMathJax(data, (data2) => {
+        spl[i] = spl[i].slice(0, match.index) + res[output] + spl[i].slice(match.index + match[0].length);
+        renderMathJax(spl.join('```'), (data2) => {
           cb(data2);
         });
       });
@@ -84,14 +86,15 @@ module.exports = (config) => {
     const eqRegex = /\$\$((?:(?!\$\$)[\s\S])*)\$\$/m;
     const inlineEqRegex = /\$([^$\n]*)\$/;
 
-    let match;
-    if ((match = eqRegex.exec(data))) {
-      doMJ(match, 'TeX');
-    } else if ((match = inlineEqRegex.exec(data))) {
-      doMJ(match, 'inline-TeX');
-    } else {
-      cb(data);
+    for (let i = 0; i < spl.length; i += 2) {
+      let match;
+      if ((match = eqRegex.exec(spl[i]))) {
+        return doMJ(match, 'TeX', i);
+      } else if ((match = inlineEqRegex.exec(spl[i]))) {
+        return doMJ(match, 'inline-TeX', i);
+      }
     }
+    cb(data);
   };
 
   return {
@@ -104,9 +107,9 @@ module.exports = (config) => {
         if (err)
           return cb(err);
 
-        renderPrism(data, (data) => {
-          renderPlantUML(data, (data) => {
-            renderMathJax(data, (data) => {
+        renderPlantUML(data, (data) => {
+          renderMathJax(data, (data) => {
+            renderPrism(data, (data) => {
               renderShowDown(data, (html) => {
                 cb(null, html);
               });

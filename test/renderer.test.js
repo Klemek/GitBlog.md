@@ -157,6 +157,12 @@ describe('Test MathJax', () => {
       done();
     });
   });
+  test('no eq in code', (done) => {
+    renderer.renderMathJax('this code is ```start $a$ end $$hello$$``` beautiful', (data) => {
+      expect(data).toBe('this code is ```start $a$ end $$hello$$``` beautiful');
+      done();
+    });
+  });
   test('multiple eq', (done) => {
     renderer.renderMathJax('$$\n\nA\n\n$$\nstart $a$ end\n$$\n\nA\n\n$$', (data) => {
       expect(data).toBe('' +
