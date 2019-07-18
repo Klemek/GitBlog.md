@@ -6,6 +6,11 @@
 
 A static blog using Markdown pulled from your git repository.
 
+> Step 1 : ```$ vi 2019/06/21/index.md```  
+> Step 2 : ```$ git add . && git commit -m "new article" && git push origin master```  
+> Step 3 : That's it  
+> Step 4 : No seriously you're done, go check your updated blog
+
 * **[How it works](#how-it-works)**
 * **[Installation](#installation)**
 * **[Writing an article](#writing-an-article)**
@@ -53,7 +58,7 @@ As you access an article link, the server will fetch it's `index.md` Markdown fi
 </p>
 </details>
 
-As you configured your data repository, when you push any data, it will trigger the webhook that will perform a `git pull` then refresh the data you just committed.
+As you configured your data repository, when you push any data, it will trigger the webhook that will perform a `git pull` then refresh the article list.
 
 
 #### 4. RSS feed
@@ -122,6 +127,10 @@ Resources are located on the `data` folder and can be referenced as the root of 
 
 In your template, the following data is sent :
 
+<details>
+<summary>details (click)</summary>
+<p>
+
 * `info`  (every pages)
   * `title` :  the blog's title as in the config
   * `description` the blog's description as in the config
@@ -141,6 +150,8 @@ In your template, the following data is sent :
   * `realPath` : the system's path for the folder
   * `escapedTitle` : the code with alphanumeric and underscore characters only
 * `error` (error pages only) : the error code
+</p>
+</details>
 
 #### 5. Create and init your git source
 
@@ -149,7 +160,10 @@ You need to [create a new repository](https://github.com/new) on your favorite G
 ```bash
 #gitblog.md/
 cd data
+git init
 git remote add origin <url_of_your_repo.git>
+git add .
+git commit -m "initial commit"
 git push -u origin master
 ```
 
@@ -174,7 +188,7 @@ Here are the steps for Github, if you use another platform adapt it your way (he
 ```json
 "webhook": {
     "endpoint": "/webhook",
-    "secret": "sha1=<value>",
+    "secret": "<value>",
     "signature_header": "X-Hub-Signature"
   },
 ```
@@ -272,8 +286,8 @@ Any URL like `/year/month/day/anything/` will redirect to this article (and link
    * `error` (default: error.ejs)  
      the name of the error page template on the data directory  
      it will receive `error`, the error code
-   * `hidden` (default: `[.ejs]`)  
-     file extensions to be returned 404 when reached
+   * `hidden` (default: `[*.ejs,/.git*]`)  
+     path matches to be returned 404 when reached
 * `article`
    * `index` (default: index.md)  
      the name of the Markdown page of the article on the `/year/month/day/` directory
