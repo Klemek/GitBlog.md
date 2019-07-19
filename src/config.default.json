@@ -10,7 +10,8 @@
     "webhook": true,
     "prism": true,
     "mathjax": true,
-    "plantuml": true
+    "plantuml": true,
+    "fa-diagrams": true
   },
   "home": {
     "title": "GitBlog.md",

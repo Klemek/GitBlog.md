@@ -11,7 +11,8 @@ const config = {
   'modules': {
     'prism': true,
     'mathjax': true,
-    'plantuml': true
+    'plantuml': true,
+    'fa-diagrams': true,
   },
   'showdown': {
     'simplifiedAutoLink': true,
@@ -32,6 +33,7 @@ beforeEach(() => {
   config['modules']['prism'] = true;
   config['modules']['mathjax'] = true;
   config['modules']['plantuml'] = true;
+  config['modules']['fa-diagrams'] = true;
   utils.deleteFolderSync(dataDir);
   fs.mkdirSync(dataDir);
 });
@@ -207,6 +209,34 @@ describe('Test MathJax', () => {
         '<span class=\"mjx-char MJXc-TeX-math-I\" style=\"padding-top: 0.519em; padding-bottom: 0.298em;\">' +
         'A' +
         '</span></span></span></span></span>');
+      done();
+    });
+  });
+});
+
+describe('Test fa-diagrams', () => {
+  test('no fa-diagrams', (done) => {
+    config['modules']['fa-diagrams'] = false;
+    renderer.renderFaDiagrams('@startfad\noptions:\n\trendering:\t\tcolor:red\n\n@endfad', (data) => {
+      expect(data).toBe('@startfad\noptions:\n\trendering:\t\tcolor:red\n\n@endfad');
+      done();
+    });
+  });
+  test('no fa-diagrams in code', (done) => {
+    renderer.renderFaDiagrams('code:\n```\n@startfad\noptions:\n\trendering:\t\tcolor:red\n\n@endfad\n```', (data) => {
+      expect(data).toBe('code:\n```\n@startfad\noptions:\n\trendering:\t\tcolor:red\n\n@endfad\n```');
+      done();
+    });
+  });
+  test('valid fa-diagrams', (done) => {
+    renderer.renderFaDiagrams('before\n@startfad\noptions:\n  rendering:\n    color: red\n@endfad\nafter', (data) => {
+      expect(data).toBe('before\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" font-family="Arial" font-size="15" fill="red" stroke-width="0"></svg>\nafter');
+      done();
+    });
+  });
+  test('invalid yaml', (done) => {
+    renderer.renderFaDiagrams('before\n@startfad\noptions:\n@endfad\nafter', (data) => {
+      expect(data).toBe('before\n<b style="color:red">TypeError: Cannot convert undefined or null to object</b>\nafter');
       done();
     });
   });

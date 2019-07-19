@@ -150,22 +150,64 @@ module.exports = (config) => {
     cb(data);
   };
 
+  let faDiagrams;
+  let yaml;
+  if (config['modules']['fa-diagrams']) {
+    faDiagrams = require('fa-diagrams');
+    yaml = require('js-yaml');
+  }
+
+  const renderFaDiagrams = (data, cb) => {
+    if (!config['modules']['fa-diagrams'])
+      return cb(data);
+    const parts = getParts(data);
+    const diagramsRegex = /@startfad\r?\n((?:(?!@endfad)[\s\S])*)\r?\n@endfad/m;
+    let match;
+    parts.forEach(part => {
+      while ((match = diagramsRegex.exec(part.text))) {
+        const code = match[1].trim();
+        let output;
+        try {
+          const diagData = yaml.safeLoad(code);
+          const findLineBreaks = (data) => {
+            Object.keys(data).forEach(key => {
+              if (typeof data[key] === 'object')
+                findLineBreaks(data[key]);
+              else if (typeof data[key] === 'string')
+                data[key] = data[key].replace(/\\n/gm, '\n');
+            });
+          };
+          findLineBreaks(diagData);
+          output = faDiagrams.compute(diagData);
+        } catch (err) {
+          output = `<b style="color:red">${err.toString()}</b>`;
+        }
+        part.text = part.text.slice(0, match.index) + output + part.text.slice(match.index + match[0].length);
+      }
+      data = data.slice(0, part.index) + part.text + data.slice(part.end);
+    });
+    cb(data);
+  };
+
   return {
     getParts: config['test'] ? getParts : undefined,
     renderShowDown: config['test'] ? renderShowDown : undefined,
     renderPrism: config['test'] ? renderPrism : undefined,
     renderPlantUML: config['test'] ? renderPlantUML : undefined,
     renderMathJax: config['test'] ? renderMathJax : undefined,
+    renderFaDiagrams: config['test'] ? renderFaDiagrams : undefined,
     render: (file, cb) => {
       fs.readFile(file, {encoding: 'UTF-8'}, (err, data) => {
         if (err)
           return cb(err);
 
         renderPlantUML(data, (data) => {
-          renderMathJax(data, (data) => {
-            renderPrism(data, (data) => {
-              renderShowDown(data, (html) => {
-                cb(null, html);
+          renderFaDiagrams(data, (data) => {
+            renderMathJax(data, (data) => {
+              renderPrism(data, (data) => {
+                renderShowDown(data, (html) => {
+                  cb(null, html);
+                });
               });
             });
           });
