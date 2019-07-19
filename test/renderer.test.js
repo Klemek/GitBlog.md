@@ -42,6 +42,23 @@ afterAll(() => {
   }
 });
 
+describe('get parts', () => {
+  test('normal', () => {
+    const data = 'Hello\nthere\ngeneral\nkenobi';
+    const parts = renderer.getParts(data);
+    expect(parts.map(p => p.text)).toEqual([
+      'Hello\nthere\ngeneral\nkenobi'
+    ]);
+  });
+  test('lot of stuff', () => {
+    const data = 'Hello\nthere\n```code```\ngeneral<script>script</script>\n<script>script2</script>\n```<script>script3</script>```kenobi';
+    const parts = renderer.getParts(data);
+    expect(parts.map(p => p.text)).toEqual([
+      'Hello\nthere\n', '\ngeneral', '\n', '\n', 'kenobi'
+    ]);
+  });
+});
+
 describe('Test Showdown', () => {
   test('normal', (done) => {
     renderer.renderShowDown('# Hello', (html) => {
@@ -108,6 +125,13 @@ describe('Test PlantUML', () => {
   test('plantuml correct', (done) => {
     renderer.renderPlantUML('@startuml\nBob -> Alice : hello\n@enduml', (data) => {
       expect(data).toBe('<img alt="generated PlantUML diagram" src="http://www.plantuml.com/plantuml/svg/SyfFKj2rKt3CoKnELR1Io4ZDoSa70000">');
+      done();
+    });
+  });
+
+  test('plantuml ignored in code', (done) => {
+    renderer.renderPlantUML('code:\n```@startuml\nBob -> Alice : hello\n@enduml```', (data) => {
+      expect(data).toBe('code:\n```@startuml\nBob -> Alice : hello\n@enduml```');
       done();
     });
   });
