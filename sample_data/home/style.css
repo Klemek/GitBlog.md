@@ -170,7 +170,7 @@ div.article:active {
     text-align: left;
 }
 
-#text img {
+#text img, #text svg {
     max-width: 100%;
     height: auto;
 }

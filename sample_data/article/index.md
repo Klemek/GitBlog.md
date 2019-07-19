@@ -19,6 +19,7 @@ If you see this page, that means it's working
 * [Spoilers](#spoilers)
 * [Math Equations](#mathequations)
 * [UML](#uml)
+* [Diagrams](#diagrams)
 * [Youtube Videos](#youtubevideos)
 
 ### Headers
@@ -251,6 +252,30 @@ express -down-> index : 2. fetch
 index -up-> showdown : 3. markdown
 showdown -left-> express : 4. html
 express -up-> web : 5. html
+@enduml
+
+### Diagrams
+[Back to top](#top)
+
+You can use [fa-diagrams](https://github.com/Klemek/fa-diagrams) with `@startfad` and `@endfad` tags and using YAML inside
+
+@startuml
+nodes:
+  - name: node1
+    icon: laptop-code
+    color: '#4E342E'
+    bottom: my app
+  - name: node2
+    icon: globe
+    color: '#455A64'
+    bottom: world
+links:
+  - from: node1
+    to: node2
+    color: '#333333'
+    top:
+      icon: envelope
+    bottom: '"hello"'
 @enduml
 
 ### Youtube Videos
