@@ -17,7 +17,6 @@ module.exports = (config) => {
     while ((match = /```/m.exec(data.slice(i)))) {
       parts.push({
         index: i,
-        end: i + match.index,
         text: data.slice(i, i + match.index),
       });
       i += match.index + match[0].length;
@@ -25,7 +24,6 @@ module.exports = (config) => {
     if (i < data.length)
       parts.push({
         index: i,
-        end: data.length,
         text: data.slice(i, data.length),
       });
 
@@ -38,7 +36,6 @@ module.exports = (config) => {
       while ((match = /(<script>((?:(?!<\/script>)[\s\S])*)<\/script>)/gm.exec(p.text.slice(i)))) {
         subParts.push({
           index: p.index + i,
-          end: i + match.index,
           text: p.text.slice(i, i + match.index),
         });
         i += match.index + match[0].length;
@@ -46,11 +43,13 @@ module.exports = (config) => {
       if (i < p.text.length)
         subParts.push({
           index: p.index + i,
-          end: p.text.length,
           text: p.text.slice(i, p.text.length),
         });
       parts.splice(pi, 1, ...subParts);
     });
+
+    parts.forEach(part => part.end = part.index + part.text.length);
+
     return parts;
   };
 
@@ -139,7 +138,7 @@ module.exports = (config) => {
     const eqRegex = /\$\$((?:(?!\$\$)[\s\S])*)\$\$/m;
     const inlineEqRegex = /\$([^$\n]*)\$/;
 
-    for (let i = 0; i < parts.length; i += 2) {
+    for (let i = 0; i < parts.length; i++) {
       let match;
       if ((match = eqRegex.exec(parts[i].text))) {
         return doMJ(match, 'TeX', i);

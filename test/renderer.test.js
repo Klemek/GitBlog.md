@@ -55,8 +55,32 @@ describe('get parts', () => {
   test('lot of stuff', () => {
     const data = 'Hello\nthere\n```code```\ngeneral<script>script</script>\n<script>script2</script>\n```<script>script3</script>```kenobi';
     const parts = renderer.getParts(data);
-    expect(parts.map(p => p.text)).toEqual([
-      'Hello\nthere\n', '\ngeneral', '\n', '\n', 'kenobi'
+    expect(parts).toEqual([
+      {
+        index: 0,
+        end: 12,
+        text: 'Hello\nthere\n'
+      },
+      {
+        index: 22,
+        end: 30,
+        text: '\ngeneral'
+      },
+      {
+        index: 53,
+        end: 54,
+        text: '\n'
+      },
+      {
+        index: 78,
+        end: 79,
+        text: '\n'
+      },
+      {
+        index: 109,
+        end: 115,
+        text: 'kenobi'
+      },
     ]);
   });
 });
@@ -132,8 +156,8 @@ describe('Test PlantUML', () => {
   });
 
   test('plantuml ignored in code', (done) => {
-    renderer.renderPlantUML('code:\n```@startuml\nBob -> Alice : hello\n@enduml```', (data) => {
-      expect(data).toBe('code:\n```@startuml\nBob -> Alice : hello\n@enduml```');
+    renderer.renderPlantUML('code:\n```@startuml\nBob -> Alice : hello\n@enduml```\n ```@startuml``` @enduml', (data) => {
+      expect(data).toBe('code:\n```@startuml\nBob -> Alice : hello\n@enduml```\n ```@startuml``` @enduml');
       done();
     });
   });
@@ -183,9 +207,9 @@ describe('Test MathJax', () => {
       done();
     });
   });
-  test('no eq in code', (done) => {
-    renderer.renderMathJax('this code is ```start $a$ end $$hello$$``` beautiful', (data) => {
-      expect(data).toBe('this code is ```start $a$ end $$hello$$``` beautiful');
+  test('no eq in code / script', (done) => {
+    renderer.renderMathJax('this code is ```start $a$ end $$hello$$``` beautiful <script>$A$</script>\n```$no eq$```', (data) => {
+      expect(data).toBe('this code is ```start $a$ end $$hello$$``` beautiful <script>$A$</script>\n```$no eq$```');
       done();
     });
   });
