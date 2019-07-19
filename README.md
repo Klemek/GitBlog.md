@@ -244,6 +244,9 @@ Any URL like `/year/month/day/anything/` will redirect to this article (and link
   It allows you to add math equations to your articles by simply writing LaTeX between `$$` for full size (and between $ for inline) (more info [here](https://www.mathjax.org/))
 * **PlantUML**  
   It allows you to add UML diagrams with PlantUML Syntax between `@startuml` and `@enduml` (more info [here](http://www.plantuml.com))
+* **fa-diagrams**  
+  It allows you to define SVG diagrams with Font-Awesome icons in YAML between `@startfad` and `@endfad` (more info [here](https://github.com/Klemek/fa-diagrams))
+
 
 ## Configuration
 [back to top](#gitblog-md)
@@ -272,6 +275,8 @@ Any URL like `/year/month/day/anything/` will redirect to this article (and link
      activate MathJax equations formatting
    * `plantuml` (default: true)  
      activate PlantUML diagram rendering
+   * `fa-diagrams` (default: true)  
+     activate fa-diagrams rendering
 * `home`
    * `title` (default: GitBlog.md)  
      the title of your blog, **strongly advised to be changed**  
