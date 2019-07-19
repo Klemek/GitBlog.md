@@ -6,16 +6,18 @@
 </head>
 <body>
 <main>
-    <h1><%= info.title %></h1>
+    <h1 class="title"><%= info.title %></h1>
     <%= info.description %>
     <h2>Articles in this blog :</h2>
     <% articles.forEach((article) => { %>
         <div class="article">
-            <h3><%- `<a href="${article.url}">${article.title}</a>` %></h3>
-            <span class="time"><span>Published on</span> <%= article.year + '-' + article.month + '-' + article.day %></span>
+            <%- `<a href="${article.url}">` %>
+            <h3><%- `${article.title}` %></h3>
+            <span class="time"><span>Published on</span>&nbsp;&nbsp;<%= article.year + '-' + ('0' + article.month).slice(-2) + '-' + ('0' + article.day).slice(-2) %></span>
             <% if(article.thumbnail){ %>
                 <%- `<img alt="thumbnail" src=${article.thumbnail}>` %>
             <% } %>
+            <%- `</a>` %>
         </div>
     <% }); %>
     <%- include('footer'); %>

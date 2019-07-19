@@ -11,7 +11,8 @@ const config = {
   'modules': {
     'prism': true,
     'mathjax': true,
-    'plantuml': true
+    'plantuml': true,
+    'fa-diagrams': true,
   },
   'showdown': {
     'simplifiedAutoLink': true,
@@ -32,6 +33,7 @@ beforeEach(() => {
   config['modules']['prism'] = true;
   config['modules']['mathjax'] = true;
   config['modules']['plantuml'] = true;
+  config['modules']['fa-diagrams'] = true;
   utils.deleteFolderSync(dataDir);
   fs.mkdirSync(dataDir);
 });
@@ -40,6 +42,47 @@ afterAll(() => {
   if (fs.existsSync(dataDir)) {
     utils.deleteFolderSync(dataDir);
   }
+});
+
+describe('get parts', () => {
+  test('normal', () => {
+    const data = 'Hello\nthere\ngeneral\nkenobi';
+    const parts = renderer.getParts(data);
+    expect(parts.map(p => p.text)).toEqual([
+      'Hello\nthere\ngeneral\nkenobi'
+    ]);
+  });
+  test('lot of stuff', () => {
+    const data = 'Hello\nthere\n```code```\ngeneral<script>script</script>\n<script>script2</script>\n```<script>script3</script>```kenobi';
+    const parts = renderer.getParts(data);
+    expect(parts).toEqual([
+      {
+        index: 0,
+        end: 12,
+        text: 'Hello\nthere\n'
+      },
+      {
+        index: 22,
+        end: 30,
+        text: '\ngeneral'
+      },
+      {
+        index: 53,
+        end: 54,
+        text: '\n'
+      },
+      {
+        index: 78,
+        end: 79,
+        text: '\n'
+      },
+      {
+        index: 109,
+        end: 115,
+        text: 'kenobi'
+      },
+    ]);
+  });
 });
 
 describe('Test Showdown', () => {
@@ -112,6 +155,13 @@ describe('Test PlantUML', () => {
     });
   });
 
+  test('plantuml ignored in code', (done) => {
+    renderer.renderPlantUML('code:\n```@startuml\nBob -> Alice : hello\n@enduml```\n ```@startuml``` @enduml', (data) => {
+      expect(data).toBe('code:\n```@startuml\nBob -> Alice : hello\n@enduml```\n ```@startuml``` @enduml');
+      done();
+    });
+  });
+
   test('plantuml multiple uml', (done) => {
     renderer.renderPlantUML('@startuml\nBob -> Alice : hello\n@enduml\n@startuml\nBob -> Alice : hello\n@enduml', (data) => {
       expect(data).toBe('<img alt="generated PlantUML diagram" src="http://www.plantuml.com/plantuml/svg/SyfFKj2rKt3CoKnELR1Io4ZDoSa70000">\n<img alt="generated PlantUML diagram" src="http://www.plantuml.com/plantuml/svg/SyfFKj2rKt3CoKnELR1Io4ZDoSa70000">');
@@ -157,6 +207,12 @@ describe('Test MathJax', () => {
       done();
     });
   });
+  test('no eq in code / script', (done) => {
+    renderer.renderMathJax('this code is ```start $a$ end $$hello$$``` beautiful <script>$A$</script>\n```$no eq$```', (data) => {
+      expect(data).toBe('this code is ```start $a$ end $$hello$$``` beautiful <script>$A$</script>\n```$no eq$```');
+      done();
+    });
+  });
   test('multiple eq', (done) => {
     renderer.renderMathJax('$$\n\nA\n\n$$\nstart $a$ end\n$$\n\nA\n\n$$', (data) => {
       expect(data).toBe('' +
@@ -177,6 +233,34 @@ describe('Test MathJax', () => {
         '<span class=\"mjx-char MJXc-TeX-math-I\" style=\"padding-top: 0.519em; padding-bottom: 0.298em;\">' +
         'A' +
         '</span></span></span></span></span>');
+      done();
+    });
+  });
+});
+
+describe('Test fa-diagrams', () => {
+  test('no fa-diagrams', (done) => {
+    config['modules']['fa-diagrams'] = false;
+    renderer.renderFaDiagrams('@startfad\noptions:\n\trendering:\t\tcolor:red\n\n@endfad', (data) => {
+      expect(data).toBe('@startfad\noptions:\n\trendering:\t\tcolor:red\n\n@endfad');
+      done();
+    });
+  });
+  test('no fa-diagrams in code', (done) => {
+    renderer.renderFaDiagrams('code:\n```\n@startfad\noptions:\n\trendering:\t\tcolor:red\n\n@endfad\n```', (data) => {
+      expect(data).toBe('code:\n```\n@startfad\noptions:\n\trendering:\t\tcolor:red\n\n@endfad\n```');
+      done();
+    });
+  });
+  test('valid fa-diagrams', (done) => {
+    renderer.renderFaDiagrams('before\n@startfad\noptions:\n  rendering:\n    color: red\n@endfad\nafter', (data) => {
+      expect(data).toBe('before\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" font-family="Arial" font-size="15" fill="red" stroke-width="0"></svg>\nafter');
+      done();
+    });
+  });
+  test('invalid yaml', (done) => {
+    renderer.renderFaDiagrams('before\n@startfad\noptions:\n@endfad\nafter', (data) => {
+      expect(data).toBe('before\n<b style="color:red">TypeError: Cannot convert undefined or null to object</b>\nafter');
       done();
     });
   });

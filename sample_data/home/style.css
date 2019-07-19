@@ -16,7 +16,7 @@ body {
 }
 
 main {
-    max-width: 42rem;
+    max-width: 45rem;
     padding: 2rem;
     margin: auto;
     background-color: #F0F0F0;
@@ -52,6 +52,13 @@ pre {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     padding: 10px 16px;
+}
+
+:not(pre) > code {
+    padding: 0.25em 0.5em;
+    border-radius: 0.25em;
+    background: #DDD;
+    font-size: 90%;
 }
 
 blockquote {
@@ -108,10 +115,11 @@ main.article div.header a.link-home {
     line-height: 2.4;
 }
 
-main.article div.header h1, main.article div.header h2 {
+main.article div.header h1, main.article div.header h2, .title {
     margin-top: 0.85em;
     margin-bottom: 0.25em;
     font-size: 2em;
+    font-weight: bold;
 }
 
 main.article div.header h1 a, main.article div.header h2 a, div.article h3 a {
@@ -129,6 +137,12 @@ div.article {
 div.article h3 {
     font-size: 1.3em;
     margin:0;
+    color: #3C3CA1;
+}
+
+div.article a {
+    text-decoration: none;
+    color: inherit;
 }
 
 div.article img{
@@ -137,6 +151,15 @@ div.article img{
     margin-right:1em;
     margin-top:0.25em;
 }
+
+div.article:hover {
+    opacity: 0.9;
+}
+
+div.article:active {
+    opacity: 0.8;
+}
+
 
 #text {
     text-align: justify;
@@ -147,7 +170,7 @@ div.article img{
     text-align: left;
 }
 
-#text img {
+#text img, #text svg {
     max-width: 100%;
     height: auto;
 }
