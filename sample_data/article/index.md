@@ -257,26 +257,30 @@ express -up-> web : 5. html
 ### Diagrams
 [Back to top](#top)
 
-You can use [fa-diagrams](https://github.com/Klemek/fa-diagrams) with `@startfad` and `@endfad` tags and using YAML inside
+You can use [fa-diagrams](https://github.com/Klemek/fa-diagrams) with `@startfad` and `@endfad` tags and using [TOML](https://github.com/toml-lang/toml) inside
 
-@startuml
-nodes:
-  - name: node1
-    icon: laptop-code
-    color: '#4E342E'
-    bottom: my app
-  - name: node2
-    icon: globe
-    color: '#455A64'
-    bottom: world
-links:
-  - from: node1
-    to: node2
-    color: '#333333'
-    top:
-      icon: envelope
-    bottom: '"hello"'
-@enduml
+@startfad
+[[nodes]]
+name = "node1"
+icon = "laptop-code"
+color = "#4E342E"
+bottom = "my app"
+
+[[nodes]]
+name = "node2"
+icon = "globe"
+color = "#455A64"
+bottom = "world"
+
+[[links]]
+from = "node1"
+to = "node2"
+color = "#333333"
+bottom = '"hello"'
+
+  [links.top]
+  icon = "envelope"
+@endfad
 
 ### Youtube Videos
 [Back to top](#top)

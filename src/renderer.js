@@ -150,10 +150,10 @@ module.exports = (config) => {
   };
 
   let faDiagrams;
-  let yaml;
+  let toml;
   if (config['modules']['fa-diagrams']) {
     faDiagrams = require('fa-diagrams');
-    yaml = require('js-yaml');
+    toml = require('@iarna/toml');
   }
 
   const renderFaDiagrams = (data, cb) => {
@@ -167,7 +167,7 @@ module.exports = (config) => {
         const code = match[1].trim();
         let output;
         try {
-          const diagData = yaml.safeLoad(code);
+          const diagData = toml.parse(code);
           const findLineBreaks = (data) => {
             Object.keys(data).forEach(key => {
               if (typeof data[key] === 'object')

@@ -1,15 +1,15 @@
 {
   "name": "gitblog.md",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "A static blog using Markdown pulled from your git repository.",
   "main": "src/server.js",
   "dependencies": {
+    "@iarna/toml": "^2.2.3",
     "body-parser": "^1.19.0",
     "crypto": "^1.0.1",
     "ejs": "^2.6.2",
     "express": "^4.17.1",
     "fa-diagrams": "^1.0.3",
-    "js-yaml": "^3.13.1",
     "mathjax-node": "^2.1.1",
     "ncp": "^2.0.0",
     "node-prismjs": "^0.1.2",
