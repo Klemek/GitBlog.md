@@ -245,7 +245,7 @@ Any URL like `/year/month/day/anything/` will redirect to this article (and link
 * **PlantUML**  
   It allows you to add UML diagrams with PlantUML Syntax between `@startuml` and `@enduml` (more info [here](http://www.plantuml.com))
 * **fa-diagrams**  
-  It allows you to define SVG diagrams with Font-Awesome icons in YAML between `@startfad` and `@endfad` (more info [here](https://github.com/Klemek/fa-diagrams))
+  It allows you to define SVG diagrams with Font-Awesome icons in [TOML](https://github.com/toml-lang/toml) between `@startfad` and `@endfad` (more info [here](https://github.com/Klemek/fa-diagrams))
 
 
 ## Configuration

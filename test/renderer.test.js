@@ -241,26 +241,29 @@ describe('Test MathJax', () => {
 describe('Test fa-diagrams', () => {
   test('no fa-diagrams', (done) => {
     config['modules']['fa-diagrams'] = false;
-    renderer.renderFaDiagrams('@startfad\noptions:\n\trendering:\t\tcolor:red\n\n@endfad', (data) => {
-      expect(data).toBe('@startfad\noptions:\n\trendering:\t\tcolor:red\n\n@endfad');
+    renderer.renderFaDiagrams('@startfad\noptions.rendering.color=\'red\'\n@endfad', (data) => {
+      expect(data).toBe('@startfad\noptions.rendering.color=\'red\'\n@endfad');
       done();
     });
   });
   test('no fa-diagrams in code', (done) => {
-    renderer.renderFaDiagrams('code:\n```\n@startfad\noptions:\n\trendering:\t\tcolor:red\n\n@endfad\n```', (data) => {
-      expect(data).toBe('code:\n```\n@startfad\noptions:\n\trendering:\t\tcolor:red\n\n@endfad\n```');
+    renderer.renderFaDiagrams('code:\n```\n@startfad\noptions.rendering.color=\'red\'\n@endfad\n```', (data) => {
+      expect(data).toBe('code:\n```\n@startfad\noptions.rendering.color=\'red\'\n@endfad\n```');
       done();
     });
   });
   test('valid fa-diagrams', (done) => {
-    renderer.renderFaDiagrams('before\n@startfad\noptions:\n  rendering:\n    color: red\n@endfad\nafter', (data) => {
+    renderer.renderFaDiagrams('before\n@startfad\noptions.rendering.color=\'red\'\n@endfad\nafter', (data) => {
       expect(data).toBe('before\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 0 0" width="0" height="0" font-family="Arial" font-size="15" fill="red" stroke-width="0"></svg>\nafter');
       done();
     });
   });
   test('invalid yaml', (done) => {
-    renderer.renderFaDiagrams('before\n@startfad\noptions:\n@endfad\nafter', (data) => {
-      expect(data).toBe('before\n<b style="color:red">TypeError: Cannot convert undefined or null to object</b>\nafter');
+    renderer.renderFaDiagrams('before\n@startfad\noptions.rendering.color=red\n@endfad\nafter', (data) => {
+      expect(data).toBe('before\n<b style="color:red">TomlError: Unexpected character, expecting string, number, datetime, boolean, inline array or inline table at row 1, col 26, pos 25:\n' +
+        '1> options.rendering.color=red\n' +
+        '                            ^\n' +
+        '\n</b>\nafter');
       done();
     });
   });
