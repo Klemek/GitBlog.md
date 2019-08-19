@@ -258,7 +258,7 @@ describe('Test fa-diagrams', () => {
       done();
     });
   });
-  test('invalid yaml', (done) => {
+  test('invalid toml', (done) => {
     renderer.renderFaDiagrams('before\n@startfad\noptions.rendering.color=red\n@endfad\nafter', (data) => {
       expect(data).toBe('before\n<b style="color:red">TomlError: Unexpected character, expecting string, number, datetime, boolean, inline array or inline table at row 1, col 26, pos 25:\n' +
         '1> options.rendering.color=red\n' +

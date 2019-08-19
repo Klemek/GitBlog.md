@@ -10,7 +10,6 @@
     "ejs": "^2.6.2",
     "express": "^4.17.1",
     "fa-diagrams": "^1.0.3",
-    "js-yaml": "^3.13.1",
     "mathjax-node": "^2.1.1",
     "ncp": "^2.0.0",
     "node-prismjs": "^0.1.2",
