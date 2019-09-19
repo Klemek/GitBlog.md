@@ -1,0 +1,7 @@
+path_classifiers:
+  test:
+    - test
+  docs:
+    - uml
+  library:
+    - src/lib
