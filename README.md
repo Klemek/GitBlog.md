@@ -1,5 +1,7 @@
 [![Build Status](https://img.shields.io/travis/Klemek/GitBlog.md.svg?branch=master)](https://travis-ci.org/Klemek/GitBlog.md)
 [![Coverage Status](https://img.shields.io/coveralls/github/Klemek/GitBlog.md.svg?branch=master)](https://coveralls.io/github/Klemek/GitBlog.md?branch=master)
+[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/Klemek/GitBlog.md.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Klemek/GitBlog.md/context:javascript)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/Klemek/GitBlog.md.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Klemek/GitBlog.md/alerts/)
 
 # GitBlog.md
 
@@ -260,6 +262,8 @@ Any URL like `/year/month/day/anything/` will redirect to this article (and link
   the directory where will be located the git repo with templates and articles
 * `view_engine` (default: ejs)  
   the Express view engine used to render pages from templates
+* `rate_limit` (default: 100)  
+  number of requests allowed in a time-frame of 15 minutes
 * `access_log` (default: access.log)  
   log file where to save access requests (empty to disable)
 * `error_log` (default: error.log)  
