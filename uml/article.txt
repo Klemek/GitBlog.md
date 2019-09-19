@@ -10,6 +10,7 @@ node nodejs {
 }
 
 package data {
+    [template.ejs]
     package "2019/06/18" {
         component index [
             index.md
@@ -22,6 +23,7 @@ package data {
 web -down-> TCP : 1. /2019/06/18/title
 express -down-> index : 2. fetch
 index -up-> showdown : 3. markdown
+template.ejs -up-> express : 4
 showdown -left-> express : 4. html
 express -up-> web : 5. html
 
