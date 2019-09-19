@@ -262,6 +262,8 @@ Any URL like `/year/month/day/anything/` will redirect to this article (and link
   the directory where will be located the git repo with templates and articles
 * `view_engine` (default: ejs)  
   the Express view engine used to render pages from templates
+* `rate_limit` (default: 100)  
+  number of requests allowed in a time-frame of 15 minutes
 * `access_log` (default: access.log)  
   log file where to save access requests (empty to disable)
 * `error_log` (default: error.log)  

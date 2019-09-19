@@ -3,6 +3,7 @@
   "host": "",
   "data_dir": "data",
   "view_engine": "ejs",
+  "rate_limit": 100,
   "access_log": "access.log",
   "error_log": "error.log",
   "modules": {

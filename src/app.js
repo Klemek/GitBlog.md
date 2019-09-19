@@ -3,6 +3,7 @@ const app = express();
 const fs = require('fs');
 const path = require('path');
 const pjson = require('../package.json');
+const rateLimit = require('express-rate-limit');
 
 app.enable('trust proxy');
 
@@ -121,6 +122,13 @@ module.exports = (config) => {
     }
     next();
   });
+
+  //rate limit for safer server
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: config['rate_limit']
+  });
+  app.use(limiter);
 
   //log request at result end
   app.use((req, res, next) => {
