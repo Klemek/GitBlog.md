@@ -1,5 +1,7 @@
 [![Build Status](https://img.shields.io/travis/Klemek/GitBlog.md.svg?branch=master)](https://travis-ci.org/Klemek/GitBlog.md)
 [![Coverage Status](https://img.shields.io/coveralls/github/Klemek/GitBlog.md.svg?branch=master)](https://coveralls.io/github/Klemek/GitBlog.md?branch=master)
+[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/Klemek/GitBlog.md.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Klemek/GitBlog.md/context:javascript)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/Klemek/GitBlog.md.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Klemek/GitBlog.md/alerts/)
 
 # GitBlog.md
 
