@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('head'); %>
+    <title><%= info.title %> - <%= article.title %></title>
+</head>
+<body>
+<main class="article">
+    <div class="header">
+        <a class="link-home" href="/">↑</a>
+        <h1><%= article.title %></h1>
+        <span class="time"><span><%= article.draft ? 'Drafted on' : 'Published on' %></span>&nbsp;&nbsp;<%= article.year + '-' + ('0' + article.month).slice(-2) + '-' + ('0' + article.day).slice(-2) %></span>
+    </div>
+    <div id="text"><%- article.content %></div>
+    <br>
+    <a href="#top">Go to top</a> - <a href="/">Back to home</a>
+    <%- include('footer'); %>
+</main>
+</body>
+</html>

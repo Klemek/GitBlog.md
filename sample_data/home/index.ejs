@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('head'); %>
+    <title><%= info.title %> - Home</title>
+</head>
+<body>
+<main>
+    <h1 class="title"><%= info.title %></h1>
+    <%= info.description %>
+    <h2>Articles in this blog :</h2>
+    <% articles.forEach((article) => { %>
+        <div class="article">
+            <%- `<a href="${article.url}">` %>
+            <h3><%- `${article.title}` %></h3>
+            <span class="time"><span>Published on</span>&nbsp;&nbsp;<%= article.year + '-' + ('0' + article.month).slice(-2) + '-' + ('0' + article.day).slice(-2) %></span>
+            <% if(article.thumbnail){ %>
+                <%- `<img alt="thumbnail" src=${article.thumbnail}>` %>
+            <% } %>
+            <%- `</a>` %>
+        </div>
+    <% }); %>
+    <%- include('footer'); %>
+</main>
+</body>
+</html>

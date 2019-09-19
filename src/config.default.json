@@ -1,0 +1,62 @@
+{
+  "node_port": 3000,
+  "host": "",
+  "data_dir": "data",
+  "view_engine": "ejs",
+  "rate_limit": 100,
+  "access_log": "access.log",
+  "error_log": "error.log",
+  "modules": {
+    "rss": true,
+    "webhook": true,
+    "prism": true,
+    "mathjax": true,
+    "plantuml": true,
+    "fa-diagrams": true
+  },
+  "home": {
+    "title": "GitBlog.md",
+    "description": "A static blog using Markdown pulled from your git repository",
+    "index": "index.ejs",
+    "error": "error.ejs",
+    "hidden": [
+      "*.ejs",
+      "/.git*"
+    ]
+  },
+  "article": {
+    "index": "index.md",
+    "draft": "draft.md",
+    "template": "template.ejs",
+    "thumbnail_tag": "thumbnail",
+    "default_title": "Untitled",
+    "default_thumbnail": ""
+  },
+  "rss": {
+    "title": "mygitblog RSS feed",
+    "description": "a generated RSS feed from my articles",
+    "endpoint": "/rss",
+    "length": 10
+  },
+  "webhook": {
+    "endpoint": "/webhook",
+    "secret": "",
+    "signature_header": "",
+    "pull_command": "git pull origin master"
+  },
+  "showdown": {
+    "parseImgDimensions": true,
+    "strikethrough": true,
+    "tables": true,
+    "tasklists": true,
+    "openLinksInNewWindow": true,
+    "emoji": true
+  },
+  "mathjax": {
+    "output_format": "svg",
+    "speak_text": true
+  },
+  "plantuml": {
+    "output_format": "svg"
+  }
+}

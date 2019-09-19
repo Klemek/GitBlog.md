@@ -1,23 +1,31 @@
 {
   "name": "gitblog.md",
-  "version": "1.0.0",
+  "version": "1.2.8",
   "description": "A static blog using Markdown pulled from your git repository.",
   "main": "src/server.js",
   "dependencies": {
+    "@iarna/toml": "^2.2.3",
+    "body-parser": "^1.19.0",
+    "ejs": "^2.6.2",
     "express": "^4.17.1",
+    "express-rate-limit": "^5.0.0",
+    "fa-diagrams": "^1.0.3",
+    "mathjax-node": "^2.1.1",
     "ncp": "^2.0.0",
-    "showdown": "^1.9.0",
-    "xml": "^1.0.1"
+    "node-prismjs": "^0.1.2",
+    "prismjs": "^1.16.0",
+    "rss": "^1.2.2",
+    "showdown": "^1.9.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
+    "coveralls": "^3.0.4",
     "jest": "^24.8.0",
     "superagent": "^5.1.0",
     "supertest": "^4.0.2"
   },
   "scripts": {
-    "test": "jest",
+    "start": "node src/server.js",
+    "test": "jest --silent",
     "install": "node src/postinstall.js"
   },
   "repository": {
@@ -29,5 +37,25 @@
   "bugs": {
     "url": "https://github.com/klemek/gitblog.md/issues"
   },
-  "homepage": "https://github.com/klemek/gitblog.md#readme"
+  "homepage": "https://github.com/klemek/gitblog.md#readme",
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!/node_modules/",
+      "!src/server.js",
+      "!src/postinstall.js",
+      "!src/lib/*.js"
+    ]
+  },
+  "nodemonConfig": {
+    "verbose": true,
+    "ignore": [
+      "test/*",
+      "sample_data/*",
+      "data/*",
+      "uml/*",
+      "*.log",
+      "README.md"
+    ]
+  }
 }

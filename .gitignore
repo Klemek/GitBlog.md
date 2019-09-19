@@ -1,4 +1,10 @@
 /.idea
 /node_modules
 /config.json
+/config.example.json
 /data
+/data/*
+/test_data
+/access.log
+/error.log
+/coverage

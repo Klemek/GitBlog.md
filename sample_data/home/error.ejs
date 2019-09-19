@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('head'); %>
+    <title><%= info.title %> - Error <%= error %></title>
+</head>
+<body>
+<main>
+    <h1>Somehing went wrong
+        <small>(Error <%= error %>)</small>
+    </h1>
+    It means the resource you're trying to access is unavailable right now.<br>
+    We're terribly sorry that you encountered this error.<br><br>
+    <a href="/">Back to home</a>
+    <%- include('footer'); %>
+</main>
+</body>
+</html>
