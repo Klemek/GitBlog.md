@@ -332,3 +332,4 @@ Any URL like `/year/month/day/anything/` will redirect to this article (and link
      specify the output format between svg, html or MathMl (mml)
    * `speak_text`: (default: true)  
      activate the alternate text in equations
+
