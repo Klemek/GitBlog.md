@@ -15,7 +15,8 @@
     "node-prismjs": "^0.1.2",
     "prismjs": "^1.16.0",
     "rss": "^1.2.2",
-    "showdown": "^1.9.0"
+    "showdown": "^1.9.0",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "coveralls": "^3.0.4",
@@ -26,7 +27,9 @@
   "scripts": {
     "start": "node src/server.js",
     "test": "jest --silent",
-    "install": "node src/postinstall.js"
+    "install": "node src/postinstall.js",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -57,5 +60,6 @@
       "*.log",
       "README.md"
     ]
-  }
+  },
+  "snyk": true
 }
