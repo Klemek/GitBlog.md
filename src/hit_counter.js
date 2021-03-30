@@ -49,8 +49,8 @@ module.exports = (config, onConnect, onError) => {
         } else {
             client.hgetall(path, (_, value) => {
                 cb({
-                    hits: value ? value.h || 0 : 0,
-                    total_visitors: value ? value.v || 0 : 0,
+                    hits: value ? parseInt(value.h) || 0 : 0,
+                    total_visitors: value ? parseInt(value.v) || 0 : 0,
                     current_visitors: cleanVisitors(path),
                 });
             });
