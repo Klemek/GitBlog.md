@@ -6,10 +6,10 @@ module.exports = (config) => {
     const converter = new showdown.Converter(config['showdown']);
 
     /**
-   * get parts outside of codes/scripts
-   * @param {string} data
-   * @returns {{index:number, end:number, text:string}[]} parts
-   */
+     * get parts outside of codes/scripts
+     * @param {string} data
+     * @returns {{index:number, end:number, text:string}[]} parts
+     */
     const getParts = (data) => {
         let parts = [];
         let match;
@@ -67,17 +67,18 @@ module.exports = (config) => {
 
     const renderPrism = (data, cb) => {
         if (!config['modules']['prism']) {
-            return cb(data);
+            cb(data);
+        } else {
+            const codeRegex = /```([\w-]+)\r?\n((?:(?!```)[\s\S])*)\r?\n```/m;
+            let match;
+            while ((match = codeRegex.exec(data))) {
+                const lang = match[1].trim();
+                const code = match[2].trim();
+                const block = Prism.highlight(code, Prism.languages[lang] || Prism.languages.autoit, lang);
+                data = data.slice(0, match.index) + `<pre><code class="${lang} language-${lang}">` + block + '</code></pre>' + data.slice(match.index + match[0].length);
+            }
+            cb(data);
         }
-        const codeRegex = /```([\w-]+)\r?\n((?:(?!```)[\s\S])*)\r?\n```/m;
-        let match;
-        while ((match = codeRegex.exec(data))) {
-            const lang = match[1].trim();
-            const code = match[2].trim();
-            const block = Prism.highlight(code, Prism.languages[lang] || Prism.languages.autoit, lang);
-            data = data.slice(0, match.index) + `<pre><code class="${lang} language-${lang}">` + block + '</code></pre>' + data.slice(match.index + match[0].length);
-        }
-        cb(data);
     };
 
     if (config['modules']['plantuml']) {
@@ -87,22 +88,23 @@ module.exports = (config) => {
     const renderPlantUML = (data, cb) => {
         /* global encode64 */
         if (!config['modules']['plantuml']) {
-            return cb(data);
+            cb(data);
+        } else {
+            const parts = getParts(data);
+            const umlRegex = /@startuml\r?\n((?:(?!@enduml)[\s\S])*)\r?\n@enduml/m;
+            let match;
+            parts.forEach(part => {
+                while ((match = umlRegex.exec(part.text))) {
+                    const code = match[1].trim();
+                    const s = unescape(encodeURIComponent(code));
+                    const compressed = global['zip_deflate'](s);
+                    const url = `http://www.plantuml.com/plantuml/${config['plantuml']['output_format']}/${encode64(compressed)}`;
+                    part.text = part.text.slice(0, match.index) + `<img alt="generated PlantUML diagram" src="${url}">` + part.text.slice(match.index + match[0].length);
+                }
+                data = data.slice(0, part.index) + part.text + data.slice(part.end);
+            });
+            cb(data);
         }
-        const parts = getParts(data);
-        const umlRegex = /@startuml\r?\n((?:(?!@enduml)[\s\S])*)\r?\n@enduml/m;
-        let match;
-        parts.forEach(part => {
-            while ((match = umlRegex.exec(part.text))) {
-                const code = match[1].trim();
-                const s = unescape(encodeURIComponent(code));
-                const compressed = global['zip_deflate'](s);
-                const url = `http://www.plantuml.com/plantuml/${config['plantuml']['output_format']}/${encode64(compressed)}`;
-                part.text = part.text.slice(0, match.index) + `<img alt="generated PlantUML diagram" src="${url}">` + part.text.slice(match.index + match[0].length);
-            }
-            data = data.slice(0, part.index) + part.text + data.slice(part.end);
-        });
-        cb(data);
     };
 
     let mjAPI;
@@ -111,8 +113,18 @@ module.exports = (config) => {
         mjAPI.config({
             MathJax: {
                 tex2jax: {
-                    inlineMath: [['$', '$']],
-                    displayMath: [['$$', '$$']],
+                    inlineMath: [
+                        [
+                            '$',
+                            '$',
+                        ],
+                    ],
+                    displayMath: [
+                        [
+                            '$$',
+                            '$$',
+                        ],
+                    ],
                 },
             },
         });
@@ -120,40 +132,47 @@ module.exports = (config) => {
 
     const renderMathJax = (data, cb) => {
         if (!config['modules']['mathjax']) {
-            return cb(data);
-        }
+            cb(data);
+        } else {
+            const parts = getParts(data);
 
-        const parts = getParts(data);
-
-        const doMJ = (match, format, i) => {
-            const eq = match[1].trim();
-            const output = config['mathjax']['output_format'];
-            const mjConf = {
-                math: eq,
-                format: format,
-                speakText: config['mathjax']['speak_text'],
-            };
-            mjConf[output] = true;
-            mjAPI.typeset(mjConf, (res) => {
-                data = data.slice(0, parts[i].index + match.index) + res[output] + data.slice(parts[i].index + match.index + match[0].length);
-                renderMathJax(data, (data2) => {
-                    cb(data2);
+            const doMJ = (match, format, i) => {
+                const eq = match[1].trim();
+                const output = config['mathjax']['output_format'];
+                const mjConf = {
+                    math: eq,
+                    format: format,
+                    speakText: config['mathjax']['speak_text'],
+                };
+                mjConf[output] = true;
+                mjAPI.typeset(mjConf, (res) => {
+                    data = data.slice(0, parts[i].index + match.index) + res[output] + data.slice(parts[i].index + match.index + match[0].length);
+                    renderMathJax(data, (data2) => {
+                        cb(data2);
+                    });
                 });
-            });
-        };
+            };
 
-        const eqRegex = /\$\$((?:(?!\$\$)[\s\S])*)\$\$/m;
-        const inlineEqRegex = /\$([^$\n]*)\$/;
+            const eqRegex = /\$\$((?:(?!\$\$)[\s\S])*)\$\$/m;
+            const inlineEqRegex = /\$([^$\n]*)\$/;
 
-        for (let i = 0; i < parts.length; i++) {
-            let match;
-            if ((match = eqRegex.exec(parts[i].text))) {
-                return doMJ(match, 'TeX', i);
-            } else if ((match = inlineEqRegex.exec(parts[i].text))) {
-                return doMJ(match, 'inline-TeX', i);
+            let found = false;
+            for (let i = 0; i < parts.length; i++) {
+                let match;
+                if ((match = eqRegex.exec(parts[i].text))) {
+                    doMJ(match, 'TeX', i);
+                    found = true;
+                    break;
+                } else if ((match = inlineEqRegex.exec(parts[i].text))) {
+                    doMJ(match, 'inline-TeX', i);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                cb(data);
             }
         }
-        cb(data);
     };
 
     let faDiagrams;
@@ -165,36 +184,37 @@ module.exports = (config) => {
 
     const renderFaDiagrams = (data, cb) => {
         if (!config['modules']['fa-diagrams']) {
-            return cb(data);
-        }
-        const parts = getParts(data);
-        const diagramsRegex = /@startfad\r?\n((?:(?!@endfad)[\s\S])*)\r?\n@endfad/m;
-        let match;
-        parts.forEach(part => {
-            while ((match = diagramsRegex.exec(part.text))) {
-                const code = match[1].trim();
-                let output;
-                try {
-                    const diagData = toml.parse(code);
-                    const findLineBreaks = (data) => {
-                        Object.keys(data).forEach(key => {
-                            if (typeof data[key] === 'object') {
-                                findLineBreaks(data[key]);
-                            } else if (typeof data[key] === 'string') {
-                                data[key] = data[key].replace(/\\n/gm, '\n');
-                            }
-                        });
-                    };
-                    findLineBreaks(diagData);
-                    output = faDiagrams.compute(diagData);
-                } catch (err) {
-                    output = `<b style="color:red">${err.toString()}</b>`;
+            cb(data);
+        } else {
+            const parts = getParts(data);
+            const diagramsRegex = /@startfad\r?\n((?:(?!@endfad)[\s\S])*)\r?\n@endfad/m;
+            let match;
+            parts.forEach(part => {
+                while ((match = diagramsRegex.exec(part.text))) {
+                    const code = match[1].trim();
+                    let output;
+                    try {
+                        const diagData = toml.parse(code);
+                        const findLineBreaks = (data) => {
+                            Object.keys(data).forEach(key => {
+                                if (typeof data[key] === 'object') {
+                                    findLineBreaks(data[key]);
+                                } else if (typeof data[key] === 'string') {
+                                    data[key] = data[key].replace(/\\n/gm, '\n');
+                                }
+                            });
+                        };
+                        findLineBreaks(diagData);
+                        output = faDiagrams.compute(diagData);
+                    } catch (err) {
+                        output = `<b style="color:red">${err.toString()}</b>`;
+                    }
+                    part.text = part.text.slice(0, match.index) + output + part.text.slice(match.index + match[0].length);
                 }
-                part.text = part.text.slice(0, match.index) + output + part.text.slice(match.index + match[0].length);
-            }
-            data = data.slice(0, part.index) + part.text + data.slice(part.end);
-        });
-        cb(data);
+                data = data.slice(0, part.index) + part.text + data.slice(part.end);
+            });
+            cb(data);
+        }
     };
 
     return {
@@ -205,22 +225,22 @@ module.exports = (config) => {
         renderMathJax: config['test'] ? renderMathJax : undefined,
         renderFaDiagrams: config['test'] ? renderFaDiagrams : undefined,
         render: (file, cb) => {
-            fs.readFile(file, {encoding: 'UTF-8'}, (err, data) => {
+            fs.readFile(file, { encoding: 'UTF-8' }, (err, data) => {
                 if (err) {
-                    return cb(err);
-                }
-
-                renderPlantUML(data, (data) => {
-                    renderFaDiagrams(data, (data) => {
-                        renderMathJax(data, (data) => {
-                            renderPrism(data, (data) => {
-                                renderShowDown(data, (html) => {
-                                    cb(null, html);
+                    cb(err);
+                } else {
+                    renderPlantUML(data, (data) => {
+                        renderFaDiagrams(data, (data) => {
+                            renderMathJax(data, (data) => {
+                                renderPrism(data, (data) => {
+                                    renderShowDown(data, (html) => {
+                                        cb(null, html);
+                                    });
                                 });
                             });
                         });
                     });
-                });
+                }
             });
         },
     };

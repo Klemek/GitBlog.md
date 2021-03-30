@@ -8,14 +8,14 @@ const testIndex = 'testindex.md';
 const joinUrl = (...paths) => path.join(...paths).replace(/\\/g, '/');
 
 const config = {
-    'test': true,
-    'data_dir': dataDir,
-    'article': {
-        'index': testIndex,
-        'draft': 'draft.md',
-        'default_title': 'Untitled',
-        'default_thumbnail': 'default.png',
-        'thumbnail_tag': 'thumbnail',
+    test: true,
+    data_dir: dataDir,
+    article: {
+        index: testIndex,
+        draft: 'draft.md',
+        default_title: 'Untitled',
+        default_thumbnail: 'default.png',
+        thumbnail_tag: 'thumbnail',
     },
 };
 
@@ -225,8 +225,8 @@ describe('Test article fetching', () => {
     test('empty index file', (done) => {
         const dir = path.join(dataDir, '2019', '05', '05');
         const file = path.join(dir, testIndex);
-        utils.createEmptyDirs([dir]);
-        utils.createEmptyFiles([file]);
+        utils.createEmptyDirs([ dir ]);
+        utils.createEmptyFiles([ file ]);
         const date = new Date(2019, 5, 5);
         date.setUTCHours(0);
         fw.fetchArticles((err, dict) => {
@@ -252,7 +252,7 @@ describe('Test article fetching', () => {
     test('correct index file', (done) => {
         const dir = path.join(dataDir, '2019', '05', '05');
         const file = path.join(dir, testIndex);
-        utils.createEmptyDirs([dir]);
+        utils.createEmptyDirs([ dir ]);
         fs.writeFileSync(file, `
            # Title with : info !
            ![thumbnail](./thumbnail.jpg)
@@ -283,7 +283,7 @@ describe('Test article fetching', () => {
     test('correct draft file', (done) => {
         const dir = path.join(dataDir, '2019', '05', '05');
         const file = path.join(dir, 'draft.md');
-        utils.createEmptyDirs([dir]);
+        utils.createEmptyDirs([ dir ]);
         fs.writeFileSync(file, `
            # Title with : info !
            ![thumbnail](./thumbnail.jpg)
@@ -315,8 +315,11 @@ describe('Test article fetching', () => {
         const dir = path.join(dataDir, '2019', '05', '05');
         const file = path.join(dir, testIndex);
         const file2 = path.join(dir, 'draft.md');
-        utils.createEmptyDirs([dir]);
-        utils.createEmptyFiles([file, file2]);
+        utils.createEmptyDirs([ dir ]);
+        utils.createEmptyFiles([
+            file,
+            file2,
+        ]);
         const date = new Date(2019, 5, 5);
         date.setUTCHours(0);
         fw.fetchArticles((err, dict) => {

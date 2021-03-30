@@ -6,23 +6,23 @@ const dataDir = 'test_data';
 const file = path.join(dataDir, 'test.md');
 
 const config = {
-    'test': true,
-    'modules': {
+    test: true,
+    modules: {
         'prism': true,
         'mathjax': true,
         'plantuml': true,
         'fa-diagrams': true,
     },
-    'showdown': {
-        'simplifiedAutoLink': true,
-        'smartIndentationFix': true,
+    showdown: {
+        simplifiedAutoLink: true,
+        smartIndentationFix: true,
     },
-    'mathjax': {
-        'output_format': 'html',
-        'speak_text': false,
+    mathjax: {
+        output_format: 'html',
+        speak_text: false,
     },
-    'plantuml': {
-        'output_format': 'svg',
+    plantuml: {
+        output_format: 'svg',
     },
 };
 
@@ -47,9 +47,7 @@ describe('get parts', () => {
     test('normal', () => {
         const data = 'Hello\nthere\ngeneral\nkenobi';
         const parts = renderer.getParts(data);
-        expect(parts.map(p => p.text)).toEqual([
-            'Hello\nthere\ngeneral\nkenobi',
-        ]);
+        expect(parts.map(p => p.text)).toEqual([ 'Hello\nthere\ngeneral\nkenobi' ]);
     });
     test('lot of stuff', () => {
         const data = 'Hello\nthere\n```code```\ngeneral<script>script</script>\n<script>script2</script>\n```<script>script3</script>```kenobi';
