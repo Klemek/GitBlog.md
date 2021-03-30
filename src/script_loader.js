@@ -5,6 +5,6 @@ const fs = require('fs');
  * @param scriptPath
  */
 module.exports = (scriptPath) => {
-  eval.call(global, fs.readFileSync(scriptPath, {encoding: 'UTF-8'}));
+    eval.call(global, fs.readFileSync(scriptPath, {encoding: 'UTF-8'}));
 };
 

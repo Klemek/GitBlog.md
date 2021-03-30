@@ -19,6 +19,8 @@
   },
   "devDependencies": {
     "coveralls": "^3.0.4",
+    "eslint": "^7.23.0",
+    "eslint-plugin-jest": "^24.3.2",
     "jest": "^24.8.0",
     "superagent": "^5.1.0",
     "supertest": "^4.0.2"
@@ -26,7 +28,8 @@
   "scripts": {
     "start": "node src/server.js",
     "test": "jest --silent -i",
-    "install": "node src/postinstall.js"
+    "install": "node src/postinstall.js",
+    "lint": "eslint --fix ."
   },
   "repository": {
     "type": "git",
