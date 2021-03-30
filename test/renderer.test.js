@@ -15,15 +15,15 @@ const config = {
     },
     'showdown': {
         'simplifiedAutoLink': true,
-        'smartIndentationFix': true
+        'smartIndentationFix': true,
     },
     'mathjax': {
         'output_format': 'html',
-        'speak_text': false
+        'speak_text': false,
     },
     'plantuml': {
-        'output_format': 'svg'
-    }
+        'output_format': 'svg',
+    },
 };
 
 const renderer = require('../src/renderer')(config);
@@ -48,7 +48,7 @@ describe('get parts', () => {
         const data = 'Hello\nthere\ngeneral\nkenobi';
         const parts = renderer.getParts(data);
         expect(parts.map(p => p.text)).toEqual([
-            'Hello\nthere\ngeneral\nkenobi'
+            'Hello\nthere\ngeneral\nkenobi',
         ]);
     });
     test('lot of stuff', () => {
@@ -58,27 +58,27 @@ describe('get parts', () => {
             {
                 index: 0,
                 end: 12,
-                text: 'Hello\nthere\n'
+                text: 'Hello\nthere\n',
             },
             {
                 index: 22,
                 end: 30,
-                text: '\ngeneral'
+                text: '\ngeneral',
             },
             {
                 index: 53,
                 end: 54,
-                text: '\n'
+                text: '\n',
             },
             {
                 index: 78,
                 end: 79,
-                text: '\n'
+                text: '\n',
             },
             {
                 index: 109,
                 end: 115,
-                text: 'kenobi'
+                text: 'kenobi',
             },
         ]);
     });

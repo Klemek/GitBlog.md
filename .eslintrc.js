@@ -4,38 +4,42 @@ module.exports = {
         'commonjs': true,
         'es2021': true,
         'node': true,
-        'jest/globals': true
+        'jest/globals': true,
     },
     'extends': ['eslint:recommended', 'plugin:jest/recommended'],
     'parserOptions': {
-        'ecmaVersion': 12
+        'ecmaVersion': 12,
     },
     'rules': {
         'indent': [
             'error',
-            4
+            4,
         ],
         'linebreak-style': [
             'error',
-            'unix'
+            'unix',
         ],
         'quotes': [
             'error',
-            'single'
+            'single',
         ],
         'semi': [
             'error',
-            'always'
+            'always',
         ],
         'curly': [
             'error',
-            'all'
+            'all',
         ],
         'brace-style': [
             'error',
-            '1tbs'
+            '1tbs',
         ],
         'jest/no-done-callback': 'off',
-        'jest/expect-expect': 'off'
-    }
+        'jest/expect-expect': 'off',
+        'comma-dangle': [
+            'error',
+            'always-multiline',
+        ],
+    },
 };

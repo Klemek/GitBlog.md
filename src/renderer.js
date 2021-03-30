@@ -112,9 +112,9 @@ module.exports = (config) => {
             MathJax: {
                 tex2jax: {
                     inlineMath: [['$', '$']],
-                    displayMath: [['$$', '$$']]
-                }
-            }
+                    displayMath: [['$$', '$$']],
+                },
+            },
         });
     }
 
@@ -131,7 +131,7 @@ module.exports = (config) => {
             const mjConf = {
                 math: eq,
                 format: format,
-                speakText: config['mathjax']['speak_text']
+                speakText: config['mathjax']['speak_text'],
             };
             mjConf[output] = true;
             mjAPI.typeset(mjConf, (res) => {
@@ -222,7 +222,7 @@ module.exports = (config) => {
                     });
                 });
             });
-        }
+        },
     };
 };
 

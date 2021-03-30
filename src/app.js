@@ -93,7 +93,7 @@ module.exports = (config) => {
             host: host,
             version: pjson.version,
             request: req,
-            config: config
+            config: config,
         };
         res.render(vPath, data, (err, html) => {
             if (err && vPath !== path.join(config['data_dir'], config['home']['error'])) {
@@ -130,7 +130,7 @@ module.exports = (config) => {
     //rate limit for safer server
     const limiter = rateLimit({
         windowMs: 15 * 60 * 1000, // 15 minutes
-        max: config['rate_limit']
+        max: config['rate_limit'],
     });
     app.use(limiter);
 
@@ -174,7 +174,7 @@ module.exports = (config) => {
                     'title': config['rss']['title'],
                     'description': config['rss']['description'],
                     'feed_url': host + req.url,
-                    'site_url': host
+                    'site_url': host,
                 });
                 Object.values(articles)
                     .slice(0, config['rss']['length'])
@@ -182,7 +182,7 @@ module.exports = (config) => {
                         feed.item({
                             title: article.title,
                             url: host + article.url,
-                            date: article.date
+                            date: article.date,
                         });
                     });
                 lastRSS = feed.xml();

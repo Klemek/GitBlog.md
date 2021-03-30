@@ -163,7 +163,7 @@ describe('Test root path', () => {
         utils.createEmptyDirs([
             path.join(dataDir, '2019', '05', '05'),
             path.join(dataDir, '2018', '05', '05'),
-            path.join(dataDir, '2017', '05', '05')
+            path.join(dataDir, '2017', '05', '05'),
         ]);
         utils.createEmptyFiles([
             path.join(dataDir, '2019', '05', '05', 'draft.md'),
@@ -219,11 +219,11 @@ describe('Test RSS feed', () => {
     test('200 2 rss items', (done, fail) => {
         utils.createEmptyDirs([
             path.join(dataDir, '2019', '05', '05'),
-            path.join(dataDir, '2018', '05', '05')
+            path.join(dataDir, '2018', '05', '05'),
         ]);
         utils.createEmptyFiles([
             path.join(dataDir, '2019', '05', '05', 'index.md'),
-            path.join(dataDir, '2018', '05', '05', 'index.md')
+            path.join(dataDir, '2018', '05', '05', 'index.md'),
         ]);
         app.reload(() => {
             request(app).get('/rsstest').then((response) => {
@@ -238,12 +238,12 @@ describe('Test RSS feed', () => {
         utils.createEmptyDirs([
             path.join(dataDir, '2019', '05', '05'),
             path.join(dataDir, '2018', '05', '05'),
-            path.join(dataDir, '2017', '05', '05')
+            path.join(dataDir, '2017', '05', '05'),
         ]);
         utils.createEmptyFiles([
             path.join(dataDir, '2019', '05', '05', 'index.md'),
             path.join(dataDir, '2018', '05', '05', 'index.md'),
-            path.join(dataDir, '2017', '05', '05', 'index.md')
+            path.join(dataDir, '2017', '05', '05', 'index.md'),
         ]);
         app.reload(() => {
             request(app).get('/rsstest').then((response) => {
@@ -265,10 +265,10 @@ describe('Test webhook', () => {
         });
     });
     test('200 no secret', (done) => {
-        utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05'),]);
+        utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05')]);
         utils.createEmptyFiles([
             path.join(dataDir, '2019', '05', '05', 'index.md'),
-            path.join(dataDir, testTemplate)
+            path.join(dataDir, testTemplate),
         ]);
         config['webhook']['pull_command'] = 'git --help';
         request(app).post('/webhooktest').then((response) => {
@@ -280,10 +280,10 @@ describe('Test webhook', () => {
         });
     });
     test('500 command failed', (done) => {
-        utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05'),]);
+        utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05')]);
         utils.createEmptyFiles([
             path.join(dataDir, '2019', '05', '05', 'index.md'),
-            path.join(dataDir, testTemplate)
+            path.join(dataDir, testTemplate),
         ]);
         config['webhook']['pull_command'] = 'qzgfqgqz';
         request(app).post('/webhooktest').then((response) => {
@@ -322,7 +322,7 @@ describe('Test articles rendering', () => {
     });
 
     test('500 fail to render', (done, fail) => {
-        utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05'),]);
+        utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05')]);
         fs.writeFileSync(path.join(dataDir, '2019', '05', '05', 'index.md'), '# Hello');
         fs.writeFileSync(path.join(dataDir, testTemplate), '<%- articl.content %><%- `<a href="${article.url}">reload</a>` %>');
         app.reload(() => {
@@ -334,7 +334,7 @@ describe('Test articles rendering', () => {
     });
 
     test('500 no template', (done, fail) => {
-        utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05'),]);
+        utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05')]);
         fs.writeFileSync(path.join(dataDir, '2019', '05', '05', 'index.md'), '# Hello');
         app.reload(() => {
             request(app).get('/2019/05/05/hello/').then((response) => {
@@ -345,7 +345,7 @@ describe('Test articles rendering', () => {
     });
 
     test('200 rendered article', (done, fail) => {
-        utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05'),]);
+        utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05')]);
         fs.writeFileSync(path.join(dataDir, '2019', '05', '05', 'index.md'), '# Hello');
         fs.writeFileSync(path.join(dataDir, testTemplate), '<%- article.content %><%- `<a href="${article.url}">reload</a>` %>');
         app.reload(() => {
@@ -358,7 +358,7 @@ describe('Test articles rendering', () => {
     });
 
     test('200 rendered draft', (done, fail) => {
-        utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05'),]);
+        utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05')]);
         fs.writeFileSync(path.join(dataDir, '2019', '05', '05', 'draft.md'), '# Hello');
         fs.writeFileSync(path.join(dataDir, testTemplate), '<%- article.content %><%- `<a href="${article.url}">reload</a>` %>');
         app.reload(() => {
@@ -371,10 +371,10 @@ describe('Test articles rendering', () => {
     });
 
     test('200 other url', (done, fail) => {
-        utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05'),]);
+        utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05')]);
         utils.createEmptyFiles([
             path.join(dataDir, '2019', '05', '05', 'index.md'),
-            path.join(dataDir, testTemplate)
+            path.join(dataDir, testTemplate),
         ]);
         app.reload(() => {
             request(app).get('/2019/05/05/anything/').then((response) => {
@@ -385,10 +385,10 @@ describe('Test articles rendering', () => {
     });
 
     test('200 other url 2', (done, fail) => {
-        utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05'),]);
+        utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05')]);
         utils.createEmptyFiles([
             path.join(dataDir, '2019', '05', '05', 'index.md'),
-            path.join(dataDir, testTemplate)
+            path.join(dataDir, testTemplate),
         ]);
         app.reload(() => {
             request(app).get('/2019/05/05/').then((response) => {
@@ -441,7 +441,7 @@ describe('Test static files', () => {
         });
     });
     test('200 valid resource of article', (done) => {
-        utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05'),]);
+        utils.createEmptyDirs([path.join(dataDir, '2019', '05', '05')]);
         fs.writeFileSync(path.join(dataDir, '2019', '05', '05', 'somefile.txt'), 'filecontent');
         request(app).get('/2019/05/05/title/somefile.txt').then((response) => {
             expect(response.statusCode).toBe(200);

@@ -92,7 +92,7 @@ module.exports = (config) => {
                         realPath: path.join(config['data_dir'], p[0], p[1], p[2], p[3]),
                         year: parseInt(p[0]),
                         month: parseInt(p[1]),
-                        day: parseInt(p[2])
+                        day: parseInt(p[2]),
                     };
                     article.date = new Date(article.year, article.month, article.day);
                     article.date.setUTCHours(0);
@@ -116,6 +116,6 @@ module.exports = (config) => {
                 });
 
             });
-        }
+        },
     };
 };
