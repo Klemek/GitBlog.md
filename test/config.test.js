@@ -8,7 +8,6 @@ beforeAll(() => {
     if (fs.existsSync(configFile)) {
         fs.renameSync(configFile, tmpConfigFile);
     }
-    expect(fs.existsSync(configFile)).toBeFalsy();
 });
 
 afterAll(() => {
