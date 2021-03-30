@@ -105,8 +105,8 @@ describe('Test error logging', () => {
       fs.readFile(path.join(dataDir, 'error.log'), {encoding: 'UTF-8'}, (err, data) => {
         expect(err).toBeNull();
         const start = data.split('\n').slice(0, 2).join('\n');
-        const expected = '500 GET / ' + new Date().toUTCString() + ' ::ffff:127.0.0.1\nTypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string. Received type object';
-        expect(start).toBe(expected);
+        const expected = '500 GET / ' + new Date().toUTCString() + ' ::ffff:127.0.0.1\nTypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string.';
+        expect(start.indexOf(expected)).toBe(0);
         done();
       });
     });
