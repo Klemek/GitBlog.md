@@ -37,14 +37,21 @@ test('options passed to redis', () => {
     expect(mockClient.options).toEqual(config['redis']);
 });
 
-describe('read()', () => {
-    beforeEach(() => {
-        mockClient.hgetall = (_, cb) => {
-            cb();
-        };
-    });
 
-    test('read path', (done) => {
+beforeEach(() => {
+    mockClient.hgetall = (_, cb) => {
+        cb();
+    };
+    mockClient.multi = () => mockClient;
+    mockClient.hincrby = () => mockClient;
+    mockClient.exec = (cb) => {
+        cb();
+    };
+    config['hit_counter']['unique_visitor_timeout'] = -1;
+});
+
+describe('read()', () => {
+    test('normal', (done) => {
         mockClient.hgetall = (path, cb) => {
             expect(path).toBe('/test/path/');
             cb(undefined, { h: 12, v: 34 });
@@ -52,12 +59,13 @@ describe('read()', () => {
         hc.read('/test/path/', (data) => {
             expect(data).toBeDefined();
             expect(data.hits).toBe(12);
-            expect(data.visitors).toBe(34);
+            expect(data.total_visitors).toBe(34);
+            expect(data.current_visitors).toBe(0);
             done();
         });
     });
 
-    test('read path with error', (done) => {
+    test('with error', (done) => {
         mockClient.hgetall = (path, cb) => {
             expect(path).toBe('/test/path/');
             cb('error', undefined);
@@ -65,12 +73,13 @@ describe('read()', () => {
         hc.read('/test/path/', (data) => {
             expect(data).toBeDefined();
             expect(data.hits).toBe(0);
-            expect(data.visitors).toBe(0);
+            expect(data.total_visitors).toBe(0);
+            expect(data.current_visitors).toBe(0);
             done();
         });
     });
 
-    test('read path with error 2', (done) => {
+    test('with error 2', (done) => {
         mockClient.hgetall = (path, cb) => {
             expect(path).toBe('/test/path/');
             cb(undefined, {});
@@ -78,22 +87,41 @@ describe('read()', () => {
         hc.read('/test/path/', (data) => {
             expect(data).toBeDefined();
             expect(data.hits).toBe(0);
-            expect(data.visitors).toBe(0);
+            expect(data.total_visitors).toBe(0);
+            expect(data.current_visitors).toBe(0);
             done();
+        });
+    });
+
+    test('1 visitor', (done) => {
+        config['hit_counter']['unique_visitor_timeout'] = 1000;
+        hc.count({
+            headers: {},
+            connection: { remoteAddress: 'test1' },
+        }, '/test/path/5', () => {
+            hc.read('/test/path/5', (data) => {
+                expect(data).toBeDefined();
+                expect(data.current_visitors).toBe(1);
+                done();
+            });
+        });
+    });
+
+    test('cleaned old visitor', (done) => {
+        hc.count({
+            headers: {},
+            connection: { remoteAddress: 'test1' },
+        }, '/test/path/5', () => {
+            hc.read('/test/path/5', (data) => {
+                expect(data).toBeDefined();
+                expect(data.current_visitors).toBe(0);
+                done();
+            });
         });
     });
 });
 
 describe('count()', () => {
-    beforeEach(() => {
-        mockClient.multi = () => mockClient;
-        mockClient.hincrby = () => mockClient;
-        mockClient.exec = (cb) => {
-            cb();
-        };
-        config['hit_counter']['unique_visitor_timeout'] = -1;
-    });
-
     test('simple visit', (done) => {
         let multiCalled = false;
         let execCalled = false;

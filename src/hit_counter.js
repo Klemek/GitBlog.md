@@ -13,10 +13,10 @@ module.exports = (config, onConnect, onError) => {
             cb();
         } else {
             const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-            const key = path + ':' + ip;
+            visitors[path] = (visitors[path] || {});
             const now = Date.now();
-            const isNewVisitor = (now - (visitors[key] || 0)) > config['hit_counter']['unique_visitor_timeout'];
-            visitors[key] = now;
+            const isNewVisitor = (now - (visitors[path][ip] || 0)) > config['hit_counter']['unique_visitor_timeout'];
+            visitors[path][ip] = now;
             client
                 .multi()
                 .hincrby(path, 'h', 1)
@@ -25,17 +25,33 @@ module.exports = (config, onConnect, onError) => {
         }
     };
 
+    const cleanVisitors = (path) => {
+        visitors[path] = (visitors[path] || {});
+        const now = Date.now();
+        let count = 0;
+        for (let ip in visitors[path]) {
+            if ((now - visitors[path][ip]) > config['hit_counter']['unique_visitor_timeout']) {
+                delete visitors[path][ip];
+            } else {
+                count++;
+            }
+        }
+        return count;
+    };
+
     const read = (path, cb) => {
         if (!client.connected) {
             cb({
                 hits: 0,
-                visitors: 0,
+                total_visitors: 0,
+                current_visitors: 0,
             });
         } else {
             client.hgetall(path, (_, value) => {
                 cb({
                     hits: value ? value.h || 0 : 0,
-                    visitors: value ? value.v || 0 : 0,
+                    total_visitors: value ? value.v || 0 : 0,
+                    current_visitors: cleanVisitors(path),
                 });
             });
         }

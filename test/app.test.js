@@ -209,7 +209,11 @@ describe('Test root path', () => {
         request(app).get('/stats')
             .then((response) => {
                 expect(response.statusCode).toBe(200);
-                expect(response.body).toEqual({ hits: 0, visitors: 0 });
+                expect(response.body).toEqual({
+                    hits: 0,
+                    total_visitors: 0,
+                    current_visitors: 0,
+                });
                 done();
             });
     });
@@ -478,7 +482,11 @@ describe('Test articles rendering', () => {
             request(app).get('/2019/05/05/anything/stats')
                 .then((response) => {
                     expect(response.statusCode).toBe(200);
-                    expect(response.body).toEqual({ hits: 0, visitors: 0 });
+                    expect(response.body).toEqual({
+                        hits: 0,
+                        total_visitors: 0,
+                        current_visitors: 0,
+                    });
                     done();
                 });
         });

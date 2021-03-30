@@ -182,10 +182,7 @@ module.exports = (config) => {
     app.get('/stats', (req, res) => {
         if (config['modules']['hit_counter']) {
             hc.read('/', (data) => {
-                res.json({
-                    hits: data.hits,
-                    visitors: data.visitors,
-                });
+                res.json(data);
             });
         } else {
             showError(req, res, 404);
@@ -268,10 +265,7 @@ module.exports = (config) => {
             } else if (req.path.endsWith('stats')) {
                 if (config['modules']['hit_counter']) {
                     hc.read(articlePath, (data) => {
-                        res.json({
-                            hits: data.hits,
-                            visitors: data.visitors,
-                        });
+                        res.json(data);
                     });
                 } else {
                     showError(req, res, 404);
