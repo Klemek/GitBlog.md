@@ -10,6 +10,7 @@ VOLUME [ "/usr/src/app/data" ]
 # where available (npm@5+)
 COPY package*.json ./
 COPY src/postinstall.js ./src/postinstall.js
+COPY src/config.default.json ./src/config.default.json
 
 RUN npm install
 # If you are building your code for production
