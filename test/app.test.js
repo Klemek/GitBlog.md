@@ -17,6 +17,7 @@ config['rss']['endpoint'] = '/rsstest';
 config['rss']['length'] = 2;
 config['home']['error'] = testError;
 config['article']['template'] = testTemplate;
+config['modules']['hit_counter'] = false;
 
 const app = require('../src/app')(config);
 
@@ -28,6 +29,7 @@ beforeEach((done, fail) => {
     config['error_log'] = '';
     config['modules']['rss'] = true;
     config['modules']['webhook'] = true;
+    config['modules']['hit_counter'] = false;
 
     utils.deleteFolderSync(dataDir);
     fs.mkdirSync(dataDir);
@@ -194,6 +196,22 @@ describe('Test root path', () => {
                     done();
                 });
         }, fail);
+    });
+    test('404 index no stats', (done) => {
+        request(app).get('/stats')
+            .then((response) => {
+                expect(response.statusCode).toBe(404);
+                done();
+            });
+    });
+    test('200 index stats', (done) => {
+        config['modules']['hit_counter'] = true;
+        request(app).get('/stats')
+            .then((response) => {
+                expect(response.statusCode).toBe(200);
+                expect(response.body).toEqual({ hits: 0, visitors: 0 });
+                done();
+            });
     });
 });
 
@@ -432,6 +450,38 @@ describe('Test articles rendering', () => {
                     done();
                 });
         }, fail);
+    });
+
+    test('404 article no stats', (done) => {
+        utils.createEmptyDirs([ path.join(dataDir, '2019', '05', '05') ]);
+        utils.createEmptyFiles([
+            path.join(dataDir, '2019', '05', '05', 'index.md'),
+            path.join(dataDir, testTemplate),
+        ]);
+        app.reload(() => {
+            request(app).get('/2019/05/05/hello/stats')
+                .then((response) => {
+                    expect(response.statusCode).toBe(404);
+                    done();
+                });
+        });
+    });
+
+    test('200 index stats', (done) => {
+        config['modules']['hit_counter'] = true;
+        utils.createEmptyDirs([ path.join(dataDir, '2019', '05', '05') ]);
+        utils.createEmptyFiles([
+            path.join(dataDir, '2019', '05', '05', 'index.md'),
+            path.join(dataDir, testTemplate),
+        ]);
+        app.reload(() => {
+            request(app).get('/2019/05/05/anything/stats')
+                .then((response) => {
+                    expect(response.statusCode).toBe(200);
+                    expect(response.body).toEqual({ hits: 0, visitors: 0 });
+                    done();
+                });
+        });
     });
 });
 

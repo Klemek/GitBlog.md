@@ -51,7 +51,16 @@ module.exports = (config) => {
     let showError;
     const fw = require('./file_walker')(config);
     const renderer = require('./renderer')(config);
-    const hc = require('./hit_counter')(config);
+    const hc = require('./hit_counter')(config,
+        () => {
+            console.log(cons.ok, 'redis connected');
+        },
+        (err) => {
+            if (err.code !== 'ECONNREFUSED') {
+                console.log(cons.warn, 'redis error: ' + err);
+            }
+        },
+    );
 
     // set view engine from configuration
     app.set('view engine', config['view_engine']);
@@ -159,22 +168,28 @@ module.exports = (config) => {
             if (err) {
                 showError(req, res, 404);
             } else {
-                hc.count(req, '/');
-                render(req, res, homePath,
-                    {
-                        articles: Object.values(articles)
-                            .filter(d => !d.draft)
-                            .sort((a, b) => ('' + b.path).localeCompare(a.path)),
-                    });
+                hc.count(req, '/', () => {
+                    render(req, res, homePath,
+                        {
+                            articles: Object.values(articles)
+                                .filter(d => !d.draft)
+                                .sort((a, b) => ('' + b.path).localeCompare(a.path)),
+                        });
+                });
             }
         });
     });
     app.get('/stats', (req, res) => {
-        const data = hc.read('/');
-        res.json({
-            hits: data.hits,
-            visitors: data.visitors,
-        });
+        if (config['modules']['hit_counter']) {
+            hc.read('/', (data) => {
+                res.json({
+                    hits: data.hits,
+                    visitors: data.visitors,
+                });
+            });
+        } else {
+            showError(req, res, 404);
+        }
     });
 
     //RSS endpoint
@@ -251,29 +266,35 @@ module.exports = (config) => {
             if (!article) {
                 showError(req, res, 404);
             } else if (req.path.endsWith('stats')) {
-                const data = hc.read(articlePath);
-                res.json({
-                    hits: data.hits,
-                    visitors: data.visitors,
-                });
-            } else {
-                hc.count(req, articlePath);
-                renderer.render(article.realPath, (err, html) => {
-                    if (err) {
-                        console.log(cons.error, `failed to render article ${req.path} : ${err}`);
-                        showError(req, res, 500);
-                    } else {
-                        article.content = html;
-                        const templatePath = path.join(config['data_dir'], config['article']['template']);
-                        fs.access(templatePath, fs.constants.R_OK, (err) => {
-                            if (err) {
-                                console.log(cons.error, `no template found at ${templatePath}`);
-                                showError(req, res, 500);
-                            } else {
-                                render(req, res, templatePath, { article: article });
-                            }
+                if (config['modules']['hit_counter']) {
+                    hc.read(articlePath, (data) => {
+                        res.json({
+                            hits: data.hits,
+                            visitors: data.visitors,
                         });
-                    }
+                    });
+                } else {
+                    showError(req, res, 404);
+                }
+            } else {
+                hc.count(req, articlePath, () => {
+                    renderer.render(article.realPath, (err, html) => {
+                        if (err) {
+                            console.log(cons.error, `failed to render article ${req.path} : ${err}`);
+                            showError(req, res, 500);
+                        } else {
+                            article.content = html;
+                            const templatePath = path.join(config['data_dir'], config['article']['template']);
+                            fs.access(templatePath, fs.constants.R_OK, (err) => {
+                                if (err) {
+                                    console.log(cons.error, `no template found at ${templatePath}`);
+                                    showError(req, res, 500);
+                                } else {
+                                    render(req, res, templatePath, { article: article });
+                                }
+                            });
+                        }
+                    });
                 });
             }
         } else {

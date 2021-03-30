@@ -282,6 +282,8 @@ Any URL like `/year/month/day/anything/` will redirect to this article (and link
      activate PlantUML diagram rendering
    * `fa-diagrams` (default: true)  
      activate fa-diagrams rendering
+   * `hit_counter` (default: true)  
+     activate /stats endpoints and visitor counting (need an active redis connection)
 * `home`
    * `title` (default: GitBlog.md)  
      the title of your blog, **strongly advised to be changed**  
@@ -332,4 +334,11 @@ Any URL like `/year/month/day/anything/` will redirect to this article (and link
      specify the output format between svg, html or MathMl (mml)
    * `speak_text`: (default: true)  
      activate the alternate text in equations
+* `hit_counter`
+   * `unique_visitor_timeout`: (default: 7200000 / 2h)
+     specify the time (in ms) before a visitor can be accounted again
+* `redis`  
+ Options to connect to redis (see [redis options](https://github.com/NodeRedis/node-redis#options-object-properties) for more info)  
+   * `host`: (default: localhost)  
+   * `port`: (default: 6379) 
 
