@@ -91,58 +91,6 @@ describe('count()', () => {
         mockClient.exec = (cb) => {
             cb();
         };
-    });
-
-    test('simple visit', (done) => {
-        let multiCalled = false;
-        let execCalled = false;
-        let hincrbyCalls = [];
-        mockClient.multi = () => {
-            multiCalled = true;
-            return mockClient;
-        };
-        mockClient.hincrby = (hash, key, value) => {
-            hincrbyCalls.push([
-                hash,
-                key,
-                value,
-            ]);
-            return mockClient;
-        };
-        mockClient.exec = (cb) => {
-            execCalled = true;
-            cb();
-        };
-        hc.count({
-            headers: {},
-            connection: { remoteAddress: 'test1' },
-        }, '/test/path/1', () => {
-            expect(multiCalled).toBeTruthy();
-            expect(hincrbyCalls).toEqual([
-                [
-                    '/test/path/1',
-                    'h',
-                    1,
-                ],
-                [
-                    '/test/path/1',
-                    'v',
-                    1,
-                ],
-            ]);
-            expect(execCalled).toBeTruthy();
-            done();
-        });
-    });
-});
-
-describe('count()', () => {
-    beforeEach(() => {
-        mockClient.multi = () => mockClient;
-        mockClient.hincrby = () => mockClient;
-        mockClient.exec = (cb) => {
-            cb();
-        };
         config['hit_counter']['unique_visitor_timeout'] = -1;
     });
 
