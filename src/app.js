@@ -51,6 +51,7 @@ module.exports = (config) => {
     let showError;
     const fw = require('./file_walker')(config);
     const renderer = require('./renderer')(config);
+    const hc = require('./hit_counter')(config);
 
     // set view engine from configuration
     app.set('view engine', config['view_engine']);
@@ -157,12 +158,20 @@ module.exports = (config) => {
             if (err) {
                 showError(req, res, 404);
             } else {
+                hc.count(req, '/');
                 render(req, res, homePath,
                     {
                         articles: Object.values(articles)
-                            .filter(d => !d.draft).sort((a, b) => ('' + b.path).localeCompare(a.path))
+                            .filter(d => !d.draft).sort((a, b) => ('' + b.path).localeCompare(a.path)),
                     });
             }
+        });
+    });
+    app.get('/stats', (req, res) => {
+        const data = hc.read('/');
+        res.json({
+            hits: data.hits,
+            visitors: data.visitors,
         });
     });
 
@@ -229,12 +238,19 @@ module.exports = (config) => {
 
     // catch all article urls and render them
     app.get('*', (req, res, next) => {
-        if (/^\/\d{4}\/\d{2}\/\d{2}\/$/.test(req.path)) {
+        if (/^\/\d{4}\/\d{2}\/\d{2}\/(stats)?$/.test(req.path)) {
             const articlePath = req.path.substr(1, 10);
             const article = articles[articlePath];
             if (!article) {
                 showError(req, res, 404);
+            } else if (req.path.endsWith('stats')) {
+                const data = hc.read(articlePath);
+                res.json({
+                    hits: data.hits,
+                    visitors: data.visitors,
+                });
             } else {
+                hc.count(req, articlePath);
                 renderer.render(article.realPath, (err, html) => {
                     if (err) {
                         console.log(cons.error, `failed to render article ${req.path} : ${err}`);
