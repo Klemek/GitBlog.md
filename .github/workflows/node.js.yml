@@ -24,7 +24,6 @@ jobs:
     - name: Coveralls
       run: ./node_modules/.bin/coveralls --verbose < coverage/lcov.info
       env:
-        COVERALLS_SERVICE_NAME: GitHub Action
-        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-        COVERALLS_GIT_BRANCH: ${{ github.head_ref }}
+        COVERALLS_REPO_TOKEN: "${{ secrets.COVERALLS_REPO_TOKEN }}"
+        COVERALLS_GIT_BRANCH: "${{ github.ref }}"
         
