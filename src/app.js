@@ -28,29 +28,39 @@ const cons = {
 
 module.exports = (config) => {
     /**
-   * Fetch articles from the data folder and send success as a response
-   * @param success
-   * @param error
-   */
+     * Fetch articles from the data folder and send success as a response
+     * @param success
+     * @param error
+     */
     let reload;
     /**
-   * Render the page with the view engine and catch errors
-   * @param req
-   * @param res
-   * @param vPath - path of the view
-   * @param data - data to pass to the view
-   * @param code - code to send along the page
-   */
+     * Render the page with the view engine and catch errors
+     * @param req
+     * @param res
+     * @param vPath - path of the view
+     * @param data - data to pass to the view
+     * @param code - code to send along the page
+     */
     let render;
     /**
-   * Show an error with the correct page
-   * @param req
-   * @param res
-   * @param code - error code
-   */
+     * Show an error with the correct page
+     * @param req
+     * @param res
+     * @param code - error code
+     */
     let showError;
     const fw = require('./file_walker')(config);
     const renderer = require('./renderer')(config);
+    const hc = require('./hit_counter')(config,
+        () => {
+            console.log(cons.ok, 'redis connected');
+        },
+        (err) => {
+            if (err.code !== 'ECONNREFUSED') {
+                console.log(cons.warn, 'redis error: ' + err);
+            }
+        },
+    );
 
     // set view engine from configuration
     app.set('view engine', config['view_engine']);
@@ -65,21 +75,22 @@ module.exports = (config) => {
         fw.fetchArticles((err, dict) => {
             if (err) {
                 console.error(cons.error, 'error loading articles : ' + err);
-                return error ? error() : null;
-            }
-            Object.keys(articles).forEach((key) => delete articles[key]);
-            Object.keys(dict).forEach((key) => articles[key] = dict[key]);
-            const nb = Object.keys(articles).length;
-            const dnb = Object.values(articles).filter(a => a.draft).length;
-            if (nb > 0) {
-                console.log(cons.ok, `loaded ${nb} article${nb > 1 ? 's' : ''} (${dnb} drafted)`);
+                error();
             } else {
-                console.log(cons.warn, 'no articles loaded, check your configuration');
+                Object.keys(articles).forEach((key) => delete articles[key]);
+                Object.keys(dict).forEach((key) => articles[key] = dict[key]);
+                const nb = Object.keys(articles).length;
+                const dnb = Object.values(articles).filter(a => a.draft).length;
+                if (nb > 0) {
+                    console.log(cons.ok, `loaded ${nb} article${nb > 1 ? 's' : ''} (${dnb} drafted)`);
+                } else {
+                    console.log(cons.warn, 'no articles loaded, check your configuration');
+                }
+
+                lastRSS = '';
+
+                success();
             }
-
-            lastRSS = '';
-
-            success();
         });
     };
     if (config['test']) {
@@ -93,7 +104,7 @@ module.exports = (config) => {
             host: host,
             version: pjson.version,
             request: req,
-            config: config
+            config: config,
         };
         res.render(vPath, data, (err, html) => {
             if (err && vPath !== path.join(config['data_dir'], config['home']['error'])) {
@@ -114,7 +125,7 @@ module.exports = (config) => {
             if (err) {
                 res.sendStatus(code);
             } else {
-                render(req, res, errorPath, {error: code}, code);
+                render(req, res, errorPath, { error: code }, code);
             }
         });
     };
@@ -130,7 +141,7 @@ module.exports = (config) => {
     //rate limit for safer server
     const limiter = rateLimit({
         windowMs: 15 * 60 * 1000, // 15 minutes
-        max: config['rate_limit']
+        max: config['rate_limit'],
     });
     app.use(limiter);
 
@@ -141,7 +152,7 @@ module.exports = (config) => {
             res.end = (chunk, encoding) => {
                 fs.appendFile(config['access_log'],
                     `${res.statusCode} ${req.method} ${req.url} ${new Date().toUTCString()} ${req.ips.join(' ') || req.ip}\n`,
-                    {encoding: 'UTF-8'}, () => {
+                    { encoding: 'UTF-8' }, () => {
                         res.end = end;
                         res.end(chunk, encoding);
                     });
@@ -157,13 +168,28 @@ module.exports = (config) => {
             if (err) {
                 showError(req, res, 404);
             } else {
-                render(req, res, homePath,
-                    {
-                        articles: Object.values(articles)
-                            .filter(d => !d.draft).sort((a, b) => ('' + b.path).localeCompare(a.path))
-                    });
+                hc.count(req, '/', () => {
+                    render(req, res, homePath,
+                        {
+                            articles: Object.values(articles)
+                                .filter(d => !d.draft)
+                                .sort((a, b) => ('' + b.path).localeCompare(a.path)),
+                        });
+                });
             }
         });
+    });
+    app.get('/stats', (req, res) => {
+        if (config['modules']['hit_counter']) {
+            hc.read('/', (data) => {
+                res.json({
+                    hits: data.hits,
+                    visitors: data.visitors,
+                });
+            });
+        } else {
+            showError(req, res, 404);
+        }
     });
 
     //RSS endpoint
@@ -171,10 +197,10 @@ module.exports = (config) => {
         if (config['modules']['rss']) {
             if (!lastRSS) {
                 const feed = new Rss({
-                    'title': config['rss']['title'],
-                    'description': config['rss']['description'],
-                    'feed_url': host + req.url,
-                    'site_url': host
+                    title: config['rss']['title'],
+                    description: config['rss']['description'],
+                    feed_url: host + req.url,
+                    site_url: host,
                 });
                 Object.values(articles)
                     .slice(0, config['rss']['length'])
@@ -182,7 +208,7 @@ module.exports = (config) => {
                         feed.item({
                             title: article.title,
                             url: host + article.url,
-                            date: article.date
+                            date: article.date,
                         });
                     });
                 lastRSS = feed.xml();
@@ -196,24 +222,29 @@ module.exports = (config) => {
     //webhook endpoint
     app.post(config['webhook']['endpoint'], (req, res) => {
         if (config['modules']['webhook']) {
+            let valid = true;
             if (config['webhook']['signature_header'] && config['webhook']['secret']) {
                 const payload = JSON.stringify(req.body) || '';
                 const hmac = crypto.createHmac('sha1', config['webhook']['secret']);
                 const digest = 'sha1=' + hmac.update(payload).digest('hex');
                 const checksum = req.headers[config['webhook']['signature_header']];
                 if (!checksum || !digest || checksum !== digest) {
-                    return res.sendStatus(403);
+                    res.sendStatus(403);
+                    valid = false;
                 }
             }
-            cp.exec(config['webhook']['pull_command'], {cwd: path.join(__dirname, '..', config['data_dir'])}, (err) => {
-                if (err) {
-                    console.log(cons.error, `command '${config['webhook']['pull_command']}' failed : ${err}`);
-                    return res.sendStatus(500);
-                }
-                reload(() => {
-                    res.sendStatus(200);
+            if (valid) {
+                cp.exec(config['webhook']['pull_command'], { cwd: path.join(__dirname, '..', config['data_dir']) }, (err) => {
+                    if (err) {
+                        console.log(cons.error, `command '${config['webhook']['pull_command']}' failed : ${err}`);
+                        res.sendStatus(500);
+                    } else {
+                        reload(() => {
+                            res.sendStatus(200);
+                        });
+                    }
                 });
-            });
+            }
         } else {
             res.sendStatus(400);
         }
@@ -229,25 +260,39 @@ module.exports = (config) => {
 
     // catch all article urls and render them
     app.get('*', (req, res, next) => {
-        if (/^\/\d{4}\/\d{2}\/\d{2}\/$/.test(req.path)) {
+        if (/^\/\d{4}\/\d{2}\/\d{2}\/(stats)?$/.test(req.path)) {
             const articlePath = req.path.substr(1, 10);
             const article = articles[articlePath];
             if (!article) {
                 showError(req, res, 404);
+            } else if (req.path.endsWith('stats')) {
+                if (config['modules']['hit_counter']) {
+                    hc.read(articlePath, (data) => {
+                        res.json({
+                            hits: data.hits,
+                            visitors: data.visitors,
+                        });
+                    });
+                } else {
+                    showError(req, res, 404);
+                }
             } else {
-                renderer.render(article.realPath, (err, html) => {
-                    if (err) {
-                        console.log(cons.error, `failed to render article ${req.path} : ${err}`);
-                        return showError(req, res, 500);
-                    }
-                    article.content = html;
-                    const templatePath = path.join(config['data_dir'], config['article']['template']);
-                    fs.access(templatePath, fs.constants.R_OK, (err) => {
+                hc.count(req, articlePath, () => {
+                    renderer.render(article.realPath, (err, html) => {
                         if (err) {
-                            console.log(cons.error, `no template found at ${templatePath}`);
+                            console.log(cons.error, `failed to render article ${req.path} : ${err}`);
                             showError(req, res, 500);
                         } else {
-                            render(req, res, templatePath, {article: article});
+                            article.content = html;
+                            const templatePath = path.join(config['data_dir'], config['article']['template']);
+                            fs.access(templatePath, fs.constants.R_OK, (err) => {
+                                if (err) {
+                                    console.log(cons.error, `no template found at ${templatePath}`);
+                                    showError(req, res, 500);
+                                } else {
+                                    render(req, res, templatePath, { article: article });
+                                }
+                            });
                         }
                     });
                 });
@@ -284,7 +329,7 @@ module.exports = (config) => {
         }
         fs.appendFile(config['error_log'],
             `500 ${req.method} ${req.url} ${new Date().toUTCString()} ${req.ips.join(' ') || req.ip}\n${err.stack}\n`,
-            {encoding: 'UTF-8'}, () => {
+            { encoding: 'UTF-8' }, () => {
                 next(err);
             });
     });

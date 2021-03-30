@@ -25,7 +25,7 @@ if (!fs.existsSync('data')) {
     const dir = path.join('data', datetime.getFullYear().toString(), pad0(datetime.getMonth() + 1), pad0(datetime.getDate()));
 
     if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, {recursive: true});
+        fs.mkdirSync(dir, { recursive: true });
     }
 
     copy(path.join('sample_data', 'article'), dir);

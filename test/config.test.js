@@ -34,8 +34,8 @@ test('example config', () => {
         fs.unlinkSync(configFile);
     }
     fs.copyFileSync(path.join('src', 'config.default.json'), configFile);
-    const data = fs.readFileSync(configFile, {encoding: 'UTF-8'});
-    fs.writeFileSync(configFile, data.replace('3000', '3333'), {encoding: 'UTF-8'});
+    const data = fs.readFileSync(configFile, { encoding: 'UTF-8' });
+    fs.writeFileSync(configFile, data.replace('3000', '3333'), { encoding: 'UTF-8' });
     const config = require('../src/config')();
     expect(config).toBeDefined();
     expect(config['node_port']).toBe(3333);
@@ -70,12 +70,18 @@ test('array parsing', () => {
     fs.writeFileSync(configFile, '{"home":{"hidden":["item1","item2"]}}');
     const config = require('../src/config')();
     expect(config).toBeDefined();
-    expect(config['home']['hidden']).toEqual(['item1', 'item2']);
+    expect(config['home']['hidden']).toEqual([
+        'item1',
+        'item2',
+    ]);
 });
 
 test('array fix', () => {
     fs.writeFileSync(configFile, '{"home":{"hidden":{}}}');
     const config = require('../src/config')();
     expect(config).toBeDefined();
-    expect(config['home']['hidden']).toEqual(['*.ejs', '/.git*']);
+    expect(config['home']['hidden']).toEqual([
+        '*.ejs',
+        '/.git*',
+    ]);
 });

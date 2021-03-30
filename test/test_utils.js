@@ -14,7 +14,7 @@ const deleteFolderSync = (dir) => {
         }
     };
     do {
-        items = fs.readdirSync(dir, {withFileTypes: true});
+        items = fs.readdirSync(dir, { withFileTypes: true });
         try {
             items.forEach(deleteItem);
         } catch (e) {
@@ -26,6 +26,6 @@ const deleteFolderSync = (dir) => {
 
 module.exports = {
     deleteFolderSync: deleteFolderSync,
-    createEmptyDirs: (list) => list.forEach((path) => fs.mkdirSync(path, {recursive: true})),
+    createEmptyDirs: (list) => list.forEach((path) => fs.mkdirSync(path, { recursive: true })),
     createEmptyFiles: (list) => list.forEach((file) => fs.writeFileSync(file, '')),
 };
