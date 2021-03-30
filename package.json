@@ -28,6 +28,9 @@
   "scripts": {
     "start": "node src/server.js",
     "test": "jest --silent -i",
+    "test-cov": "jest --silent -i --coverage",
+    "coveralls": "coveralls < coverage/lcov.info",
+    "test-lint": "eslint .",
     "install": "node src/postinstall.js",
     "lint": "eslint --fix ."
   },

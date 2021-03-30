@@ -19,10 +19,12 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
     - run: npm run build --if-present
+    - name: ESLint
+      run: npm run test-lint
     - name: Jest
-      run: ./node_modules/.bin/jest --silent -i --coverage
+      run: npm run test-cov
     - name: Coveralls
-      run: ./node_modules/.bin/coveralls --verbose < coverage/lcov.info
+      run: npm run coveralls
       env:
         COVERALLS_REPO_TOKEN: "${{ secrets.COVERALLS_REPO_TOKEN }}"
         COVERALLS_GIT_BRANCH: "${{ github.ref }}"
