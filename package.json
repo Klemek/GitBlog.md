@@ -4,7 +4,7 @@
   "description": "A static blog using Markdown pulled from your git repository.",
   "main": "src/server.js",
   "dependencies": {
-    "@iarna/toml": "^2.2.3",
+    "@iarna/toml": "^2.2.5",
     "body-parser": "^1.19.0",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
