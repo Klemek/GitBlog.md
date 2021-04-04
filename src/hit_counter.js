@@ -8,8 +8,8 @@ module.exports = (config, onConnect, onError) => {
 
     const visitors = {};
 
-    const count = (req, path, cb) => {
-        if (!client.connected) {
+    const count = (req, path, disable, cb) => {
+        if (!client.connected || disable) {
             cb();
         } else {
             const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;

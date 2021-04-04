@@ -98,7 +98,7 @@ describe('read()', () => {
         hc.count({
             headers: {},
             connection: { remoteAddress: 'test1' },
-        }, '/test/path/5', () => {
+        }, '/test/path/5', false, () => {
             hc.read('/test/path/5', (data) => {
                 expect(data).toBeDefined();
                 expect(data.current_visitors).toBe(1);
@@ -111,7 +111,7 @@ describe('read()', () => {
         hc.count({
             headers: {},
             connection: { remoteAddress: 'test1' },
-        }, '/test/path/5', () => {
+        }, '/test/path/5', false, () => {
             hc.read('/test/path/5', (data) => {
                 expect(data).toBeDefined();
                 expect(data.current_visitors).toBe(0);
@@ -145,7 +145,7 @@ describe('count()', () => {
         hc.count({
             headers: {},
             connection: { remoteAddress: 'test1' },
-        }, '/test/path/1', () => {
+        }, '/test/path/1', false, () => {
             expect(multiCalled).toBeTruthy();
             expect(hincrbyCalls).toEqual([
                 [
@@ -177,11 +177,11 @@ describe('count()', () => {
         hc.count({
             headers: {},
             connection: { remoteAddress: 'test2' },
-        }, '/test/path/2', () => {
+        }, '/test/path/2', false, () => {
             hc.count({
                 headers: {},
                 connection: { remoteAddress: 'test2' },
-            }, '/test/path/2', () => {
+            }, '/test/path/2', false, () => {
                 expect(hincrbyCalls).toEqual([
                     [
                         '/test/path/2',
@@ -223,11 +223,11 @@ describe('count()', () => {
         hc.count({
             headers: {},
             connection: { remoteAddress: 'test3' },
-        }, '/test/path/3', () => {
+        }, '/test/path/3', false, () => {
             hc.count({
                 headers: {},
                 connection: { remoteAddress: 'test3' },
-            }, '/test/path/3', () => {
+            }, '/test/path/3', false, () => {
                 expect(hincrbyCalls).toEqual([
                     [
                         '/test/path/3',
