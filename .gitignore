@@ -2,6 +2,7 @@
 /node_modules
 /config.json
 /config.example.json
+/robots_list.json
 /data
 /data/*
 /test_data

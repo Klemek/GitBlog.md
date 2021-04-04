@@ -61,6 +61,23 @@ module.exports = (config) => {
             }
         },
     );
+    const botDetector = require('./bot_detector')(config);
+    botDetector.load((status, err) => {
+        switch (status) {
+        case botDetector.status.FETCH_OK:
+            console.log(cons.ok, 'fetched robots list');
+            break;
+        case botDetector.status.FETCH_ERROR:
+            console.error(cons.error, 'error fetching robots list : ' + err);
+            break;
+        case botDetector.status.READ_OK:
+            console.log(cons.ok, `read robots list: ${botDetector.count}`);
+            break;
+        case botDetector.status.READ_ERROR:
+            console.error(cons.error, 'error reading robots list : ' + err);
+            break;
+        }
+    });
 
     // set view engine from configuration
     app.set('view engine', config['view_engine']);
@@ -145,6 +162,9 @@ module.exports = (config) => {
     });
     app.use(limiter);
 
+    //detect robots
+    app.use(botDetector.handle);
+
     //log request at result end
     app.use((req, res, next) => {
         if (config['access_log']) {
@@ -168,7 +188,7 @@ module.exports = (config) => {
             if (err) {
                 showError(req, res, 404);
             } else {
-                hc.count(req, '/', () => {
+                hc.count(req, '/', req.isRobot, () => {
                     render(req, res, homePath,
                         {
                             articles: Object.values(articles)
@@ -271,7 +291,7 @@ module.exports = (config) => {
                     showError(req, res, 404);
                 }
             } else {
-                hc.count(req, articlePath, () => {
+                hc.count(req, articlePath, req.isRobot, () => {
                     renderer.render(article.realPath, (err, html) => {
                         if (err) {
                             console.log(cons.error, `failed to render article ${req.path} : ${err}`);

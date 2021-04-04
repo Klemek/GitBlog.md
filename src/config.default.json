@@ -63,6 +63,10 @@
   "hit_counter": {
     "unique_visitor_timeout": 7200000
   },
+  "robots": {
+    "list_url": "https://raw.githubusercontent.com/atmire/COUNTER-Robots/master/COUNTER_Robots_list.json",
+    "list_file": "robots_list.json"
+  },
   "redis": {
     "host": "localhost",
     "port": 6379
