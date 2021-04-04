@@ -336,6 +336,11 @@ Any URL like `/year/month/day/anything/` will redirect to this article (and link
 * `hit_counter`
    * `unique_visitor_timeout`: (default: 7200000 / 2h)
      specify the time (in ms) before a visitor can be accounted again
+* `robots`
+   * `list_url`: (default: https://raw.githubusercontent.com/atmire/COUNTER-Robots/master/COUNTER_Robots_list.json)
+     url to fetch for web crawlers patterns
+   * `list_file`: (default: robots_list.json)
+     file to store web crawlers patterns
 * `redis`  
  Options to connect to redis (see [redis options](https://github.com/NodeRedis/node-redis#options-object-properties) for more info)  
    * `host`: (default: localhost)  
