@@ -16,21 +16,23 @@ module.exports = (config) => {
     };
 
     const fetchList = (cb) => {
-        const file = fs.createWriteStream(config['robots']['list_file']);
         https.get(config['robots']['list_url'], (res) => {
-            res.pipe(file);
-            file.on('finish', () => {
-                file.close(cb);
-            });
+            if (res.statusCode !== 200) {
+                cb(res.statusCode);
+            } else {
+                const file = fs.createWriteStream(config['robots']['list_file']);
+                res.pipe(file);
+                file.on('finish', () => {
+                    file.close(cb);
+                });
+            }
         }).on('error', (err) => {
-            file.close(() => {
-                cb(err.message);
-            });
+            cb(err.message);
         });
     };
 
     const readFile = (cb) => {
-        fs.readFile(config['robots']['list_file'], (err, data) => {
+        fs.readFile(config['robots']['list_file'], { encoding: 'utf-8' }, (err, data) => {
             if (err) {
                 cb(err, undefined);
             } else {
