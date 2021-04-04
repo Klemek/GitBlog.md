@@ -11,8 +11,6 @@ module.exports = (config) => {
         },
         count: [],
         regex: null,
-        knownBots: [],
-        known: [],
     };
 
     const fetchList = (cb) => {
