@@ -16,14 +16,16 @@ module.exports = (config) => {
     };
 
     const fetchList = (cb) => {
+        const file = fs.createWriteStream(config['robots']['list_file']);
         https.get(config['robots']['list_url'], (res) => {
-            const file = fs.createWriteStream(config['robots']['list_file']);
             res.pipe(file);
             file.on('finish', () => {
                 file.close(cb);
             });
         }).on('error', (err) => {
-            cb(err.message);
+            file.close(() => {
+                cb(err.message);
+            });
         });
     };
 
@@ -45,9 +47,11 @@ module.exports = (config) => {
         fetchList((err) => {
             cb(err ? _this.status.FETCH_ERROR : _this.status.FETCH_OK, err);
             readFile((err, data) => {
-                _this.count = data.length;
-                _this.regex = new RegExp('(' + data.filter(v => v['pattern']).map(v => v['pattern'])
-                    .join('|') + ')');
+                if (!err) {
+                    _this.count = data.length;
+                    _this.regex = new RegExp('(' + data.filter(v => v['pattern']).map(v => v['pattern'])
+                        .join('|') + ')');
+                }
                 cb(err ? _this.status.READ_ERROR : _this.status.READ_OK, err);
             });
         });
