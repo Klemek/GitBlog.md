@@ -197,26 +197,6 @@ describe('Test root path', () => {
                 });
         }, fail);
     });
-    test('404 index no stats', (done) => {
-        request(app).get('/stats')
-            .then((response) => {
-                expect(response.statusCode).toBe(404);
-                done();
-            });
-    });
-    test('200 index stats', (done) => {
-        config['modules']['hit_counter'] = true;
-        request(app).get('/stats')
-            .then((response) => {
-                expect(response.statusCode).toBe(200);
-                expect(response.body).toEqual({
-                    hits: 0,
-                    total_visitors: 0,
-                    current_visitors: 0,
-                });
-                done();
-            });
-    });
 });
 
 describe('Test RSS feed', () => {
@@ -455,44 +435,7 @@ describe('Test articles rendering', () => {
                 });
         }, fail);
     });
-
-    test('404 article no stats', (done) => {
-        utils.createEmptyDirs([ path.join(dataDir, '2019', '05', '05') ]);
-        utils.createEmptyFiles([
-            path.join(dataDir, '2019', '05', '05', 'index.md'),
-            path.join(dataDir, testTemplate),
-        ]);
-        app.reload(() => {
-            request(app).get('/2019/05/05/hello/stats')
-                .then((response) => {
-                    expect(response.statusCode).toBe(404);
-                    done();
-                });
-        });
-    });
-
-    test('200 index stats', (done) => {
-        config['modules']['hit_counter'] = true;
-        utils.createEmptyDirs([ path.join(dataDir, '2019', '05', '05') ]);
-        utils.createEmptyFiles([
-            path.join(dataDir, '2019', '05', '05', 'index.md'),
-            path.join(dataDir, testTemplate),
-        ]);
-        app.reload(() => {
-            request(app).get('/2019/05/05/anything/stats')
-                .then((response) => {
-                    expect(response.statusCode).toBe(200);
-                    expect(response.body).toEqual({
-                        hits: 0,
-                        total_visitors: 0,
-                        current_visitors: 0,
-                    });
-                    done();
-                });
-        });
-    });
 });
-
 
 describe('Test static files', () => {
     test('404 invalid file no error page', (done) => {
@@ -572,5 +515,115 @@ describe('Test other requests', () => {
                 expect(response.statusCode).toBe(400);
                 done();
             });
+    });
+});
+
+
+describe('Test stats', () => {
+    test('404 index no stats', (done) => {
+        request(app).get('/stats')
+            .then((response) => {
+                expect(response.statusCode).toBe(404);
+                done();
+            });
+    });
+    test('200 index stats', (done) => {
+        config['modules']['hit_counter'] = true;
+        request(app).get('/stats')
+            .then((response) => {
+                expect(response.statusCode).toBe(200);
+                expect(response.body).toEqual({
+                    path: '/',
+                    hits: 0,
+                    total_visitors: 0,
+                    current_visitors: 0,
+                });
+                done();
+            });
+    });
+    test('200 index stats all no article', (done) => {
+        config['modules']['hit_counter'] = true;
+        app.reload(() => {
+            request(app).get('/stats?all=true')
+                .then((response) => {
+                    expect(response.statusCode).toBe(200);
+                    expect(response.body).toEqual([
+                        {
+                            path: '/',
+                            hits: 0,
+                            total_visitors: 0,
+                            current_visitors: 0,
+                        },
+                    ]);
+                    done();
+                });
+        });
+    });
+    test('200 index stats all 2 article 1 drafted', (done) => {
+        config['modules']['hit_counter'] = true;
+        utils.createEmptyDirs([
+            path.join(dataDir, '2019', '05', '05'),
+            path.join(dataDir, '2019', '04', '05'),
+        ]);
+        utils.createEmptyFiles([
+            path.join(dataDir, '2019', '05', '05', 'index.md'),
+            path.join(dataDir, '2019', '04', '05', 'draft.md'),
+        ]);
+        app.reload(() => {
+            request(app).get('/stats?all=true')
+                .then((response) => {
+                    expect(response.statusCode).toBe(200);
+                    expect(response.body).toEqual([
+                        {
+                            path: '/',
+                            hits: 0,
+                            total_visitors: 0,
+                            current_visitors: 0,
+                        },
+                        {
+                            path: '2019/05/05',
+                            hits: 0,
+                            total_visitors: 0,
+                            current_visitors: 0,
+                        },
+                    ]);
+                    done();
+                });
+        });
+    });
+    test('404 article no stats', (done) => {
+        utils.createEmptyDirs([ path.join(dataDir, '2019', '05', '05') ]);
+        utils.createEmptyFiles([
+            path.join(dataDir, '2019', '05', '05', 'index.md'),
+            path.join(dataDir, testTemplate),
+        ]);
+        app.reload(() => {
+            request(app).get('/2019/05/05/hello/stats')
+                .then((response) => {
+                    expect(response.statusCode).toBe(404);
+                    done();
+                });
+        });
+    });
+    test('200 article stats', (done) => {
+        config['modules']['hit_counter'] = true;
+        utils.createEmptyDirs([ path.join(dataDir, '2019', '05', '05') ]);
+        utils.createEmptyFiles([
+            path.join(dataDir, '2019', '05', '05', 'index.md'),
+            path.join(dataDir, testTemplate),
+        ]);
+        app.reload(() => {
+            request(app).get('/2019/05/05/anything/stats')
+                .then((response) => {
+                    expect(response.statusCode).toBe(200);
+                    expect(response.body).toEqual({
+                        path: '2019/05/05',
+                        hits: 0,
+                        total_visitors: 0,
+                        current_visitors: 0,
+                    });
+                    done();
+                });
+        });
     });
 });

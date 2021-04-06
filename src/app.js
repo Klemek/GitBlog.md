@@ -201,9 +201,25 @@ module.exports = (config) => {
     });
     app.get('/stats', (req, res) => {
         if (config['modules']['hit_counter']) {
-            hc.read('/', (data) => {
-                res.json(data);
-            });
+            if (req.query['all']) {
+                const keys = Object.keys(articles).filter(key => !articles[key].draft);
+                keys.unshift('/');
+                const read = (i, outputData) => {
+                    if (i >= keys.length) {
+                        res.json(outputData);
+                    } else {
+                        hc.read(keys[i], (data) => {
+                            outputData.push(data);
+                            read(i + 1, outputData);
+                        });
+                    }
+                };
+                read(0, []);
+            } else {
+                hc.read('/', (data) => {
+                    res.json(data);
+                });
+            }
         } else {
             showError(req, res, 404);
         }
