@@ -42,13 +42,15 @@ module.exports = (config, onConnect, onError) => {
     const read = (path, cb) => {
         if (!client.connected) {
             cb({
+                path: path,
                 hits: 0,
                 total_visitors: 0,
-                current_visitors: 0,
+                current_visitors: cleanVisitors(path),
             });
         } else {
             client.hgetall(path, (_, value) => {
                 cb({
+                    path: path,
                     hits: value ? parseInt(value.h) || 0 : 0,
                     total_visitors: value ? parseInt(value.v) || 0 : 0,
                     current_visitors: cleanVisitors(path),
