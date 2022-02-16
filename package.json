@@ -16,7 +16,7 @@
     "prismjs": "^1.23.0",
     "redis": "^3.0.2",
     "rss": "^1.2.2",
-    "showdown": "^1.9.1"
+    "showdown": "^2.0.0"
   },
   "devDependencies": {
     "coveralls": "^3.0.4",
